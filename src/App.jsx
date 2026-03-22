@@ -99,7 +99,7 @@ export default function App() {
   );
 
   return (
-    <div style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif", background:"#09090b", minHeight:"100vh", color:"#fafafa" }}>
+    <div style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif", background:"#09090b", minHeight:"100vh", color:"#fafafa", margin:0, padding:0, overflowX:"hidden" }}>
       <div style={{ background:"#09090b", borderBottom:"1px solid rgba(255,255,255,0.07)", padding:"18px 20px 0" }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
           <div>
@@ -122,7 +122,7 @@ export default function App() {
         </div>
       </div>
 
-      <div style={{ padding:"20px 16px 40px", maxWidth:600, margin:"0 auto" }}>
+      <div style={{         padding:"16px 12px 60px", maxWidth:600, margin:"0 auto" }}>
 
         {loading && <div style={{ textAlign:"center", padding:"60px 0", color:"rgba(255,255,255,0.3)", fontSize:14 }}>Ładowanie danych…</div>}
 
@@ -275,9 +275,10 @@ export default function App() {
 }
 
 const inp = {
-  width:"100%", padding:"12px 14px", background:"rgba(255,255,255,0.05)",
+  width:"100%", maxWidth:"100%", padding:"12px 14px", background:"rgba(255,255,255,0.05)",
   border:"1px solid rgba(255,255,255,0.1)", borderRadius:10, color:"#fafafa",
-  fontSize:14, marginBottom:16, boxSizing:"border-box", outline:"none"
+  fontSize:16, marginBottom:16, boxSizing:"border-box", outline:"none",
+  WebkitAppearance:"none", appearance:"none", display:"block"
 };
 function Label({ children }) {
   return <div style={{ fontSize:12, color:"rgba(255,255,255,0.4)", letterSpacing:"0.06em", textTransform:"uppercase", marginBottom:7, fontWeight:500 }}>{children}</div>;
