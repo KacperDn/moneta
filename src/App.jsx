@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
 
-const SUPABASE_URL = "https://qimjchrhredybfzrfhdb.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpbWpjaHJocmVkeWJmenJmaGRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMDkxMzMsImV4cCI6MjA4OTc4NTEzM30.N7KUfP5s7Hc7GyTMdETI7_9jmMC7VCmKuTcvRNPRDGE";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
 const API = `${SUPABASE_URL}/rest/v1/expenses`;
 const HEADERS = { "Content-Type": "application/json", "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` };
 
