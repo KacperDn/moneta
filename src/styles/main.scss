@@ -1,24 +1,24 @@
-$bg:            #09090b;
-$surface:       rgba(255, 255, 255, 0.04);
-$border:        rgba(255, 255, 255, 0.07);
-$border-mid:    rgba(255, 255, 255, 0.1);
-$text:          #fafafa;
-$muted:         rgba(255, 255, 255, 0.4);
-$subtle:        rgba(255, 255, 255, 0.2);
-$accent:        #a78bfa;
-$accent-dim:    rgba(167, 139, 250, 0.15);
-$accent-border: rgba(167, 139, 250, 0.5);
-$danger:        #ef4444;
-$danger-bg:     rgba(239, 68, 68, 0.12);
-$danger-border: rgba(239, 68, 68, 0.25);
-$success-bg:    rgba(16, 185, 129, 0.1);
-$success-border:rgba(16, 185, 129, 0.25);
-$success-text:  #6ee7b7;
+$bg:             #09090b;
+$surface:        rgba(255, 255, 255, 0.04);
+$border:         rgba(255, 255, 255, 0.07);
+$border-mid:     rgba(255, 255, 255, 0.1);
+$text:           #fafafa;
+$muted:          rgba(255, 255, 255, 0.4);
+$subtle:         rgba(255, 255, 255, 0.2);
+$accent:         #a78bfa;
+$accent-dim:     rgba(167, 139, 250, 0.15);
+$accent-border:  rgba(167, 139, 250, 0.5);
+$danger:         #ef4444;
+$danger-bg:      rgba(239, 68, 68, 0.12);
+$danger-border:  rgba(239, 68, 68, 0.25);
+$success-bg:     rgba(16, 185, 129, 0.1);
+$success-border: rgba(16, 185, 129, 0.25);
+$success-text:   #6ee7b7;
 
-$radius-sm:  8px;
-$radius-md:  10px;
-$radius-lg:  16px;
-$radius-xl:  20px;
+$radius-sm: 8px;
+$radius-md: 10px;
+$radius-lg: 16px;
+$radius-xl: 20px;
 
 $font: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
 
@@ -85,12 +85,16 @@ html, body, #root {
     font-size: 12px;
     color: $muted;
     margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__controls {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-shrink: 0;
   }
 
   &__select {
@@ -293,6 +297,51 @@ html, body, #root {
 
     &::placeholder {
       color: rgba(255, 255, 255, 0.2);
+    }
+
+    &--pass {
+      margin-bottom: 0;
+    }
+  }
+
+  &__input-wrap {
+    position: relative;
+    margin-bottom: 16px;
+
+    .form__input--pass {
+      padding-right: 46px;
+      width: 100%;
+    }
+  }
+
+  &__pass-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $muted;
+    transition: color 0.15s;
+
+    svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    &:hover {
+      color: $text;
     }
   }
 

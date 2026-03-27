@@ -6,9 +6,10 @@ export default function Auth() {
   const [mode, setMode]       = useState("login");
   const [email, setEmail]     = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [err, setErr]         = useState("");
-  const [info, setInfo]       = useState("");
+  const [loading, setLoading]   = useState(false);
+  const [err, setErr]           = useState("");
+  const [info, setInfo]         = useState("");
+  const [showPass, setShowPass] = useState(false);
 
   const handle = async () => {
     if (!email.trim() || !password.trim()) return setErr("Wypełnij wszystkie pola.");
@@ -44,29 +45,42 @@ export default function Auth() {
           {err  && <div className="alert alert--error">{err}</div>}
           {info && <div className="alert alert--success">{info}</div>}
 
-          <label className="form__label">Email</label>
-          <input
-            type="email"
-            placeholder="twoj@email.com"
-            value={email}
-            className="form__input"
-            onChange={e => { setErr(""); setEmail(e.target.value); }}
-            onKeyDown={e => e.key === "Enter" && handle()}
-          />
+          <form onSubmit={e => { e.preventDefault(); handle(); }} autoComplete="on">
+            <label className="form__label">Email</label>
+            <input
+              type="email"
+              name="email"
+              autoComplete="email"
+              placeholder="twoj@email.com"
+              value={email}
+              className="form__input"
+              onChange={e => { setErr(""); setEmail(e.target.value); }}
+            />
 
-          <label className="form__label">Hasło</label>
-          <input
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            className="form__input"
-            onChange={e => { setErr(""); setPassword(e.target.value); }}
-            onKeyDown={e => e.key === "Enter" && handle()}
-          />
+            <label className="form__label">Hasło</label>
+            <div className="form__input-wrap">
+              <input
+                type={showPass ? "text" : "password"}
+                name="password"
+                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                placeholder="••••••••"
+                value={password}
+                className="form__input form__input--pass"
+                onChange={e => { setErr(""); setPassword(e.target.value); }}
+              />
+              <button
+                type="button"
+                className="form__pass-toggle"
+                onClick={() => setShowPass(p => !p)}
+              >
+                {showPass ? "✖" : "👁️"}
+              </button>
+            </div>
 
-          <button className="btn--primary" onClick={handle} disabled={loading}>
-            {loading ? "Ładowanie…" : mode === "login" ? "Zaloguj się" : "Utwórz konto"}
-          </button>
+            <button type="submit" className="btn--primary" disabled={loading}>
+              {loading ? "Ładowanie…" : mode === "login" ? "Zaloguj się" : "Utwórz konto"}
+            </button>
+          </form>
 
           <div className="auth__switch">
             {mode === "login" ? "Nie masz konta? " : "Masz już konto? "}

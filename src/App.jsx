@@ -116,7 +116,7 @@ export default function App() {
       {/* Header */}
       <div className="header">
         <div className="header__top">
-          <div>
+          <div style={{ minWidth: 0, flex: 1, marginRight: 10 }}>
             <div className="header__logo">moneta</div>
             <div className="header__email">{session.user.email}</div>
           </div>
