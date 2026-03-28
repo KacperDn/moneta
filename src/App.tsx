@@ -144,58 +144,59 @@ export default function App() {
                   </ResponsiveContainer>
                 </div>
               )}
-
-              <div className="card">
-                <div className="card__title">Trendy miesięczne</div>
-                {byMonth.length < 2 ? (
-                  <div className="trend__empty">
-                    <div className="trend__empty-text">Wykres pojawi się po uzupełnieniu wydatków z minimum 2 miesięcy</div>
-                    <div className="trend__empty-sub">Masz dane z {byMonth.length} {byMonth.length === 1 ? "miesiąca" : "miesięcy"}</div>
-                  </div>
-                ) : (() => {
-                  const last = byMonth[byMonth.length - 1];
-                  const prev = byMonth[byMonth.length - 2];
-                  const diff = last.total - prev.total;
-                  const pct = ((diff / prev.total) * 100).toFixed(1);
-                  const up = diff > 0;
-                  const avg = byMonth.reduce((s, m) => s + m.total, 0) / byMonth.length;
-                  const maxM = byMonth.reduce((a, b) => a.total > b.total ? a : b);
-                  const minM = byMonth.reduce((a, b) => a.total < b.total ? a : b);
-                  return <>
-                    <div className="trend__stats">
-                      <div className="trend__stat">
-                        <div className="trend__stat-label">vs poprzedni miesiąc</div>
-                        <div className={`trend__stat-value ${up ? "trend__stat-value--up" : "trend__stat-value--down"}`}>
-                          {up ? "↑" : "↓"} {Math.abs(parseFloat(pct))}%
-                        </div>
-                      </div>
-                      <div className="trend__stat">
-                        <div className="trend__stat-label">średnia miesięczna</div>
-                        <div className="trend__stat-value">{fmt(avg)} zł</div>
-                      </div>
-                      <div className="trend__stat">
-                        <div className="trend__stat-label">najdroższy</div>
-                        <div className="trend__stat-value trend__stat-value--up">{maxM.label}</div>
-                      </div>
-                      <div className="trend__stat">
-                        <div className="trend__stat-label">najtańszy</div>
-                        <div className="trend__stat-value trend__stat-value--down">{minM.label}</div>
-                      </div>
-                    </div>
-                    <ResponsiveContainer width="100%" height={160}>
-                      <LineChart data={byMonth} margin={{ top: 10, right: 10, left: -28, bottom: 0 }}>
-                        <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
-                        <XAxis dataKey="label" tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
-                        <Tooltip formatter={v => `${fmt(v as number)} zł`} contentStyle={{ background: "#18181b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, fontSize: 13 }} />
-                        <Line type="monotone" dataKey="total" stroke="#a78bfa" strokeWidth={2} dot={{ fill: "#a78bfa", r: 4 }} activeDot={{ r: 6 }} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </>;
-                })()}
-              </div>
             </>
           }
+
+          <div className="card">
+            <div className="card__title">Trendy miesięczne</div>
+            {byMonth.length < 2 ? (
+              <div className="trend__empty">
+                <div className="trend__empty-icon">📈</div>
+                <div className="trend__empty-text">Wykres pojawi się po uzupełnieniu wydatków z minimum 2 miesięcy</div>
+                <div className="trend__empty-sub">Masz dane z {byMonth.length} {byMonth.length === 1 ? "miesiąca" : "miesięcy"}</div>
+              </div>
+            ) : (() => {
+              const last = byMonth[byMonth.length - 1];
+              const prev = byMonth[byMonth.length - 2];
+              const diff = last.total - prev.total;
+              const pct = ((diff / prev.total) * 100).toFixed(1);
+              const up = diff > 0;
+              const avg = byMonth.reduce((s, m) => s + m.total, 0) / byMonth.length;
+              const maxM = byMonth.reduce((a, b) => a.total > b.total ? a : b);
+              const minM = byMonth.reduce((a, b) => a.total < b.total ? a : b);
+              return <>
+                <div className="trend__stats">
+                  <div className="trend__stat">
+                    <div className="trend__stat-label">vs poprzedni miesiąc</div>
+                    <div className={`trend__stat-value ${up ? "trend__stat-value--up" : "trend__stat-value--down"}`}>
+                      {up ? "↑" : "↓"} {Math.abs(parseFloat(pct))}%
+                    </div>
+                  </div>
+                  <div className="trend__stat">
+                    <div className="trend__stat-label">średnia miesięczna</div>
+                    <div className="trend__stat-value">{fmt(avg)} zł</div>
+                  </div>
+                  <div className="trend__stat">
+                    <div className="trend__stat-label">najdroższy</div>
+                    <div className="trend__stat-value trend__stat-value--up">{maxM.label}</div>
+                  </div>
+                  <div className="trend__stat">
+                    <div className="trend__stat-label">najtańszy</div>
+                    <div className="trend__stat-value trend__stat-value--down">{minM.label}</div>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={160}>
+                  <LineChart data={byMonth} margin={{ top: 10, right: 10, left: -28, bottom: 0 }}>
+                    <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
+                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
+                    <Tooltip formatter={v => `${fmt(v as number)} zł`} contentStyle={{ background: "#18181b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, fontSize: 13 }} />
+                    <Line type="monotone" dataKey="total" stroke="#a78bfa" strokeWidth={2} dot={{ fill: "#a78bfa", r: 4 }} activeDot={{ r: 6 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </>;
+            })()}
+          </div>
         </>}
 
         {!loading && view === "add" && <>
