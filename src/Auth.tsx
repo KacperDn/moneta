@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "./supabase";
+import { supabase } from "./lib/supabase";
 import "./styles/main.scss";
 
 export default function Auth() {
@@ -73,7 +73,7 @@ export default function Auth() {
                 className="form__pass-toggle"
                 onClick={() => setShowPass(p => !p)}
               >
-                {showPass ? "✖" : "👁️"}
+                {showPass ? "🙈" : "👁️"}
               </button>
             </div>
 
