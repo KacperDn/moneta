@@ -1,4 +1,4 @@
-# moneta 💜
+# moneta 
 
 Personal finance tracker — track your monthly expenses, visualize spending habits and monitor trends over time.
 
@@ -8,12 +8,12 @@ Personal finance tracker — track your monthly expenses, visualize spending hab
 
 ## Features
 
-- 📊 Monthly spending breakdown with donut chart
-- 📈 Multi-month trend chart with % change indicator
-- 🗂️ 8 expense categories with daily bar chart
-- 🔐 Email/password authentication with persistent sessions
-- ☁️ Cloud database — data syncs across all devices
-- 📱 Mobile-first responsive design, installable as PWA
+-  Monthly spending breakdown with donut chart
+-  Multi-month trend chart with % change indicator
+-  8 expense categories with daily bar chart
+-  Email/password authentication with persistent sessions
+-  Cloud database — data syncs across all devices
+-  Mobile-first responsive design, installable as PWA
 
 ## Tech Stack
 
