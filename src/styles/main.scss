@@ -591,6 +591,92 @@ html, body, #root {
   color: $subtle;
 }
 
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton__wrap {
+  padding-top: 20px;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: $radius-lg;
+  margin-bottom: 14px;
+}
+
+.skeleton--hero {
+  height: 110px;
+  border-radius: $radius-lg;
+}
+
+.skeleton--card {
+  height: 180px;
+}
+
+.confirm__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.confirm__box {
+  background: #1c1c1f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $radius-xl;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.confirm__title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.confirm__sub {
+  font-size: 13px;
+  color: $muted;
+  margin-bottom: 24px;
+}
+
+.confirm__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.confirm__btn {
+  padding: 12px;
+  border-radius: $radius-md;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.85; }
+}
+
+.confirm__btn--cancel {
+  background: rgba(255, 255, 255, 0.08);
+  color: $text;
+}
+
+.confirm__btn--danger {
+  background: $danger;
+  color: #fff;
+}
+
 .auth {
   display: flex;
   align-items: center;
