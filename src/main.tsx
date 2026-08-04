@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import App from "./App";
 import PasswordReset from "./PasswordReset";
+import ErrorBoundary from "./ErrorBoundary";
 import "./styles/main.scss";
 
 const params = new URLSearchParams(window.location.search);
@@ -10,7 +11,9 @@ const isRecovery = params.get("type") === "recovery" && !!params.get("token");
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    {isRecovery ? <PasswordReset /> : <App />}
+    <ErrorBoundary>
+      {isRecovery ? <PasswordReset /> : <App />}
+    </ErrorBoundary>
     <Toaster
       position="bottom-center"
       toastOptions={{

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "./lib/supabase";
+import { friendlyAuthError } from "./lib/errors";
 import "./styles/main.scss";
 
 type Mode = "login" | "register" | "reset";
@@ -21,7 +22,7 @@ export default function Auth() {
       setLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email);
       setLoading(false);
-      if (error) return setErr(error.message);
+      if (error) return setErr(friendlyAuthError(error.message));
       return setInfo("Link do resetowania hasła został wysłany na podany adres email.");
     }
 
@@ -34,7 +35,7 @@ export default function Auth() {
       : await supabase.auth.signUp({ email, password });
     setLoading(false);
 
-    if (error) return setErr(error.message);
+    if (error) return setErr(friendlyAuthError(error.message));
     if (mode === "register") setInfo("Konto utworzone! Możesz się teraz zalogować.");
   };
 

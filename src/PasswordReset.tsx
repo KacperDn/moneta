@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "./lib/supabase";
+import { friendlyAuthError } from "./lib/errors";
 import "./styles/main.scss";
 
 export default function PasswordReset() {
@@ -37,7 +38,7 @@ export default function PasswordReset() {
     const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
 
-    if (error) return setErr(error.message);
+    if (error) return setErr(friendlyAuthError(error.message));
 
     setDone(true);
     window.history.replaceState({}, "", window.location.pathname);
