@@ -3,8 +3,10 @@ import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveCo
 import { useAuth } from "./hooks/useAuth";
 import { useExpenses } from "./hooks/useExpenses";
 import { useCountUp } from "./hooks/useCountUp";
+import { useBudgetGoal } from "./hooks/useBudgetGoal";
 import { CATS, MONTHS, fmt, getCat } from "./constants";
 import { ExpenseForm } from "./types";
+import { IconPieChart } from "./icons";
 import Auth from "./Auth";
 import PasswordReset from "./PasswordReset";
 import "./styles/main.scss";
@@ -26,6 +28,7 @@ function Skeleton() {
 export default function App() {
   const { session, ready, isRecovery, logout } = useAuth();
   const { loading, saving, add, remove, filtered, byMonth } = useExpenses(session);
+  const { goal, setGoal } = useBudgetGoal(session?.user.id);
 
   const [view, setView]         = useState<typeof TABS[number]>("dash");
   const [month, setMonth]       = useState(NOW.getMonth());
@@ -33,6 +36,8 @@ export default function App() {
   const [form, setForm]         = useState<ExpenseForm>({ desc: "", cat: "Jedzenie", amount: "", date: NOW.toISOString().split("T")[0] });
   const [err, setErr]           = useState("");
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [budgetOpen, setBudgetOpen] = useState(false);
+  const [budgetInput, setBudgetInput] = useState("");
 
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [indicator, setIndicator] = useState({ left: 0, width: 0 });
@@ -40,11 +45,26 @@ export default function App() {
   useLayoutEffect(() => {
     const el = tabRefs.current[TABS.indexOf(view)];
     if (el) setIndicator({ left: el.offsetLeft, width: el.offsetWidth });
-  }, [view]);
+  }, [view, ready, session]);
 
   const monthExpenses = filtered(month, year);
   const total = monthExpenses.reduce((s, e) => s + parseFloat(String(e.amount)), 0);
   const animatedTotal = useCountUp(total);
+
+  const budgetPct = goal ? (total / goal) * 100 : 0;
+  const budgetStatus = budgetPct >= 100 ? "over" : budgetPct >= 80 ? "warn" : "ok";
+
+  const openBudget = () => {
+    setBudgetInput(goal ? String(goal) : "");
+    setBudgetOpen(true);
+  };
+
+  const saveBudget = () => {
+    const v = parseFloat(budgetInput);
+    if (!budgetInput || isNaN(v) || v <= 0) return;
+    setGoal(v);
+    setBudgetOpen(false);
+  };
 
   const byCat = useMemo(() => {
     const m: Record<string, number> = {};
@@ -107,6 +127,33 @@ export default function App() {
         </div>
       )}
 
+      {/* Budget goal dialog */}
+      {budgetOpen && (
+        <div className="confirm__overlay">
+          <div className="confirm__box">
+            <div className="confirm__title">Cel miesięczny</div>
+            <div className="confirm__sub">Ustaw limit wydatków, żeby śledzić postęp w tym miesiącu.</div>
+            <input
+              className="form__input"
+              type="number"
+              placeholder="np. 2000"
+              value={budgetInput}
+              autoFocus
+              onChange={e => setBudgetInput(e.target.value)}
+            />
+            <div className="confirm__actions">
+              <button className="confirm__btn confirm__btn--cancel" onClick={() => setBudgetOpen(false)}>Anuluj</button>
+              <button className="confirm__btn confirm__btn--primary" onClick={saveBudget}>Zapisz</button>
+            </div>
+            {goal !== null && (
+              <button className="confirm__remove" onClick={() => { setGoal(null); setBudgetOpen(false); }}>
+                Usuń cel
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="header">
         <div className="header__top">
@@ -145,10 +192,31 @@ export default function App() {
               <div className="hero__month">{MONTHS[month]} {year}</div>
               <div className="hero__total">{fmt(animatedTotal)}<span className="hero__currency">zł</span></div>
               <div className="hero__count">{monthExpenses.length} transakcji</div>
+
+              {goal ? (
+                <div className="budget">
+                  <div className="budget__track">
+                    <div className={`budget__fill budget__fill--${budgetStatus}`} style={{ width: `${Math.min(100, budgetPct)}%` }} />
+                  </div>
+                  <div className="budget__meta">
+                    <span>{fmt(total)} / {fmt(goal)} zł</span>
+                    <button className="budget__edit" onClick={openBudget}>Edytuj cel</button>
+                  </div>
+                </div>
+              ) : (
+                <button className="budget__set" onClick={openBudget}>+ Ustaw cel miesięczny</button>
+              )}
             </div>
 
             {byCat.length === 0
-              ? <div className="app__empty">Brak wydatków w tym miesiącu</div>
+              ? (
+                <div className="empty-state">
+                  <div className="empty-state__icon">{IconPieChart}</div>
+                  <div className="empty-state__title">Brak wydatków w tym miesiącu</div>
+                  <div className="empty-state__sub">Dodaj pierwszy wydatek, żeby zobaczyć podział na kategorie i wykresy.</div>
+                  <button className="btn--primary empty-state__cta" onClick={() => setView("add")}>Dodaj wydatek</button>
+                </div>
+              )
               : <>
                 <div className="card">
                   <div className="card__title">Podział</div>
@@ -311,7 +379,14 @@ export default function App() {
           <div className="history__title">Historia</div>
           <div className="history__subtitle">{MONTHS[month]} {year} · {monthExpenses.length} transakcji</div>
           {loading ? <Skeleton /> : monthExpenses.length === 0
-            ? <div className="app__empty">Brak wydatków</div>
+            ? (
+              <div className="empty-state">
+                <div className="empty-state__icon">{IconPieChart}</div>
+                <div className="empty-state__title">Brak wydatków</div>
+                <div className="empty-state__sub">Historia dla tego miesiąca jest pusta.</div>
+                <button className="btn--primary empty-state__cta" onClick={() => setView("add")}>Dodaj wydatek</button>
+              </div>
+            )
             : <div className="card card--list">
               {monthExpenses.map(e => {
                 const c = getCat(e.cat);

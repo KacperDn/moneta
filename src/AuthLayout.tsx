@@ -1,39 +1,8 @@
-import { ReactNode, useEffect, useState } from "react";
+import { PointerEvent, ReactNode, useEffect, useRef, useState } from "react";
+import { IconPieChart, IconTrendingUp, IconCloud, IconShield } from "./icons";
 
-const iconProps = {
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 2,
-  strokeLinecap: "round" as const,
-  strokeLinejoin: "round" as const,
-};
-
-const IconPieChart = (
-  <svg {...iconProps}>
-    <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
-    <path d="M22 12A10 10 0 0 0 12 2v10z" />
-  </svg>
-);
-
-const IconTrendingUp = (
-  <svg {...iconProps}>
-    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-    <polyline points="17 6 23 6 23 12" />
-  </svg>
-);
-
-const IconCloud = (
-  <svg {...iconProps}>
-    <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
-  </svg>
-);
-
-const IconShield = (
-  <svg {...iconProps}>
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-  </svg>
-);
+const SWIPE_MOVE_THRESHOLD = 6;
+const SWIPE_TRIGGER_THRESHOLD = 40;
 
 interface Slide {
   icon: ReactNode;
@@ -54,6 +23,8 @@ interface Props {
 
 export default function AuthLayout({ children }: Props) {
   const [active, setActive] = useState(0);
+  const dragState = useRef({ startX: 0, moved: false });
+  const suppressClick = useRef(false);
 
   useEffect(() => {
     const id = setTimeout(() => setActive(a => (a + 1) % SLIDES.length), 5000);
@@ -61,6 +32,31 @@ export default function AuthLayout({ children }: Props) {
   }, [active]);
 
   const next = () => setActive(a => (a + 1) % SLIDES.length);
+  const prev = () => setActive(a => (a - 1 + SLIDES.length) % SLIDES.length);
+
+  const onPointerDown = (e: PointerEvent) => {
+    dragState.current = { startX: e.clientX, moved: false };
+  };
+
+  const onPointerMove = (e: PointerEvent) => {
+    if (Math.abs(e.clientX - dragState.current.startX) > SWIPE_MOVE_THRESHOLD) {
+      dragState.current.moved = true;
+    }
+  };
+
+  const onPointerUp = (e: PointerEvent) => {
+    if (!dragState.current.moved) return;
+    suppressClick.current = true;
+    const delta = e.clientX - dragState.current.startX;
+    if (Math.abs(delta) > SWIPE_TRIGGER_THRESHOLD) {
+      if (delta < 0) next(); else prev();
+    }
+  };
+
+  const handleCardClick = () => {
+    if (suppressClick.current) { suppressClick.current = false; return; }
+    next();
+  };
 
   return (
     <div className="auth-shell">
@@ -73,7 +69,12 @@ export default function AuthLayout({ children }: Props) {
 
       <div className="auth-scene">
         <aside className="auth-promo">
-          <div className="auth-stack">
+          <div
+            className="auth-stack"
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+          >
             {SLIDES.map((s, i) => {
               const pos = (i - active + SLIDES.length) % SLIDES.length;
               const hidden = pos === SLIDES.length - 1;
@@ -82,13 +83,15 @@ export default function AuthLayout({ children }: Props) {
                   key={i}
                   type="button"
                   className={`auth-stack__card auth-stack__card--pos${pos}`}
-                  onClick={next}
+                  onClick={handleCardClick}
                   tabIndex={hidden ? -1 : 0}
                   aria-hidden={hidden}
                 >
-                  <div className="auth-stack__icon">{s.icon}</div>
-                  <div className="auth-stack__title">{s.title}</div>
-                  <div className="auth-stack__desc">{s.desc}</div>
+                  <div className="auth-stack__content">
+                    <div className="auth-stack__icon">{s.icon}</div>
+                    <div className="auth-stack__title">{s.title}</div>
+                    <div className="auth-stack__desc">{s.desc}</div>
+                  </div>
                 </button>
               );
             })}

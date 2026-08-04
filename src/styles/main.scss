@@ -145,14 +145,6 @@ input:-webkit-autofill:focus {
   font-size: 14px;
 }
 
-.app__empty {
-  text-align: center;
-  padding: 60px 0;
-  color: $subtle;
-  font-size: 15px;
-  animation: fadeIn 0.4s $ease;
-}
-
 .header {
   background: rgba(9, 9, 11, 0.75);
   backdrop-filter: blur(14px);
@@ -306,6 +298,115 @@ input:-webkit-autofill:focus {
   font-size: 12px;
   color: $muted;
   margin-top: 10px;
+}
+
+.budget {
+  margin-top: 22px;
+  max-width: 260px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.budget__track {
+  height: 6px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.budget__fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s $ease;
+}
+
+.budget__fill--ok   { background: linear-gradient(90deg, #10b981, #34d399); }
+.budget__fill--warn { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.budget__fill--over { background: linear-gradient(90deg, $danger, #f87171); }
+
+.budget__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+  color: $muted;
+  font-variant-numeric: tabular-nums;
+}
+
+.budget__edit {
+  background: none;
+  border: none;
+  color: $muted;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: color 0.15s, text-decoration-color 0.15s;
+
+  &:hover { color: $text; text-decoration-color: $muted; }
+}
+
+.budget__set {
+  margin-top: 20px;
+  background: none;
+  border: 1px dashed $border-mid;
+  color: $muted;
+  border-radius: $radius-md;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: $accent-border;
+    color: $text;
+    background: $accent-dim;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 44px 20px 36px;
+  animation: fadeIn 0.4s $ease;
+}
+
+.empty-state__icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: $accent-dim;
+  color: #c4b5fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.empty-state__title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.empty-state__sub {
+  font-size: 13px;
+  color: $muted;
+  line-height: 1.5;
+  margin: 0 auto 22px;
+  max-width: 260px;
+}
+
+.empty-state__cta {
+  width: auto;
+  display: inline-flex;
+  padding: 11px 22px;
+  margin-top: 0;
 }
 
 .card {
@@ -859,6 +960,28 @@ input:-webkit-autofill:focus {
   color: #fff;
 }
 
+.confirm__btn--primary {
+  background: linear-gradient(135deg, $accent 0%, #8b6ee0 100%);
+  color: #14101f;
+}
+
+.confirm__remove {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: 14px;
+  background: none;
+  border: none;
+  color: $muted;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: color 0.15s, text-decoration-color 0.15s;
+
+  &:hover { color: $danger; text-decoration-color: $danger; }
+}
+
 .auth-shell {
   position: relative;
   overflow: hidden;
@@ -969,10 +1092,12 @@ input:-webkit-autofill:focus {
   flex-direction: column;
   gap: 24px;
   width: 100%;
+  order: 2;
 
   @media (min-width: 900px) {
     width: 340px;
     flex-shrink: 0;
+    order: 0;
   }
 }
 
@@ -981,6 +1106,8 @@ input:-webkit-autofill:focus {
   z-index: 1;
   height: 216px;
   flex-shrink: 0;
+  touch-action: pan-y;
+  cursor: grab;
 }
 
 .auth-stack__card {
@@ -1036,6 +1163,16 @@ input:-webkit-autofill:focus {
   pointer-events: none;
 }
 
+.auth-stack__content {
+  opacity: 0;
+  transition: opacity 0.2s $ease;
+}
+
+.auth-stack__card--pos0 .auth-stack__content {
+  opacity: 1;
+  transition-delay: 0.18s;
+}
+
 .auth-stack__icon {
   width: 34px;
   height: 34px;
@@ -1071,6 +1208,7 @@ input:-webkit-autofill:focus {
   position: relative;
   z-index: 1;
   display: flex;
+  justify-content: center;
   gap: 6px;
 }
 
@@ -1100,10 +1238,12 @@ input:-webkit-autofill:focus {
 
 .auth-panel {
   width: 100%;
+  order: 1;
 
   @media (min-width: 900px) {
     width: 360px;
     flex-shrink: 0;
+    order: 0;
   }
 }
 
