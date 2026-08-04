@@ -1,13 +1,15 @@
-import { useState, useMemo } from "react";
-import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
-import toast from "react-hot-toast";
+import { useState, useMemo, useRef, useLayoutEffect } from "react";
+import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, ComposedChart, Area, Line, CartesianGrid } from "recharts";
 import { useAuth } from "./hooks/useAuth";
 import { useExpenses } from "./hooks/useExpenses";
+import { useCountUp } from "./hooks/useCountUp";
 import { CATS, MONTHS, fmt, getCat } from "./constants";
 import { ExpenseForm } from "./types";
 import Auth from "./Auth";
 import PasswordReset from "./PasswordReset";
 import "./styles/main.scss";
+
+const TABS = ["dash", "add", "list"] as const;
 
 const NOW = new Date();
 
@@ -25,15 +27,24 @@ export default function App() {
   const { session, ready, isRecovery, logout } = useAuth();
   const { loading, saving, add, remove, filtered, byMonth } = useExpenses(session);
 
-  const [view, setView]         = useState("dash");
+  const [view, setView]         = useState<typeof TABS[number]>("dash");
   const [month, setMonth]       = useState(NOW.getMonth());
   const [year]                  = useState(NOW.getFullYear());
   const [form, setForm]         = useState<ExpenseForm>({ desc: "", cat: "Jedzenie", amount: "", date: NOW.toISOString().split("T")[0] });
   const [err, setErr]           = useState("");
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [indicator, setIndicator] = useState({ left: 0, width: 0 });
+
+  useLayoutEffect(() => {
+    const el = tabRefs.current[TABS.indexOf(view)];
+    if (el) setIndicator({ left: el.offsetLeft, width: el.offsetWidth });
+  }, [view]);
+
   const monthExpenses = filtered(month, year);
   const total = monthExpenses.reduce((s, e) => s + parseFloat(String(e.amount)), 0);
+  const animatedTotal = useCountUp(total);
 
   const byCat = useMemo(() => {
     const m: Record<string, number> = {};
@@ -111,11 +122,17 @@ export default function App() {
           </div>
         </div>
         <nav className="nav">
-          {(["dash", "add", "list"] as const).map((id, i) => (
-            <button key={id} className={`nav__tab${view === id ? " nav__tab--active" : ""}`} onClick={() => setView(id)}>
+          {TABS.map((id, i) => (
+            <button
+              key={id}
+              ref={el => { tabRefs.current[i] = el; }}
+              className={`nav__tab${view === id ? " nav__tab--active" : ""}`}
+              onClick={() => setView(id)}
+            >
               {["Przegląd", "Dodaj", "Historia"][i]}
             </button>
           ))}
+          <div className="nav__indicator" style={{ left: indicator.left, width: indicator.width }} />
         </nav>
       </div>
 
@@ -126,7 +143,7 @@ export default function App() {
           loading ? <Skeleton /> : <>
             <div className="hero">
               <div className="hero__month">{MONTHS[month]} {year}</div>
-              <div className="hero__total">{fmt(total)}<span className="hero__currency">zł</span></div>
+              <div className="hero__total">{fmt(animatedTotal)}<span className="hero__currency">zł</span></div>
               <div className="hero__count">{monthExpenses.length} transakcji</div>
             </div>
 
@@ -137,7 +154,11 @@ export default function App() {
                   <div className="card__title">Podział</div>
                   <ResponsiveContainer width="100%" height={190}>
                     <PieChart>
-                      <Pie data={byCat} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={52} outerRadius={82} paddingAngle={3} strokeWidth={0}>
+                      <Pie
+                        data={byCat} dataKey="value" nameKey="name" cx="50%" cy="50%"
+                        innerRadius={52} outerRadius={82} paddingAngle={3} cornerRadius={6} strokeWidth={0}
+                        animationDuration={700} animationEasing="ease-out"
+                      >
                         {byCat.map((e, i) => <Cell key={i} fill={e.color} />)}
                       </Pie>
                       <Tooltip formatter={v => `${fmt(v as number)} zł`} contentStyle={{ background: "#18181b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, fontSize: 13 }} />
@@ -171,10 +192,20 @@ export default function App() {
                     <div className="card__title">Dzień po dniu</div>
                     <ResponsiveContainer width="100%" height={140}>
                       <BarChart data={byDay} margin={{ top: 0, right: 0, left: -28, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="barFill" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#c4b5fd" />
+                            <stop offset="100%" stopColor="#a78bfa" />
+                          </linearGradient>
+                        </defs>
                         <XAxis dataKey="day" tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
                         <YAxis tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
-                        <Tooltip formatter={v => `${fmt(v as number)} zł`} contentStyle={{ background: "#18181b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, fontSize: 13 }} />
-                        <Bar dataKey="amt" fill="#a78bfa" radius={[5, 5, 2, 2]} maxBarSize={32} />
+                        <Tooltip
+                          formatter={v => `${fmt(v as number)} zł`}
+                          cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                          contentStyle={{ background: "#18181b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, fontSize: 13 }}
+                        />
+                        <Bar dataKey="amt" fill="url(#barFill)" radius={[5, 5, 2, 2]} maxBarSize={32} animationDuration={600} animationEasing="ease-out" />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -221,13 +252,20 @@ export default function App() {
                     </div>
                   </div>
                   <ResponsiveContainer width="100%" height={160}>
-                    <LineChart data={byMonth} margin={{ top: 10, right: 10, left: -28, bottom: 0 }}>
+                    <ComposedChart data={byMonth} margin={{ top: 10, right: 10, left: -28, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#a78bfa" stopOpacity={0.35} />
+                          <stop offset="100%" stopColor="#a78bfa" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
                       <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
                       <XAxis dataKey="label" tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
                       <Tooltip formatter={v => `${fmt(v as number)} zł`} contentStyle={{ background: "#18181b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, fontSize: 13 }} />
-                      <Line type="monotone" dataKey="total" stroke="#a78bfa" strokeWidth={2} dot={{ fill: "#a78bfa", r: 4 }} activeDot={{ r: 6 }} />
-                    </LineChart>
+                      <Area type="monotone" dataKey="total" stroke="none" fill="url(#trendFill)" animationDuration={700} />
+                      <Line type="monotone" dataKey="total" stroke="#a78bfa" strokeWidth={2.5} dot={{ fill: "#a78bfa", r: 4 }} activeDot={{ r: 6 }} animationDuration={700} />
+                    </ComposedChart>
                   </ResponsiveContainer>
                 </>;
               })()}
@@ -263,6 +301,7 @@ export default function App() {
             onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
 
           <button className="btn--primary" onClick={handleAdd} disabled={saving}>
+            {saving && <span className="btn__spinner" />}
             {saving ? "Zapisywanie…" : "Dodaj wydatek"}
           </button>
         </>}

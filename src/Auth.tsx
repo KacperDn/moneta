@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "./lib/supabase";
 import { friendlyAuthError } from "./lib/errors";
+import AuthLayout from "./AuthLayout";
 import "./styles/main.scss";
 
 type Mode = "login" | "register" | "reset";
@@ -42,77 +43,67 @@ export default function Auth() {
   const switchMode = (m: Mode) => { setMode(m); setErr(""); setInfo(""); };
 
   return (
-    <div className="auth">
-      <div className="auth__inner">
-
-        <div className="auth__logo">
-          <div className="auth__logo-text">moneta</div>
-          <div className="auth__logo-sub">personal finance</div>
-        </div>
-
-        <div className="auth__card">
-          <div className="auth__title">
-            {mode === "login" ? "Zaloguj się" : mode === "register" ? "Utwórz konto" : "Reset hasła"}
-          </div>
-
-          {err  && <div className="alert alert--error">{err}</div>}
-          {info && <div className="alert alert--success">{info}</div>}
-
-          <form onSubmit={e => { e.preventDefault(); handle(); }} autoComplete="on">
-            <label className="form__label">Email</label>
-            <input
-              type="email"
-              name="email"
-              autoComplete="email"
-              placeholder="twoj@email.com"
-              value={email}
-              className="form__input"
-              onChange={e => { setErr(""); setEmail(e.target.value); }}
-            />
-
-            {mode !== "reset" && <>
-              <label className="form__label">Hasło</label>
-              <div className="form__input-wrap">
-                <input
-                  type={showPass ? "text" : "password"}
-                  name="password"
-                  autoComplete={mode === "login" ? "current-password" : "new-password"}
-                  placeholder="••••••••"
-                  value={password}
-                  className="form__input form__input--pass"
-                  onChange={e => { setErr(""); setPassword(e.target.value); }}
-                />
-                <button type="button" className="form__pass-toggle" onClick={() => setShowPass(p => !p)}>
-                  {showPass ? (
-                    <svg viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                  ) : (
-                    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  )}
-                </button>
-              </div>
-            </>}
-
-            <button type="submit" className="btn--primary" disabled={loading}>
-              {loading ? "Ładowanie…" : mode === "login" ? "Zaloguj się" : mode === "register" ? "Utwórz konto" : "Wyślij link"}
-            </button>
-          </form>
-
-          <div className="auth__switch">
-            {mode === "login" && <>
-              <button className="btn--ghost" onClick={() => switchMode("reset")}>Zapomniałem hasła</button>
-              <span style={{ margin: "0 8px", opacity: 0.3 }}>·</span>
-              <button className="btn--ghost" onClick={() => switchMode("register")}>Zarejestruj się</button>
-            </>}
-            {mode === "register" && (
-              <button className="btn--ghost" onClick={() => switchMode("login")}>Mam już konto</button>
-            )}
-            {mode === "reset" && (
-              <button className="btn--ghost" onClick={() => switchMode("login")}>Wróć do logowania</button>
-            )}
-          </div>
-        </div>
-
+    <AuthLayout>
+      <div className="auth-form__title">
+        {mode === "login" ? "Zaloguj się" : mode === "register" ? "Utwórz konto" : "Reset hasła"}
       </div>
-    </div>
+
+      {err  && <div className="alert alert--error">{err}</div>}
+      {info && <div className="alert alert--success">{info}</div>}
+
+      <form onSubmit={e => { e.preventDefault(); handle(); }} autoComplete="on">
+        <label className="form__label">Email</label>
+        <input
+          type="email"
+          name="email"
+          autoComplete="email"
+          placeholder="twoj@email.com"
+          value={email}
+          className="form__input"
+          onChange={e => { setErr(""); setEmail(e.target.value); }}
+        />
+
+        {mode !== "reset" && <>
+          <label className="form__label">Hasło</label>
+          <div className="form__input-wrap">
+            <input
+              type={showPass ? "text" : "password"}
+              name="password"
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
+              placeholder="••••••••"
+              value={password}
+              className="form__input form__input--pass"
+              onChange={e => { setErr(""); setPassword(e.target.value); }}
+            />
+            <button type="button" className="form__pass-toggle" onClick={() => setShowPass(p => !p)}>
+              {showPass ? (
+                <svg viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              ) : (
+                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              )}
+            </button>
+          </div>
+        </>}
+
+        <button type="submit" className="btn--primary" disabled={loading}>
+          {loading && <span className="btn__spinner" />}
+          {loading ? "Ładowanie…" : mode === "login" ? "Zaloguj się" : mode === "register" ? "Utwórz konto" : "Wyślij link"}
+        </button>
+      </form>
+
+      <div className="auth-form__switch">
+        {mode === "login" && <>
+          <button className="btn--ghost" onClick={() => switchMode("reset")}>Zapomniałem hasła</button>
+          <span style={{ margin: "0 8px", opacity: 0.3 }}>·</span>
+          <button className="btn--ghost" onClick={() => switchMode("register")}>Zarejestruj się</button>
+        </>}
+        {mode === "register" && (
+          <button className="btn--ghost" onClick={() => switchMode("login")}>Mam już konto</button>
+        )}
+        {mode === "reset" && (
+          <button className="btn--ghost" onClick={() => switchMode("login")}>Wróć do logowania</button>
+        )}
+      </div>
+    </AuthLayout>
   );
 }
