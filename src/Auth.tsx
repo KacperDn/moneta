@@ -54,9 +54,6 @@ export default function Auth() {
           <div className="auth__title">
             {mode === "login" ? "Zaloguj się" : mode === "register" ? "Utwórz konto" : "Reset hasła"}
           </div>
-          <div className="auth__subtitle">
-            {mode === "login" ? "Witaj z powrotem 👋" : mode === "register" ? "Zacznij śledzić wydatki" : "Wyślemy Ci link na email"}
-          </div>
 
           {err  && <div className="alert alert--error">{err}</div>}
           {info && <div className="alert alert--success">{info}</div>}
