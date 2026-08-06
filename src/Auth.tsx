@@ -6,7 +6,11 @@ import "./styles/main.scss";
 
 type Mode = "login" | "register" | "reset";
 
-export default function Auth() {
+interface Props {
+  onBack?: () => void;
+}
+
+export default function Auth({ onBack }: Props) {
   const [mode, setMode]         = useState<Mode>("login");
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
@@ -43,7 +47,7 @@ export default function Auth() {
   const switchMode = (m: Mode) => { setMode(m); setErr(""); setInfo(""); };
 
   return (
-    <AuthLayout>
+    <AuthLayout onBack={onBack}>
       <div className="auth-form__title">
         {mode === "login" ? "Zaloguj się" : mode === "register" ? "Utwórz konto" : "Reset hasła"}
       </div>

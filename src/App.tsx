@@ -8,6 +8,7 @@ import { CATS, MONTHS, fmt, getCat } from "./constants";
 import { ExpenseForm } from "./types";
 import { IconPieChart } from "./icons";
 import Auth from "./Auth";
+import Landing from "./Landing";
 import PasswordReset from "./PasswordReset";
 import "./styles/main.scss";
 
@@ -29,6 +30,7 @@ export default function App() {
   const { session, ready, isRecovery, logout } = useAuth();
   const { loading, saving, add, remove, filtered, byMonth } = useExpenses(session);
   const { goal, setGoal } = useBudgetGoal(session?.user.id);
+  const [showLogin, setShowLogin] = useState(false);
 
   const [view, setView]         = useState<typeof TABS[number]>("dash");
   const [month, setMonth]       = useState(NOW.getMonth());
@@ -108,7 +110,11 @@ export default function App() {
     </div>
   );
   if (isRecovery) return <PasswordReset />;
-  if (!session) return <Auth />;
+  if (!session) {
+    return showLogin
+      ? <Auth onBack={() => setShowLogin(false)} />
+      : <Landing onGetStarted={() => setShowLogin(true)} />;
+  }
 
   return (
     <div className="app">
