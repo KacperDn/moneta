@@ -1,23 +1,96 @@
-$bg:             #09090b;
-$bg-elevated:    #0f0f12;
-$surface:        rgba(255, 255, 255, 0.045);
-$surface-hover:  rgba(255, 255, 255, 0.07);
-$border:         rgba(255, 255, 255, 0.08);
-$border-mid:     rgba(255, 255, 255, 0.12);
-$text:           #fafafa;
-$muted:          rgba(255, 255, 255, 0.42);
-$subtle:         rgba(255, 255, 255, 0.22);
-$accent:         #a78bfa;
-$accent-2:       #ec4899;
-$accent-dim:     rgba(167, 139, 250, 0.15);
-$accent-border:  rgba(167, 139, 250, 0.5);
-$accent-glow:    rgba(167, 139, 250, 0.35);
-$danger:         #ef4444;
-$danger-bg:      rgba(239, 68, 68, 0.12);
-$danger-border:  rgba(239, 68, 68, 0.25);
-$success-bg:     rgba(16, 185, 129, 0.1);
-$success-border: rgba(16, 185, 129, 0.25);
-$success-text:   #6ee7b7;
+// Color tokens live as CSS custom properties (not plain Sass values) so the
+// theme can switch at runtime via [data-theme] on <html> — see useTheme.ts.
+// Dark is the default palette (applied on :root); light overrides it.
+:root {
+  --bg:             #09090b;
+  --bg-elevated:    #0f0f12;
+  --card-solid:     #16161a;
+  --card-solid-dim: #101013;
+  --overlay-solid:  #18181b;
+  --header-backdrop: rgba(9, 9, 11, 0.75);
+  --surface:        rgba(255, 255, 255, 0.045);
+  --surface-hover:  rgba(255, 255, 255, 0.07);
+  --border:         rgba(255, 255, 255, 0.08);
+  --border-mid:     rgba(255, 255, 255, 0.12);
+  --text:           #fafafa;
+  --text-soft:      rgba(255, 255, 255, 0.82);
+  --muted:          rgba(255, 255, 255, 0.42);
+  --subtle:         rgba(255, 255, 255, 0.22);
+  --heading-a:      #ffffff;
+  --heading-b:      rgba(255, 255, 255, 0.75);
+  --accent:         #a78bfa;
+  --accent-2:       #ec4899;
+  --accent-soft:    #c4b5fd;
+  --accent-dim:     rgba(167, 139, 250, 0.15);
+  --accent-border:  rgba(167, 139, 250, 0.5);
+  --accent-glow:    rgba(167, 139, 250, 0.35);
+  --danger:         #ef4444;
+  --danger-bg:      rgba(239, 68, 68, 0.12);
+  --danger-border:  rgba(239, 68, 68, 0.25);
+  --success-bg:     rgba(16, 185, 129, 0.1);
+  --success-border: rgba(16, 185, 129, 0.25);
+  --success-text:   #6ee7b7;
+}
+
+[data-theme="light"] {
+  --bg:             #f5f5f7;
+  --bg-elevated:    #ffffff;
+  --card-solid:     #ffffff;
+  --card-solid-dim: #ececef;
+  --overlay-solid:  #ffffff;
+  --header-backdrop: rgba(245, 245, 247, 0.75);
+  --surface:        rgba(10, 10, 20, 0.035);
+  --surface-hover:  rgba(10, 10, 20, 0.06);
+  --border:         rgba(10, 10, 20, 0.1);
+  --border-mid:     rgba(10, 10, 20, 0.16);
+  --text:           #131318;
+  --text-soft:      rgba(19, 19, 24, 0.8);
+  --muted:          rgba(19, 19, 24, 0.52);
+  --subtle:         rgba(19, 19, 24, 0.32);
+  --heading-a:      #0a0a0d;
+  --heading-b:      rgba(10, 10, 13, 0.72);
+  --accent:         #7c5cf0;
+  --accent-2:       #db2777;
+  --accent-soft:    #6d28d9;
+  --accent-dim:     rgba(124, 92, 240, 0.1);
+  --accent-border:  rgba(124, 92, 240, 0.4);
+  --accent-glow:    rgba(124, 92, 240, 0.22);
+  --danger:         #dc2626;
+  --danger-bg:      rgba(220, 38, 38, 0.08);
+  --danger-border:  rgba(220, 38, 38, 0.22);
+  --success-bg:     rgba(5, 150, 105, 0.08);
+  --success-border: rgba(5, 150, 105, 0.22);
+  --success-text:   #047857;
+}
+
+$bg:             var(--bg);
+$bg-elevated:    var(--bg-elevated);
+$card-solid:     var(--card-solid);
+$card-solid-dim: var(--card-solid-dim);
+$overlay-solid:  var(--overlay-solid);
+$header-backdrop: var(--header-backdrop);
+$surface:        var(--surface);
+$surface-hover:  var(--surface-hover);
+$border:         var(--border);
+$border-mid:     var(--border-mid);
+$text:           var(--text);
+$text-soft:      var(--text-soft);
+$muted:          var(--muted);
+$subtle:         var(--subtle);
+$heading-a:      var(--heading-a);
+$heading-b:      var(--heading-b);
+$accent:         var(--accent);
+$accent-2:       var(--accent-2);
+$accent-soft:    var(--accent-soft);
+$accent-dim:     var(--accent-dim);
+$accent-border:  var(--accent-border);
+$accent-glow:    var(--accent-glow);
+$danger:         var(--danger);
+$danger-bg:      var(--danger-bg);
+$danger-border:  var(--danger-border);
+$success-bg:     var(--success-bg);
+$success-border: var(--success-border);
+$success-text:   var(--success-text);
 
 $radius-sm: 8px;
 $radius-md: 10px;
@@ -173,7 +246,7 @@ input:-webkit-autofill:focus {
 }
 
 .header {
-  background: rgba(9, 9, 11, 0.75);
+  background: $header-backdrop;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid $border;
@@ -194,7 +267,7 @@ input:-webkit-autofill:focus {
   font-size: 19px;
   font-weight: 800;
   letter-spacing: -0.5px;
-  background: linear-gradient(135deg, $accent 0%, #c4b5fd 60%, $accent-2 130%);
+  background: linear-gradient(135deg, $accent 0%, $accent-soft 60%, $accent-2 130%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -232,19 +305,24 @@ input:-webkit-autofill:focus {
   }
 
   option {
-    background: #18181b;
+    background: $overlay-solid;
   }
 }
 
-.header__logout {
+.header__settings {
   background: none;
   border: 1px solid $border;
   color: $muted;
   border-radius: $radius-sm;
-  padding: 6px 10px;
-  font-size: 12px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s, background 0.15s;
+
+  svg { width: 16px; height: 16px; }
 
   &:hover {
     color: $text;
@@ -263,7 +341,7 @@ input:-webkit-autofill:focus {
   padding: 13px 0;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: $muted;
   font-weight: 400;
   font-size: 13px;
   cursor: pointer;
@@ -305,7 +383,7 @@ input:-webkit-autofill:focus {
   font-weight: 800;
   letter-spacing: -2px;
   line-height: 1;
-  background: linear-gradient(135deg, #fff 30%, rgba(255, 255, 255, 0.75) 100%);
+  background: linear-gradient(135deg, $heading-a 30%, $heading-b 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -404,7 +482,7 @@ input:-webkit-autofill:focus {
   margin: 0 auto 18px;
   border-radius: 50%;
   background: $accent-dim;
-  color: #c4b5fd;
+  color: $accent-soft;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -487,7 +565,7 @@ input:-webkit-autofill:focus {
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.8);
+  color: $text-soft;
 }
 
 .cat-bar__icon {
@@ -571,7 +649,7 @@ input:-webkit-autofill:focus {
   }
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.2);
+    color: $subtle;
   }
 }
 
@@ -632,7 +710,7 @@ input:-webkit-autofill:focus {
   background: $surface;
   border: 1px solid $border;
   border-radius: $radius-md;
-  color: rgba(255, 255, 255, 0.6);
+  color: $text-soft;
   font-size: 13px;
   cursor: pointer;
   font-weight: 400;
@@ -651,7 +729,7 @@ input:-webkit-autofill:focus {
 .form__cat-btn--active {
   background: $accent-dim;
   border-color: $accent-border;
-  color: #c4b5fd;
+  color: $accent-soft;
   font-weight: 600;
   box-shadow: 0 0 0 1px $accent-border inset;
 }
@@ -808,7 +886,7 @@ input:-webkit-autofill:focus {
 .list__delete {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.2);
+  color: $subtle;
   cursor: pointer;
   font-size: 18px;
   padding: 2px 0 2px 8px;
@@ -936,7 +1014,7 @@ input:-webkit-autofill:focus {
 }
 
 .confirm__box {
-  background: #16161a;
+  background: $card-solid;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: $radius-xl;
   padding: 28px 24px;
@@ -1089,7 +1167,7 @@ input:-webkit-autofill:focus {
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.4px;
-  background: linear-gradient(135deg, $accent 0%, #c4b5fd 55%, $accent-2 130%);
+  background: linear-gradient(135deg, $accent 0%, $accent-soft 55%, $accent-2 130%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1123,6 +1201,9 @@ input:-webkit-autofill:focus {
 
 .landing__header {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 28px 20px 0;
   animation: fadeInUp 0.5s $ease;
 }
@@ -1131,7 +1212,7 @@ input:-webkit-autofill:focus {
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.4px;
-  background: linear-gradient(135deg, $accent 0%, #c4b5fd 55%, $accent-2 130%);
+  background: linear-gradient(135deg, $accent 0%, $accent-soft 55%, $accent-2 130%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1201,7 +1282,7 @@ input:-webkit-autofill:focus {
   height: $carousel-card-height;
   margin-left: calc(#{$carousel-card-width} / -2);
   overflow: hidden;
-  background: #16161a;
+  background: $card-solid;
   background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 45%);
   border: 1px solid $border-mid;
   border-radius: $radius-lg;
@@ -1236,7 +1317,7 @@ input:-webkit-autofill:focus {
 .carousel__card--right {
   transform: translateX($carousel-card-width-mobile * $carousel-offset-ratio) translateZ($carousel-depth) rotateY(-$carousel-tilt) scale($carousel-scale);
   opacity: 0.85;
-  filter: brightness(0.8);
+  background: $card-solid-dim;
   z-index: 3;
 
   @include desktop {
@@ -1247,7 +1328,7 @@ input:-webkit-autofill:focus {
 .carousel__card--left {
   transform: translateX(-$carousel-card-width-mobile * $carousel-offset-ratio) translateZ($carousel-depth) rotateY($carousel-tilt) scale($carousel-scale);
   opacity: 0.85;
-  filter: brightness(0.8);
+  background: $card-solid-dim;
   z-index: 3;
 
   @include desktop {
@@ -1323,14 +1404,14 @@ input:-webkit-autofill:focus {
   width: 20px;
   height: 3px;
   border-radius: 99px;
-  background: rgba(255, 255, 255, 0.15);
+  background: $border-mid;
   border: none;
   padding: 0;
   cursor: pointer;
   transition: background 0.3s, width 0.3s;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.28);
+    background: $subtle;
   }
 }
 
@@ -1361,4 +1442,147 @@ input:-webkit-autofill:focus {
   margin-top: 20px;
   font-size: 13px;
   color: $muted;
+}
+
+.settings {
+  position: relative;
+  overflow: hidden;
+  font-family: $font;
+  background: $bg;
+  min-height: 100vh;
+  color: $text;
+}
+
+.settings__header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 20px 8px;
+}
+
+.settings__back {
+  background: none;
+  border: none;
+  color: $muted;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: -4px;
+  display: inline-flex;
+  transition: color 0.15s;
+
+  svg { width: 22px; height: 22px; }
+
+  &:hover { color: $text; }
+}
+
+.settings__title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.settings__container {
+  position: relative;
+  z-index: 1;
+  padding: 20px 16px 60px;
+  max-width: 600px;
+  margin: 0 auto;
+  animation: fadeInUp 0.4s $ease;
+}
+
+.settings__group {
+  margin-bottom: 22px;
+}
+
+.settings__group-title {
+  font-size: 11px;
+  color: $muted;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+.settings__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.settings__row-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: $muted;
+  font-size: 13px;
+}
+
+.settings__badge {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: $accent-soft;
+  background: $accent-dim;
+  border: 1px solid $accent-border;
+  border-radius: 99px;
+  padding: 3px 8px;
+}
+
+.settings__theme-toggle {
+  display: flex;
+  gap: 3px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 3px;
+}
+
+.settings__theme-btn {
+  padding: 5px 12px;
+  border-radius: $radius-sm;
+  border: none;
+  background: none;
+  color: $muted;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    color: $text;
+  }
+}
+
+.settings__theme-btn--active {
+  background: $accent-dim;
+  color: $accent-soft;
+}
+
+.settings__logout {
+  width: 100%;
+  margin-top: 8px;
+  padding: 13px;
+  background: $danger-bg;
+  border: 1px solid $danger-border;
+  color: #fca5a5;
+  border-radius: $radius-md;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: $danger;
+  }
 }

@@ -1,15 +1,17 @@
-import { useState, useMemo, useRef, useLayoutEffect } from "react";
+import { useState, useMemo, useRef, useLayoutEffect, useEffect } from "react";
 import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, ComposedChart, Area, Line, CartesianGrid } from "recharts";
 import { useAuth } from "./hooks/useAuth";
 import { useExpenses } from "./hooks/useExpenses";
 import { useCountUp } from "./hooks/useCountUp";
 import { useBudgetGoal } from "./hooks/useBudgetGoal";
+import { useTheme } from "./hooks/useTheme";
 import { CATS, MONTHS, fmt, getCat } from "./constants";
 import { ExpenseForm } from "./types";
-import { IconPieChart } from "./icons";
+import { IconPieChart, IconSettings } from "./icons";
 import Auth from "./Auth";
 import Landing from "./Landing";
 import PasswordReset from "./PasswordReset";
+import Settings from "./Settings";
 import "./styles/main.scss";
 
 const TABS = ["dash", "add", "list"] as const;
@@ -30,6 +32,7 @@ export default function App() {
   const { session, ready, isRecovery, logout } = useAuth();
   const { loading, saving, add, remove, filtered, byMonth } = useExpenses(session);
   const { goal, setGoal } = useBudgetGoal(session?.user.id);
+  const { theme, setTheme } = useTheme();
   const [showLogin, setShowLogin] = useState(false);
 
   const [view, setView]         = useState<typeof TABS[number]>("dash");
@@ -40,9 +43,20 @@ export default function App() {
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [budgetOpen, setBudgetOpen] = useState(false);
   const [budgetInput, setBudgetInput] = useState("");
+  const [showSettings, setShowSettings] = useState(false);
 
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [indicator, setIndicator] = useState({ left: 0, width: 0 });
+
+  // showLogin/showSettings are navigation state, not auth state — reset them
+  // whenever the session drops so a fresh logout always lands on Landing,
+  // and a later log-in never reopens a screen left over from before.
+  useEffect(() => {
+    if (!session) {
+      setShowLogin(false);
+      setShowSettings(false);
+    }
+  }, [session]);
 
   useLayoutEffect(() => {
     const el = tabRefs.current[TABS.indexOf(view)];
@@ -113,7 +127,18 @@ export default function App() {
   if (!session) {
     return showLogin
       ? <Auth onBack={() => setShowLogin(false)} />
-      : <Landing onGetStarted={() => setShowLogin(true)} />;
+      : <Landing theme={theme} onThemeChange={setTheme} onGetStarted={() => setShowLogin(true)} />;
+  }
+  if (showSettings) {
+    return (
+      <Settings
+        email={session.user.email!}
+        theme={theme}
+        onThemeChange={setTheme}
+        onBack={() => setShowSettings(false)}
+        onLogout={logout}
+      />
+    );
   }
 
   return (
@@ -171,7 +196,9 @@ export default function App() {
             <select className="header__select" value={month} onChange={e => setMonth(+e.target.value)}>
               {MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}
             </select>
-            <button className="header__logout" onClick={logout}>Wyloguj</button>
+            <button className="header__settings" onClick={() => setShowSettings(true)} aria-label="Ustawienia">
+              {IconSettings}
+            </button>
           </div>
         </div>
         <nav className="nav">
@@ -235,7 +262,7 @@ export default function App() {
                       >
                         {byCat.map((e, i) => <Cell key={i} fill={e.color} />)}
                       </Pie>
-                      <Tooltip formatter={v => `${fmt(v as number)} zł`} contentStyle={{ background: "#18181b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, fontSize: 13 }} />
+                      <Tooltip formatter={v => `${fmt(v as number)} zł`} contentStyle={{ background: "var(--overlay-solid)", border: "1px solid var(--border-mid)", borderRadius: 10, fontSize: 13 }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -268,16 +295,16 @@ export default function App() {
                       <BarChart data={byDay} margin={{ top: 0, right: 0, left: -28, bottom: 0 }}>
                         <defs>
                           <linearGradient id="barFill" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#c4b5fd" />
-                            <stop offset="100%" stopColor="#a78bfa" />
+                            <stop offset="0%" stopColor="var(--accent-soft)" />
+                            <stop offset="100%" stopColor="var(--accent)" />
                           </linearGradient>
                         </defs>
-                        <XAxis dataKey="day" tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
+                        <XAxis dataKey="day" tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
                         <Tooltip
                           formatter={v => `${fmt(v as number)} zł`}
-                          cursor={{ fill: "rgba(255,255,255,0.04)" }}
-                          contentStyle={{ background: "#18181b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, fontSize: 13 }}
+                          cursor={{ fill: "var(--surface)" }}
+                          contentStyle={{ background: "var(--overlay-solid)", border: "1px solid var(--border-mid)", borderRadius: 10, fontSize: 13 }}
                         />
                         <Bar dataKey="amt" fill="url(#barFill)" radius={[5, 5, 2, 2]} maxBarSize={32} animationDuration={600} animationEasing="ease-out" />
                       </BarChart>
@@ -329,16 +356,16 @@ export default function App() {
                     <ComposedChart data={byMonth} margin={{ top: 10, right: 10, left: -28, bottom: 0 }}>
                       <defs>
                         <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#a78bfa" stopOpacity={0.35} />
-                          <stop offset="100%" stopColor="#a78bfa" stopOpacity={0} />
+                          <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.35} />
+                          <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
-                      <XAxis dataKey="label" tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
-                      <Tooltip formatter={v => `${fmt(v as number)} zł`} contentStyle={{ background: "#18181b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, fontSize: 13 }} />
+                      <CartesianGrid stroke="var(--border)" vertical={false} />
+                      <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
+                      <Tooltip formatter={v => `${fmt(v as number)} zł`} contentStyle={{ background: "var(--overlay-solid)", border: "1px solid var(--border-mid)", borderRadius: 10, fontSize: 13 }} />
                       <Area type="monotone" dataKey="total" stroke="none" fill="url(#trendFill)" animationDuration={700} />
-                      <Line type="monotone" dataKey="total" stroke="#a78bfa" strokeWidth={2.5} dot={{ fill: "#a78bfa", r: 4 }} activeDot={{ r: 6 }} animationDuration={700} />
+                      <Line type="monotone" dataKey="total" stroke="var(--accent)" strokeWidth={2.5} dot={{ fill: "var(--accent)", r: 4 }} activeDot={{ r: 6 }} animationDuration={700} />
                     </ComposedChart>
                   </ResponsiveContainer>
                 </>;

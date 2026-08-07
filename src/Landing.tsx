@@ -1,5 +1,7 @@
 import { PointerEvent, ReactNode, useEffect, useRef, useState } from "react";
-import { IconPieChart, IconTrendingUp, IconCloud, IconShield } from "./icons";
+import { IconPieChart, IconTrendingUp, IconCloud, IconShield, IconSettings } from "./icons";
+import { Theme } from "./hooks/useTheme";
+import Settings from "./Settings";
 
 const SWIPE_MOVE_THRESHOLD = 6;
 const SWIPE_TRIGGER_THRESHOLD = 40;
@@ -31,10 +33,13 @@ function offsetClass(offset: number) {
 }
 
 interface Props {
+  theme: Theme;
+  onThemeChange: (theme: Theme) => void;
   onGetStarted: () => void;
 }
 
-export default function Landing({ onGetStarted }: Props) {
+export default function Landing({ theme, onThemeChange, onGetStarted }: Props) {
+  const [showSettings, setShowSettings] = useState(false);
   const [active, setActive] = useState(0);
   const dragState = useRef({ startX: 0, moved: false });
   const suppressClick = useRef(false);
@@ -72,6 +77,16 @@ export default function Landing({ onGetStarted }: Props) {
     else if (offset === -1) prev();
   };
 
+  if (showSettings) {
+    return (
+      <Settings
+        theme={theme}
+        onThemeChange={onThemeChange}
+        onBack={() => setShowSettings(false)}
+      />
+    );
+  }
+
   return (
     <div className="landing">
       <div className="auth-glow auth-glow--1" />
@@ -79,6 +94,14 @@ export default function Landing({ onGetStarted }: Props) {
 
       <header className="landing__header">
         <span className="landing__logo">moneta</span>
+        <button
+          type="button"
+          className="header__settings"
+          onClick={() => setShowSettings(true)}
+          aria-label="Ustawienia"
+        >
+          {IconSettings}
+        </button>
       </header>
 
       <main className="landing__hero">
