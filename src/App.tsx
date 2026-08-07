@@ -46,6 +46,8 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [hiddenCats, setHiddenCats] = useState<Set<string>>(new Set());
   const [catHintOpen, setCatHintOpen] = useState(false);
+  const [catFilter, setCatFilter] = useState<string | null>(null);
+  const [drilldownCat, setDrilldownCat] = useState<string | null>(null);
 
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [indicator, setIndicator] = useState({ left: 0, width: 0 });
@@ -67,6 +69,7 @@ export default function App() {
 
   useEffect(() => {
     setHiddenCats(new Set());
+    setCatFilter(null);
   }, [month]);
 
   const toggleCat = (name: string) => {
@@ -107,6 +110,11 @@ export default function App() {
 
   const visibleCats = useMemo(() => byCat.filter(c => !hiddenCats.has(c.name)), [byCat, hiddenCats]);
   const visibleTotal = useMemo(() => visibleCats.reduce((s, c) => s + c.value, 0), [visibleCats]);
+
+  const filteredExpenses = useMemo(
+    () => catFilter ? monthExpenses.filter(e => e.cat === catFilter) : monthExpenses,
+    [monthExpenses, catFilter]
+  );
 
   const byDay = useMemo(() => {
     const m: Record<number, number> = {};
@@ -209,7 +217,7 @@ export default function App() {
           <div className="confirm__box">
             <div className="confirm__title">Filtrowanie kategorii</div>
             <div className="confirm__sub">
-              Kliknij kategorię — na liście albo na wykresie — żeby tymczasowo wyłączyć ją z podziału. Procenty przeliczą się na nowo z tego, co zostało widoczne.
+              Kliknij kategorię na liście, żeby tymczasowo wyłączyć ją z podziału — procenty przeliczą się z tego, co zostało widoczne. Kliknij kategorię na wykresie, żeby zobaczyć jej wydatki.
             </div>
             <div className="confirm__actions confirm__actions--single">
               <button className="confirm__btn confirm__btn--primary" onClick={() => setCatHintOpen(false)}>Rozumiem</button>
@@ -217,6 +225,43 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Category drill-down dialog */}
+      {drilldownCat && (() => {
+        const c = getCat(drilldownCat);
+        const items = monthExpenses.filter(e => e.cat === drilldownCat);
+        const catTotal = items.reduce((s, e) => s + parseFloat(String(e.amount)), 0);
+        return (
+          <div className="confirm__overlay" onClick={() => setDrilldownCat(null)}>
+            <div className="drilldown__box" onClick={e => e.stopPropagation()}>
+              <div className="drilldown__header">
+                <div className="drilldown__icon" style={{ background: `${c.color}22` }}>{c.icon}</div>
+                <div className="drilldown__heading">
+                  <div className="drilldown__title">{c.name}</div>
+                  <div className="drilldown__sub">{fmt(catTotal)} zł · {items.length} {items.length === 1 ? "transakcja" : "transakcji"}</div>
+                </div>
+                <button type="button" className="drilldown__close" onClick={() => setDrilldownCat(null)} aria-label="Zamknij">×</button>
+              </div>
+              <div className="drilldown__list">
+                {items.map(e => (
+                  <div key={e.id} className="drilldown__row">
+                    <div className="drilldown__desc">{e.description}</div>
+                    <div className="drilldown__date">{e.date}</div>
+                    <div className="drilldown__amount">{fmt(parseFloat(String(e.amount)))} zł</div>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                className="btn--ghost drilldown__viewall"
+                onClick={() => { setCatFilter(c.name); setDrilldownCat(null); setView("list"); }}
+              >
+                Zobacz w historii →
+              </button>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Header */}
       <div className="header">
@@ -297,7 +342,7 @@ export default function App() {
                             animationDuration={700} animationEasing="ease-out"
                           >
                             {visibleCats.map((e, i) => (
-                              <Cell key={i} fill={e.color} cursor="pointer" onClick={() => toggleCat(e.name)} />
+                              <Cell key={i} fill={e.color} cursor="pointer" onClick={() => setDrilldownCat(e.name)} />
                             ))}
                           </Pie>
                           <Tooltip formatter={v => `${fmt(v as number)} zł`} contentStyle={{ background: "var(--overlay-solid)", border: "1px solid var(--border-mid)", borderRadius: 10, fontSize: 13 }} />
@@ -357,7 +402,7 @@ export default function App() {
                         <XAxis dataKey="day" tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
                         <YAxis tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
                         <Tooltip
-                          formatter={v => `${fmt(v as number)} zł`}
+                          formatter={v => [`${fmt(v as number)} zł`, "Wydatki"]}
                           cursor={{ fill: "var(--surface)" }}
                           contentStyle={{ background: "var(--overlay-solid)", border: "1px solid var(--border-mid)", borderRadius: 10, fontSize: 13 }}
                         />
@@ -418,8 +463,8 @@ export default function App() {
                       <CartesianGrid stroke="var(--border)" vertical={false} />
                       <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
-                      <Tooltip formatter={v => `${fmt(v as number)} zł`} contentStyle={{ background: "var(--overlay-solid)", border: "1px solid var(--border-mid)", borderRadius: 10, fontSize: 13 }} />
-                      <Area type="monotone" dataKey="total" stroke="none" fill="url(#trendFill)" animationDuration={700} />
+                      <Tooltip formatter={v => [`${fmt(v as number)} zł`, "Suma"]} contentStyle={{ background: "var(--overlay-solid)", border: "1px solid var(--border-mid)", borderRadius: 10, fontSize: 13 }} />
+                      <Area type="monotone" dataKey="total" stroke="none" fill="url(#trendFill)" animationDuration={700} legendType="none" tooltipType="none" />
                       <Line type="monotone" dataKey="total" stroke="var(--accent)" strokeWidth={2.5} dot={{ fill: "var(--accent)", r: 4 }} activeDot={{ r: 6 }} animationDuration={700} />
                     </ComposedChart>
                   </ResponsiveContainer>
@@ -465,18 +510,43 @@ export default function App() {
         {/* LIST */}
         {view === "list" && <>
           <div className="history__title">Historia</div>
-          <div className="history__subtitle">{MONTHS[month]} {year} · {monthExpenses.length} transakcji</div>
-          {loading ? <Skeleton /> : monthExpenses.length === 0
+          <div className="history__subtitle">{MONTHS[month]} {year} · {filteredExpenses.length} transakcji</div>
+
+          {byCat.length > 0 && (
+            <div className="filter-pills">
+              <button
+                type="button"
+                className={`filter-pill${catFilter === null ? " filter-pill--active" : ""}`}
+                onClick={() => setCatFilter(null)}
+              >
+                Wszystkie
+              </button>
+              {byCat.map(c => (
+                <button
+                  key={c.name}
+                  type="button"
+                  className={`filter-pill${catFilter === c.name ? " filter-pill--active" : ""}`}
+                  onClick={() => setCatFilter(catFilter === c.name ? null : c.name)}
+                >
+                  <span className="filter-pill__icon">{c.icon}</span>{c.name}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {loading ? <Skeleton /> : filteredExpenses.length === 0
             ? (
               <div className="empty-state">
                 <div className="empty-state__icon">{IconPieChart}</div>
                 <div className="empty-state__title">Brak wydatków</div>
-                <div className="empty-state__sub">Historia dla tego miesiąca jest pusta.</div>
+                <div className="empty-state__sub">
+                  {catFilter ? "Brak wydatków w tej kategorii w tym miesiącu." : "Historia dla tego miesiąca jest pusta."}
+                </div>
                 <button className="btn--primary empty-state__cta" onClick={() => setView("add")}>Dodaj wydatek</button>
               </div>
             )
             : <div className="card card--list">
-              {monthExpenses.map(e => {
+              {filteredExpenses.map(e => {
                 const c = getCat(e.cat);
                 return (
                   <div key={e.id} className="list__row">
