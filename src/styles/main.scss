@@ -1740,10 +1740,36 @@ input:-webkit-autofill:focus {
   justify-content: space-between;
   padding: 14px 16px;
   font-size: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid $border;
 
   &:last-child {
     border-bottom: none;
+  }
+}
+
+.settings__row--link {
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid $border;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $surface-hover;
+  }
+}
+
+.settings__row-chevron {
+  display: inline-flex;
+  color: $muted;
+  transform: scaleX(-1);
+
+  svg {
+    width: 16px;
+    height: 16px;
   }
 }
 
@@ -1813,5 +1839,38 @@ input:-webkit-autofill:focus {
   &:hover {
     background: rgba(239, 68, 68, 0.18);
     border-color: $danger;
+  }
+}
+
+.legal__updated {
+  font-size: 12px;
+  color: $subtle;
+  margin-bottom: 24px;
+}
+
+.legal__section {
+  margin-bottom: 22px;
+}
+
+.legal__heading {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.legal__text {
+  font-size: 13.5px;
+  color: $muted;
+  line-height: 1.6;
+}
+
+.legal__link {
+  color: $accent-soft;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.15s;
+
+  &:hover {
+    text-decoration-color: currentColor;
   }
 }

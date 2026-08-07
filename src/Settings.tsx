@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { IconChevronLeft } from "./icons";
 import { Theme } from "./hooks/useTheme";
+import PrivacyPolicy from "./PrivacyPolicy";
 
 interface Props {
   theme: Theme;
@@ -10,6 +12,12 @@ interface Props {
 }
 
 export default function Settings({ email, theme, onThemeChange, onBack, onLogout }: Props) {
+  const [showPrivacy, setShowPrivacy] = useState(false);
+
+  if (showPrivacy) {
+    return <PrivacyPolicy onBack={() => setShowPrivacy(false)} />;
+  }
+
   return (
     <div className="settings">
       <div className="auth-glow auth-glow--1" />
@@ -79,10 +87,10 @@ export default function Settings({ email, theme, onThemeChange, onBack, onLogout
         <div className="settings__group">
           <div className="settings__group-title">Prawne</div>
           <div className="card card--list">
-            <div className="settings__row">
+            <button type="button" className="settings__row settings__row--link" onClick={() => setShowPrivacy(true)}>
               <span>Polityka prywatności</span>
-              <span className="settings__row-value"><span className="settings__badge">wkrótce</span></span>
-            </div>
+              <span className="settings__row-chevron">{IconChevronLeft}</span>
+            </button>
           </div>
         </div>
 
