@@ -7,7 +7,7 @@ import { useBudgetGoal } from "./hooks/useBudgetGoal";
 import { useTheme } from "./hooks/useTheme";
 import { CATS, MONTHS, fmt, getCat } from "./constants";
 import { ExpenseForm } from "./types";
-import { IconPieChart, IconSettings } from "./icons";
+import { IconPieChart, IconSettings, IconInfo } from "./icons";
 import Auth from "./Auth";
 import Landing from "./Landing";
 import PasswordReset from "./PasswordReset";
@@ -44,6 +44,8 @@ export default function App() {
   const [budgetOpen, setBudgetOpen] = useState(false);
   const [budgetInput, setBudgetInput] = useState("");
   const [showSettings, setShowSettings] = useState(false);
+  const [hiddenCats, setHiddenCats] = useState<Set<string>>(new Set());
+  const [catHintOpen, setCatHintOpen] = useState(false);
 
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [indicator, setIndicator] = useState({ left: 0, width: 0 });
@@ -62,6 +64,19 @@ export default function App() {
     const el = tabRefs.current[TABS.indexOf(view)];
     if (el) setIndicator({ left: el.offsetLeft, width: el.offsetWidth });
   }, [view, ready, session]);
+
+  useEffect(() => {
+    setHiddenCats(new Set());
+  }, [month]);
+
+  const toggleCat = (name: string) => {
+    setHiddenCats(prev => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  };
 
   const monthExpenses = filtered(month, year);
   const total = monthExpenses.reduce((s, e) => s + parseFloat(String(e.amount)), 0);
@@ -89,6 +104,9 @@ export default function App() {
       .map(([name, value]) => ({ value, ...getCat(name) }))
       .sort((a, b) => b.value - a.value);
   }, [monthExpenses]);
+
+  const visibleCats = useMemo(() => byCat.filter(c => !hiddenCats.has(c.name)), [byCat, hiddenCats]);
+  const visibleTotal = useMemo(() => visibleCats.reduce((s, c) => s + c.value, 0), [visibleCats]);
 
   const byDay = useMemo(() => {
     const m: Record<number, number> = {};
@@ -185,6 +203,21 @@ export default function App() {
         </div>
       )}
 
+      {/* Category filter hint dialog */}
+      {catHintOpen && (
+        <div className="confirm__overlay">
+          <div className="confirm__box">
+            <div className="confirm__title">Filtrowanie kategorii</div>
+            <div className="confirm__sub">
+              Kliknij kategorię — na liście albo na wykresie — żeby tymczasowo wyłączyć ją z podziału. Procenty przeliczą się na nowo z tego, co zostało widoczne.
+            </div>
+            <div className="confirm__actions confirm__actions--single">
+              <button className="confirm__btn confirm__btn--primary" onClick={() => setCatHintOpen(false)}>Rozumiem</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="header">
         <div className="header__top">
@@ -253,37 +286,59 @@ export default function App() {
               : <>
                 <div className="card">
                   <div className="card__title">Podział</div>
-                  <ResponsiveContainer width="100%" height={190}>
-                    <PieChart>
-                      <Pie
-                        data={byCat} dataKey="value" nameKey="name" cx="50%" cy="50%"
-                        innerRadius={52} outerRadius={82} paddingAngle={3} cornerRadius={6} strokeWidth={0}
-                        animationDuration={700} animationEasing="ease-out"
-                      >
-                        {byCat.map((e, i) => <Cell key={i} fill={e.color} />)}
-                      </Pie>
-                      <Tooltip formatter={v => `${fmt(v as number)} zł`} contentStyle={{ background: "var(--overlay-solid)", border: "1px solid var(--border-mid)", borderRadius: 10, fontSize: 13 }} />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  {visibleCats.length === 0
+                    ? <div className="cat-bar__all-hidden">Wszystkie kategorie odznaczone — kliknij jedną poniżej, żeby ją przywrócić.</div>
+                    : (
+                      <ResponsiveContainer width="100%" height={190}>
+                        <PieChart>
+                          <Pie
+                            data={visibleCats} dataKey="value" nameKey="name" cx="50%" cy="50%"
+                            innerRadius={52} outerRadius={82} paddingAngle={3} cornerRadius={6} strokeWidth={0}
+                            animationDuration={700} animationEasing="ease-out"
+                          >
+                            {visibleCats.map((e, i) => (
+                              <Cell key={i} fill={e.color} cursor="pointer" onClick={() => toggleCat(e.name)} />
+                            ))}
+                          </Pie>
+                          <Tooltip formatter={v => `${fmt(v as number)} zł`} contentStyle={{ background: "var(--overlay-solid)", border: "1px solid var(--border-mid)", borderRadius: 10, fontSize: 13 }} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    )
+                  }
                 </div>
 
                 <div className="card">
-                  <div className="card__title">Kategorie</div>
+                  <div className="card__title card__title--row">
+                    Kategorie
+                    <button type="button" className="card__info" onClick={() => setCatHintOpen(true)} aria-label="Jak to działa?">
+                      {IconInfo}
+                    </button>
+                  </div>
                   {byCat.map(c => {
-                    const pct = total > 0 ? (c.value / total * 100) : 0;
+                    const hidden = hiddenCats.has(c.name);
+                    const pct = !hidden && visibleTotal > 0 ? (c.value / visibleTotal * 100) : 0;
                     return (
-                      <div key={c.name} className="cat-bar">
+                      <button
+                        key={c.name}
+                        type="button"
+                        className={`cat-bar${hidden ? " cat-bar--hidden" : ""}`}
+                        onClick={() => toggleCat(c.name)}
+                      >
                         <div className="cat-bar__header">
-                          <div className="cat-bar__name"><span className="cat-bar__icon">{c.icon}</span>{c.name}</div>
+                          <div className="cat-bar__name">
+                            <span className="cat-bar__dot" style={{ background: hidden ? "transparent" : c.color, borderColor: c.color }} />
+                            <span className="cat-bar__icon">{c.icon}</span>
+                            {c.name}
+                          </div>
                           <div className="cat-bar__values">
-                            <span className="cat-bar__pct">{pct.toFixed(0)}%</span>
+                            <span className="cat-bar__pct">{hidden ? "—" : `${pct.toFixed(0)}%`}</span>
                             <span className="cat-bar__amount">{fmt(c.value)} zł</span>
                           </div>
                         </div>
                         <div className="cat-bar__track">
                           <div className="cat-bar__fill" style={{ width: `${pct}%`, background: c.color }} />
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>

@@ -45,3 +45,11 @@ export const IconChevronLeft = (
     <polyline points="15 18 9 12 15 6" />
   </svg>
 );
+
+export const IconInfo = (
+  <svg {...props}>
+    <circle cx="12" cy="12" r="10" />
+    <line x1="12" y1="16" x2="12" y2="12" />
+    <line x1="12" y1="8" x2="12" y2="8" />
+  </svg>
+);
