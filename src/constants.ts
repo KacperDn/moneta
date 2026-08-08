@@ -11,11 +11,6 @@ export const CATS: Category[] = [
   { name: "Inne",      icon: "📦", color: "#6b7280" },
 ];
 
-export const MONTHS: string[] = [
-  "Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec",
-  "Lipiec","Sierpień","Wrzesień","Październik","Listopad","Grudzień",
-];
-
 export const fmt = (n: number): string =>
   n.toLocaleString("pl-PL", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 

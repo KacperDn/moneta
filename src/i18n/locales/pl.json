@@ -1,0 +1,197 @@
+{
+  "common": {
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "delete": "Usuń",
+    "close": "Zamknij",
+    "loading": "Ładowanie…"
+  },
+  "categories": {
+    "Jedzenie": "Jedzenie",
+    "Transport": "Transport",
+    "Rozrywka": "Rozrywka",
+    "Rachunki": "Rachunki",
+    "Zdrowie": "Zdrowie",
+    "Ubrania": "Ubrania",
+    "Edukacja": "Edukacja",
+    "Inne": "Inne"
+  },
+  "months": [
+    "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec",
+    "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"
+  ],
+  "landing": {
+    "title": "Zobacz, gdzie naprawdę idą Twoje pieniądze",
+    "subtitle": "Proste śledzenie wydatków, przejrzyste wykresy i cele budżetowe — wszystko w jednym miejscu.",
+    "cta": "Zaloguj się",
+    "footer": "moneta · aplikacja do śledzenia wydatków",
+    "settingsAria": "Ustawienia",
+    "cardAria": "Karta {{n}}",
+    "slides": [
+      { "title": "Zobacz, gdzie mkną pieniądze", "desc": "Automatyczny podział na kategorie z przejrzystymi wykresami." },
+      { "title": "Śledź trendy miesiąc po miesiącu", "desc": "Porównuj miesiące i zauważaj wzorce w wydatkach." },
+      { "title": "Twoje dane zawsze przy Tobie", "desc": "Dostęp z telefonu i komputera — zawsze zsynchronizowane." },
+      { "title": "Prywatność na pierwszym miejscu", "desc": "Twoje dane widzisz tylko Ty, zabezpieczone na poziomie bazy." }
+    ]
+  },
+  "auth": {
+    "titleLogin": "Zaloguj się",
+    "titleRegister": "Utwórz konto",
+    "titleReset": "Reset hasła",
+    "emailLabel": "Email",
+    "passwordLabel": "Hasło",
+    "emailPlaceholder": "twoj@email.com",
+    "passwordPlaceholder": "••••••••",
+    "errEmailRequired": "Wpisz adres email.",
+    "errPasswordRequired": "Wpisz hasło.",
+    "errPasswordLength": "Hasło musi mieć minimum 6 znaków.",
+    "infoResetSent": "Link do resetowania hasła został wysłany na podany adres email.",
+    "infoRegisterSuccess": "Konto utworzone! Możesz się teraz zalogować.",
+    "submitLoading": "Ładowanie…",
+    "submitLogin": "Zaloguj się",
+    "submitRegister": "Utwórz konto",
+    "submitReset": "Wyślij link",
+    "forgotPassword": "Zapomniałem hasła",
+    "createAccount": "Zarejestruj się",
+    "haveAccount": "Mam już konto",
+    "backToLogin": "Wróć do logowania"
+  },
+  "passwordReset": {
+    "title": "Nowe hasło",
+    "subtitle": "Ustaw nowe hasło do swojego konta",
+    "label": "Nowe hasło",
+    "errPasswordLength": "Hasło musi mieć minimum 6 znaków.",
+    "errNoToken": "Brak tokenu resetowania. Spróbuj ponownie.",
+    "errLinkExpired": "Link wygasł lub jest nieprawidłowy. Wyślij nowy link.",
+    "success": "Hasło zostało zmienione! Możesz się teraz zalogować.",
+    "submitLoading": "Zapisywanie…",
+    "submitIdle": "Zmień hasło"
+  },
+  "authErrors": {
+    "invalidCredentials": "Nieprawidłowy email lub hasło.",
+    "emailNotConfirmed": "Potwierdź adres email, aby się zalogować.",
+    "userExists": "Konto z tym adresem email już istnieje.",
+    "passwordLength": "Hasło musi mieć minimum 6 znaków.",
+    "rateLimit": "Zbyt wiele prób. Spróbuj ponownie za chwilę.",
+    "networkError": "Brak połączenia z serwerem. Sprawdź internet.",
+    "generic": "Coś poszło nie tak. Spróbuj ponownie za chwilę."
+  },
+  "errorBoundary": {
+    "message": "Coś poszło nie tak. Odśwież stronę lub spróbuj później."
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "backAria": "Wróć",
+    "groupAccount": "Konto",
+    "email": "Email",
+    "groupAppearance": "Wygląd i język",
+    "theme": "Motyw",
+    "themeDark": "Ciemny",
+    "themeLight": "Jasny",
+    "language": "Język",
+    "languagePolish": "Polski",
+    "languageEnglish": "English",
+    "groupExpenses": "Wydatki",
+    "categories": "Kategorie",
+    "comingSoon": "wkrótce",
+    "groupLegal": "Prawne",
+    "privacyPolicy": "Polityka prywatności",
+    "logout": "Wyloguj się"
+  },
+  "privacy": {
+    "title": "Polityka prywatności",
+    "updated": "Ostatnia aktualizacja: 8 sierpnia 2026",
+    "s1_heading": "1. Administrator danych",
+    "s1_body": "Administratorem danych jest autor aplikacji moneta, Kacper Daniluk. Kontakt: <a>{{email}}</a>.",
+    "s2_heading": "2. Jakie dane zbieramy",
+    "s2_body": "Adres email i hasło — podczas rejestracji i logowania (hasło jest przechowywane w formie zaszyfrowanej przez Supabase Auth, nigdy jako czysty tekst). Dane o wydatkach, które sam wprowadzasz: opis, kategoria, kwota, data. Opcjonalny cel budżetowy — miesięczny limit wydatków.\n\nNie zbieramy żadnych innych danych — nie prosimy o imię, numer telefonu, adres czy dane płatnicze.",
+    "s3_heading": "3. Do czego wykorzystujemy dane",
+    "s3_body": "Wyłącznie do działania samej aplikacji — logowania, wyświetlania Twoich wydatków, wykresów i statystyk. Nie wykorzystujemy danych do żadnych innych celów. Nie ma reklam, nie ma sprzedaży danych, nie ma profilowania.",
+    "s4_heading": "4. Jak przechowujemy dane",
+    "s4_body": "Dane są przechowywane w bazie PostgreSQL udostępnianej przez Supabase, z włączonym Row Level Security — na poziomie bazy danych masz dostęp wyłącznie do swoich własnych danych. Połączenie z bazą odbywa się przez HTTPS.",
+    "s5_heading": "5. Udostępnianie danych",
+    "s5_body": "Nie udostępniamy, nie sprzedajemy i nie wynajmujemy Twoich danych żadnym firmom trzecim. Aplikacja nie korzysta z narzędzi analitycznych ani reklamowych.",
+    "s6_heading": "6. Cookies i localStorage",
+    "s6_body": "Aplikacja nie używa cookies do śledzenia. W pamięci lokalnej przeglądarki zapisujemy jedynie token sesji logowania oraz wybrany motyw (jasny/ciemny). Żadne z tych danych nie są wysyłane do firm trzecich.",
+    "s7_heading": "7. Twoje prawa",
+    "s7_body": "Masz prawo do wglądu, poprawiania i usunięcia swoich danych. Wydatki możesz edytować i usuwać samodzielnie w aplikacji. Jeśli chcesz usunąć całe konto wraz z danymi, napisz na adres kontaktowy poniżej — usuniemy je jak najszybciej.",
+    "s8_heading": "8. Kontakt",
+    "s8_body": "W sprawie swoich danych pisz na: <a>{{email}}</a>"
+  },
+  "toast": {
+    "fetchFailed": "Nie udało się pobrać danych. Sprawdź połączenie.",
+    "expenseSaveFailed": "Nie udało się zapisać wydatku.",
+    "expenseAdded": "Wydatek dodany!",
+    "expenseDeleteFailed": "Nie udało się usunąć wydatku.",
+    "expenseDeleted": "Wydatek usunięty.",
+    "budgetLoadFailed": "Nie udało się wczytać celu miesięcznego.",
+    "budgetSaveFailed": "Nie udało się zapisać celu miesięcznego."
+  },
+  "transactionsCount_one": "{{count}} transakcja",
+  "transactionsCount_few": "{{count}} transakcje",
+  "transactionsCount_many": "{{count}} transakcji",
+  "transactionsCount_other": "{{count}} transakcji",
+  "monthsDataCount_one": "Masz dane z {{count}} miesiąca",
+  "monthsDataCount_other": "Masz dane z {{count}} miesięcy",
+  "dashboard": {
+    "navOverview": "Przegląd",
+    "navAdd": "Dodaj",
+    "navHistory": "Historia",
+    "settingsAria": "Ustawienia",
+    "editGoal": "Edytuj cel",
+    "setGoal": "+ Ustaw cel miesięczny",
+    "emptyTitle": "Brak wydatków w tym miesiącu",
+    "emptySubtitle": "Dodaj pierwszy wydatek, żeby zobaczyć podział na kategorie i wykresy.",
+    "emptyCta": "Dodaj wydatek",
+    "breakdownTitle": "Podział",
+    "categoriesTitle": "Kategorie",
+    "categoriesInfoAria": "Jak to działa?",
+    "allHidden": "Wszystkie kategorie odznaczone — kliknij jedną poniżej, żeby ją przywrócić.",
+    "catHintTitle": "Filtrowanie kategorii",
+    "catHintBody": "Kliknij kategorię na liście, żeby tymczasowo wyłączyć ją z podziału — procenty przeliczą się z tego, co zostało widoczne. Kliknij kategorię na wykresie, żeby zobaczyć jej wydatki.",
+    "catHintGotIt": "Rozumiem",
+    "dayByDayTitle": "Dzień po dniu",
+    "tooltipExpenses": "Wydatki",
+    "monthlyTrendTitle": "Trendy miesięczne",
+    "tooltipSum": "Suma",
+    "trendEmptyTitle": "Wykres pojawi się po uzupełnieniu wydatków z minimum 2 miesięcy",
+    "vsLastMonth": "vs poprzedni miesiąc",
+    "avgMonthly": "średnia miesięczna",
+    "mostExpensive": "najdroższy",
+    "cheapest": "najtańszy"
+  },
+  "drilldown": {
+    "closeAria": "Zamknij",
+    "viewInHistory": "Zobacz w historii →"
+  },
+  "confirmDelete": {
+    "title": "Usunąć wydatek?",
+    "body": "Tej operacji nie można cofnąć."
+  },
+  "budgetGoal": {
+    "title": "Cel miesięczny",
+    "body": "Ustaw limit wydatków, żeby śledzić postęp w tym miesiącu.",
+    "placeholder": "np. 2000",
+    "removeGoal": "Usuń cel"
+  },
+  "form": {
+    "title": "Nowy wydatek",
+    "descriptionLabel": "Opis",
+    "descriptionPlaceholder": "np. Biedronka, Netflix…",
+    "amountLabel": "Kwota (zł)",
+    "amountPlaceholder": "0,00",
+    "categoryLabel": "Kategoria",
+    "dateLabel": "Data",
+    "submitLoading": "Zapisywanie…",
+    "submitIdle": "Dodaj wydatek",
+    "errDescription": "Wpisz opis wydatku.",
+    "errAmount": "Podaj poprawną kwotę."
+  },
+  "history": {
+    "title": "Historia",
+    "filterAll": "Wszystkie",
+    "emptyTitle": "Brak wydatków",
+    "emptySubFiltered": "Brak wydatków w tej kategorii w tym miesiącu.",
+    "emptySubAll": "Historia dla tego miesiąca jest pusta."
+  }
+}

@@ -1,11 +1,12 @@
 import { useState, useMemo, useRef, useLayoutEffect, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, ComposedChart, Area, Line, CartesianGrid } from "recharts";
 import { useAuth } from "./hooks/useAuth";
 import { useExpenses } from "./hooks/useExpenses";
 import { useCountUp } from "./hooks/useCountUp";
 import { useBudgetGoal } from "./hooks/useBudgetGoal";
 import { useTheme } from "./hooks/useTheme";
-import { CATS, MONTHS, fmt, getCat } from "./constants";
+import { CATS, fmt, getCat } from "./constants";
 import { ExpenseForm } from "./types";
 import { IconPieChart, IconSettings, IconInfo } from "./icons";
 import Auth from "./Auth";
@@ -29,6 +30,10 @@ function Skeleton() {
 }
 
 export default function App() {
+  const { t } = useTranslation();
+  const catLabel = (name: string) => t(`categories.${name}`, { defaultValue: name });
+  const MONTHS = t("months", { returnObjects: true }) as string[];
+
   const { session, ready, isRecovery, logout } = useAuth();
   const { loading, saving, add, remove, filtered, byMonth } = useExpenses(session);
   const { goal, setGoal } = useBudgetGoal(session?.user.id);
@@ -125,9 +130,9 @@ export default function App() {
   }, [monthExpenses]);
 
   const handleAdd = async () => {
-    if (!form.desc.trim()) return setErr("Wpisz opis wydatku.");
+    if (!form.desc.trim()) return setErr(t("form.errDescription"));
     const a = parseFloat(form.amount);
-    if (!form.amount || isNaN(a) || a <= 0) return setErr("Podaj poprawną kwotę.");
+    if (!form.amount || isNaN(a) || a <= 0) return setErr(t("form.errAmount"));
     const ok = await add(form, session!.user.id);
     if (ok) {
       setForm(f => ({ ...f, desc: "", amount: "" }));
@@ -146,7 +151,7 @@ export default function App() {
 
   if (!ready) return (
     <div className="app app--center">
-      <div className="app__loading">Ładowanie…</div>
+      <div className="app__loading">{t("common.loading")}</div>
     </div>
   );
   if (isRecovery) return <PasswordReset />;
@@ -174,11 +179,11 @@ export default function App() {
       {confirmId && (
         <div className="confirm__overlay">
           <div className="confirm__box">
-            <div className="confirm__title">Usunąć wydatek?</div>
-            <div className="confirm__sub">Tej operacji nie można cofnąć.</div>
+            <div className="confirm__title">{t("confirmDelete.title")}</div>
+            <div className="confirm__sub">{t("confirmDelete.body")}</div>
             <div className="confirm__actions">
-              <button className="confirm__btn confirm__btn--cancel" onClick={() => setConfirmId(null)}>Anuluj</button>
-              <button className="confirm__btn confirm__btn--danger" onClick={confirmDelete}>Usuń</button>
+              <button className="confirm__btn confirm__btn--cancel" onClick={() => setConfirmId(null)}>{t("common.cancel")}</button>
+              <button className="confirm__btn confirm__btn--danger" onClick={confirmDelete}>{t("common.delete")}</button>
             </div>
           </div>
         </div>
@@ -188,23 +193,23 @@ export default function App() {
       {budgetOpen && (
         <div className="confirm__overlay">
           <div className="confirm__box">
-            <div className="confirm__title">Cel miesięczny</div>
-            <div className="confirm__sub">Ustaw limit wydatków, żeby śledzić postęp w tym miesiącu.</div>
+            <div className="confirm__title">{t("budgetGoal.title")}</div>
+            <div className="confirm__sub">{t("budgetGoal.body")}</div>
             <input
               className="form__input"
               type="number"
-              placeholder="np. 2000"
+              placeholder={t("budgetGoal.placeholder")}
               value={budgetInput}
               autoFocus
               onChange={e => setBudgetInput(e.target.value)}
             />
             <div className="confirm__actions">
-              <button className="confirm__btn confirm__btn--cancel" onClick={() => setBudgetOpen(false)}>Anuluj</button>
-              <button className="confirm__btn confirm__btn--primary" onClick={saveBudget}>Zapisz</button>
+              <button className="confirm__btn confirm__btn--cancel" onClick={() => setBudgetOpen(false)}>{t("common.cancel")}</button>
+              <button className="confirm__btn confirm__btn--primary" onClick={saveBudget}>{t("common.save")}</button>
             </div>
             {goal !== null && (
               <button className="confirm__remove" onClick={() => { setGoal(null); setBudgetOpen(false); }}>
-                Usuń cel
+                {t("budgetGoal.removeGoal")}
               </button>
             )}
           </div>
@@ -215,12 +220,12 @@ export default function App() {
       {catHintOpen && (
         <div className="confirm__overlay">
           <div className="confirm__box">
-            <div className="confirm__title">Filtrowanie kategorii</div>
+            <div className="confirm__title">{t("dashboard.catHintTitle")}</div>
             <div className="confirm__sub">
-              Kliknij kategorię na liście, żeby tymczasowo wyłączyć ją z podziału — procenty przeliczą się z tego, co zostało widoczne. Kliknij kategorię na wykresie, żeby zobaczyć jej wydatki.
+              {t("dashboard.catHintBody")}
             </div>
             <div className="confirm__actions confirm__actions--single">
-              <button className="confirm__btn confirm__btn--primary" onClick={() => setCatHintOpen(false)}>Rozumiem</button>
+              <button className="confirm__btn confirm__btn--primary" onClick={() => setCatHintOpen(false)}>{t("dashboard.catHintGotIt")}</button>
             </div>
           </div>
         </div>
@@ -237,10 +242,10 @@ export default function App() {
               <div className="drilldown__header">
                 <div className="drilldown__icon" style={{ background: `${c.color}22` }}>{c.icon}</div>
                 <div className="drilldown__heading">
-                  <div className="drilldown__title">{c.name}</div>
-                  <div className="drilldown__sub">{fmt(catTotal)} zł · {items.length} {items.length === 1 ? "transakcja" : "transakcji"}</div>
+                  <div className="drilldown__title">{catLabel(c.name)}</div>
+                  <div className="drilldown__sub">{fmt(catTotal)} zł · {t("transactionsCount", { count: items.length })}</div>
                 </div>
-                <button type="button" className="drilldown__close" onClick={() => setDrilldownCat(null)} aria-label="Zamknij">×</button>
+                <button type="button" className="drilldown__close" onClick={() => setDrilldownCat(null)} aria-label={t("drilldown.closeAria")}>×</button>
               </div>
               <div className="drilldown__list">
                 {items.map(e => (
@@ -256,7 +261,7 @@ export default function App() {
                 className="btn--ghost drilldown__viewall"
                 onClick={() => { setCatFilter(c.name); setDrilldownCat(null); setView("list"); }}
               >
-                Zobacz w historii →
+                {t("drilldown.viewInHistory")}
               </button>
             </div>
           </div>
@@ -274,7 +279,7 @@ export default function App() {
             <select className="header__select" value={month} onChange={e => setMonth(+e.target.value)}>
               {MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}
             </select>
-            <button className="header__settings" onClick={() => setShowSettings(true)} aria-label="Ustawienia">
+            <button className="header__settings" onClick={() => setShowSettings(true)} aria-label={t("dashboard.settingsAria")}>
               {IconSettings}
             </button>
           </div>
@@ -287,7 +292,7 @@ export default function App() {
               className={`nav__tab${view === id ? " nav__tab--active" : ""}`}
               onClick={() => setView(id)}
             >
-              {["Przegląd", "Dodaj", "Historia"][i]}
+              {[t("dashboard.navOverview"), t("dashboard.navAdd"), t("dashboard.navHistory")][i]}
             </button>
           ))}
           <div className="nav__indicator" style={{ left: indicator.left, width: indicator.width }} />
@@ -302,7 +307,7 @@ export default function App() {
             <div className="hero">
               <div className="hero__month">{MONTHS[month]} {year}</div>
               <div className="hero__total">{fmt(animatedTotal)}<span className="hero__currency">zł</span></div>
-              <div className="hero__count">{monthExpenses.length} transakcji</div>
+              <div className="hero__count">{t("transactionsCount", { count: monthExpenses.length })}</div>
 
               {goal ? (
                 <div className="budget">
@@ -311,11 +316,11 @@ export default function App() {
                   </div>
                   <div className="budget__meta">
                     <span>{fmt(total)} / {fmt(goal)} zł</span>
-                    <button className="budget__edit" onClick={openBudget}>Edytuj cel</button>
+                    <button className="budget__edit" onClick={openBudget}>{t("dashboard.editGoal")}</button>
                   </div>
                 </div>
               ) : (
-                <button className="budget__set" onClick={openBudget}>+ Ustaw cel miesięczny</button>
+                <button className="budget__set" onClick={openBudget}>{t("dashboard.setGoal")}</button>
               )}
             </div>
 
@@ -323,16 +328,16 @@ export default function App() {
               ? (
                 <div className="empty-state">
                   <div className="empty-state__icon">{IconPieChart}</div>
-                  <div className="empty-state__title">Brak wydatków w tym miesiącu</div>
-                  <div className="empty-state__sub">Dodaj pierwszy wydatek, żeby zobaczyć podział na kategorie i wykresy.</div>
-                  <button className="btn--primary empty-state__cta" onClick={() => setView("add")}>Dodaj wydatek</button>
+                  <div className="empty-state__title">{t("dashboard.emptyTitle")}</div>
+                  <div className="empty-state__sub">{t("dashboard.emptySubtitle")}</div>
+                  <button className="btn--primary empty-state__cta" onClick={() => setView("add")}>{t("dashboard.emptyCta")}</button>
                 </div>
               )
               : <>
                 <div className="card">
-                  <div className="card__title">Podział</div>
+                  <div className="card__title">{t("dashboard.breakdownTitle")}</div>
                   {visibleCats.length === 0
-                    ? <div className="cat-bar__all-hidden">Wszystkie kategorie odznaczone — kliknij jedną poniżej, żeby ją przywrócić.</div>
+                    ? <div className="cat-bar__all-hidden">{t("dashboard.allHidden")}</div>
                     : (
                       <ResponsiveContainer width="100%" height={190}>
                         <PieChart>
@@ -354,8 +359,8 @@ export default function App() {
 
                 <div className="card">
                   <div className="card__title card__title--row">
-                    Kategorie
-                    <button type="button" className="card__info" onClick={() => setCatHintOpen(true)} aria-label="Jak to działa?">
+                    {t("dashboard.categoriesTitle")}
+                    <button type="button" className="card__info" onClick={() => setCatHintOpen(true)} aria-label={t("dashboard.categoriesInfoAria")}>
                       {IconInfo}
                     </button>
                   </div>
@@ -373,7 +378,7 @@ export default function App() {
                           <div className="cat-bar__name">
                             <span className="cat-bar__dot" style={{ background: hidden ? "transparent" : c.color, borderColor: c.color }} />
                             <span className="cat-bar__icon">{c.icon}</span>
-                            {c.name}
+                            {catLabel(c.name)}
                           </div>
                           <div className="cat-bar__values">
                             <span className="cat-bar__pct">{hidden ? "—" : `${pct.toFixed(0)}%`}</span>
@@ -390,7 +395,7 @@ export default function App() {
 
                 {byDay.length > 1 && (
                   <div className="card">
-                    <div className="card__title">Dzień po dniu</div>
+                    <div className="card__title">{t("dashboard.dayByDayTitle")}</div>
                     <ResponsiveContainer width="100%" height={140}>
                       <BarChart data={byDay} margin={{ top: 0, right: 0, left: -28, bottom: 0 }}>
                         <defs>
@@ -402,7 +407,7 @@ export default function App() {
                         <XAxis dataKey="day" tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
                         <YAxis tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
                         <Tooltip
-                          formatter={v => [`${fmt(v as number)} zł`, "Wydatki"]}
+                          formatter={v => [`${fmt(v as number)} zł`, t("dashboard.tooltipExpenses")]}
                           cursor={{ fill: "var(--surface)" }}
                           contentStyle={{ background: "var(--overlay-solid)", border: "1px solid var(--border-mid)", borderRadius: 10, fontSize: 13 }}
                         />
@@ -415,12 +420,12 @@ export default function App() {
             }
 
             <div className="card">
-              <div className="card__title">Trendy miesięczne</div>
+              <div className="card__title">{t("dashboard.monthlyTrendTitle")}</div>
               {byMonth.length < 2 ? (
                 <div className="trend__empty">
                   <div className="trend__empty-icon">📈</div>
-                  <div className="trend__empty-text">Wykres pojawi się po uzupełnieniu wydatków z minimum 2 miesięcy</div>
-                  <div className="trend__empty-sub">Masz dane z {byMonth.length} {byMonth.length === 1 ? "miesiąca" : "miesięcy"}</div>
+                  <div className="trend__empty-text">{t("dashboard.trendEmptyTitle")}</div>
+                  <div className="trend__empty-sub">{t("monthsDataCount", { count: byMonth.length })}</div>
                 </div>
               ) : (() => {
                 const last = byMonth[byMonth.length - 1];
@@ -434,21 +439,21 @@ export default function App() {
                 return <>
                   <div className="trend__stats">
                     <div className="trend__stat">
-                      <div className="trend__stat-label">vs poprzedni miesiąc</div>
+                      <div className="trend__stat-label">{t("dashboard.vsLastMonth")}</div>
                       <div className={`trend__stat-value ${up ? "trend__stat-value--up" : "trend__stat-value--down"}`}>
                         {up ? "↑" : "↓"} {Math.abs(parseFloat(pct))}%
                       </div>
                     </div>
                     <div className="trend__stat">
-                      <div className="trend__stat-label">średnia miesięczna</div>
+                      <div className="trend__stat-label">{t("dashboard.avgMonthly")}</div>
                       <div className="trend__stat-value">{fmt(avg)} zł</div>
                     </div>
                     <div className="trend__stat">
-                      <div className="trend__stat-label">najdroższy</div>
+                      <div className="trend__stat-label">{t("dashboard.mostExpensive")}</div>
                       <div className="trend__stat-value trend__stat-value--up">{maxM.label}</div>
                     </div>
                     <div className="trend__stat">
-                      <div className="trend__stat-label">najtańszy</div>
+                      <div className="trend__stat-label">{t("dashboard.cheapest")}</div>
                       <div className="trend__stat-value trend__stat-value--down">{minM.label}</div>
                     </div>
                   </div>
@@ -463,7 +468,7 @@ export default function App() {
                       <CartesianGrid stroke="var(--border)" vertical={false} />
                       <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
-                      <Tooltip formatter={v => [`${fmt(v as number)} zł`, "Suma"]} contentStyle={{ background: "var(--overlay-solid)", border: "1px solid var(--border-mid)", borderRadius: 10, fontSize: 13 }} />
+                      <Tooltip formatter={v => [`${fmt(v as number)} zł`, t("dashboard.tooltipSum")]} contentStyle={{ background: "var(--overlay-solid)", border: "1px solid var(--border-mid)", borderRadius: 10, fontSize: 13 }} />
                       <Area type="monotone" dataKey="total" stroke="none" fill="url(#trendFill)" animationDuration={700} legendType="none" tooltipType="none" />
                       <Line type="monotone" dataKey="total" stroke="var(--accent)" strokeWidth={2.5} dot={{ fill: "var(--accent)", r: 4 }} activeDot={{ r: 6 }} animationDuration={700} />
                     </ComposedChart>
@@ -476,41 +481,41 @@ export default function App() {
 
         {/* ADD */}
         {view === "add" && <>
-          <div className="form__title">Nowy wydatek</div>
+          <div className="form__title">{t("form.title")}</div>
           {err && <div className="alert alert--error">{err}</div>}
 
-          <label className="form__label">Opis</label>
-          <input className="form__input" placeholder="np. Biedronka, Netflix…" value={form.desc}
+          <label className="form__label">{t("form.descriptionLabel")}</label>
+          <input className="form__input" placeholder={t("form.descriptionPlaceholder")} value={form.desc}
             onChange={e => { setErr(""); setForm(f => ({ ...f, desc: e.target.value })); }} />
 
-          <label className="form__label">Kwota (zł)</label>
-          <input className="form__input" type="number" placeholder="0,00" value={form.amount}
+          <label className="form__label">{t("form.amountLabel")}</label>
+          <input className="form__input" type="number" placeholder={t("form.amountPlaceholder")} value={form.amount}
             onChange={e => { setErr(""); setForm(f => ({ ...f, amount: e.target.value })); }} />
 
-          <label className="form__label">Kategoria</label>
+          <label className="form__label">{t("form.categoryLabel")}</label>
           <div className="form__cat-grid">
             {CATS.map(c => (
               <button key={c.name} className={`form__cat-btn${form.cat === c.name ? " form__cat-btn--active" : ""}`}
                 onClick={() => setForm(f => ({ ...f, cat: c.name }))}>
-                <span className="form__cat-btn__icon">{c.icon}</span>{c.name}
+                <span className="form__cat-btn__icon">{c.icon}</span>{catLabel(c.name)}
               </button>
             ))}
           </div>
 
-          <label className="form__label">Data</label>
+          <label className="form__label">{t("form.dateLabel")}</label>
           <input className="form__input" type="date" value={form.date}
             onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
 
           <button className="btn--primary" onClick={handleAdd} disabled={saving}>
             {saving && <span className="btn__spinner" />}
-            {saving ? "Zapisywanie…" : "Dodaj wydatek"}
+            {saving ? t("form.submitLoading") : t("form.submitIdle")}
           </button>
         </>}
 
         {/* LIST */}
         {view === "list" && <>
-          <div className="history__title">Historia</div>
-          <div className="history__subtitle">{MONTHS[month]} {year} · {filteredExpenses.length} transakcji</div>
+          <div className="history__title">{t("history.title")}</div>
+          <div className="history__subtitle">{MONTHS[month]} {year} · {t("transactionsCount", { count: filteredExpenses.length })}</div>
 
           {byCat.length > 0 && (
             <div className="filter-pills">
@@ -519,7 +524,7 @@ export default function App() {
                 className={`filter-pill${catFilter === null ? " filter-pill--active" : ""}`}
                 onClick={() => setCatFilter(null)}
               >
-                Wszystkie
+                {t("history.filterAll")}
               </button>
               {byCat.map(c => (
                 <button
@@ -528,7 +533,7 @@ export default function App() {
                   className={`filter-pill${catFilter === c.name ? " filter-pill--active" : ""}`}
                   onClick={() => setCatFilter(catFilter === c.name ? null : c.name)}
                 >
-                  <span className="filter-pill__icon">{c.icon}</span>{c.name}
+                  <span className="filter-pill__icon">{c.icon}</span>{catLabel(c.name)}
                 </button>
               ))}
             </div>
@@ -538,11 +543,11 @@ export default function App() {
             ? (
               <div className="empty-state">
                 <div className="empty-state__icon">{IconPieChart}</div>
-                <div className="empty-state__title">Brak wydatków</div>
+                <div className="empty-state__title">{t("history.emptyTitle")}</div>
                 <div className="empty-state__sub">
-                  {catFilter ? "Brak wydatków w tej kategorii w tym miesiącu." : "Historia dla tego miesiąca jest pusta."}
+                  {catFilter ? t("history.emptySubFiltered") : t("history.emptySubAll")}
                 </div>
-                <button className="btn--primary empty-state__cta" onClick={() => setView("add")}>Dodaj wydatek</button>
+                <button className="btn--primary empty-state__cta" onClick={() => setView("add")}>{t("dashboard.emptyCta")}</button>
               </div>
             )
             : <div className="card card--list">
@@ -553,7 +558,7 @@ export default function App() {
                     <div className="list__icon" style={{ background: `${c.color}22` }}>{c.icon}</div>
                     <div className="list__info">
                       <div className="list__desc">{e.description}</div>
-                      <div className="list__meta">{c.name} · {e.date}</div>
+                      <div className="list__meta">{catLabel(c.name)} · {e.date}</div>
                     </div>
                     <div className="list__amount">{fmt(parseFloat(String(e.amount)))} zł</div>
                     <button className="list__delete" onClick={() => handleDelete(e.id)}>×</button>

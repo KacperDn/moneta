@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { Session } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../lib/supabase";
 import { Expense, ExpenseForm, MonthSummary } from "../types";
-import { MONTHS } from "../constants";
 
 const MAX_RETRIES = 3;
 
@@ -18,6 +18,7 @@ interface UseExpensesReturn {
 }
 
 export function useExpenses(session: Session | null): UseExpensesReturn {
+  const { t, i18n } = useTranslation();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading]   = useState(true);
   const [saving, setSaving]     = useState(false);
@@ -38,7 +39,7 @@ export function useExpenses(session: Session | null): UseExpensesReturn {
       if (attempt < MAX_RETRIES) {
         setTimeout(() => fetchData(attempt + 1), attempt * 1000);
       } else {
-        toast.error("Nie udało się pobrać danych. Sprawdź połączenie.");
+        toast.error(t("toast.fetchFailed"));
         setLoading(false);
       }
       return;
@@ -63,13 +64,13 @@ export function useExpenses(session: Session | null): UseExpensesReturn {
       .single();
 
     if (error || !data) {
-      toast.error("Nie udało się zapisać wydatku.");
+      toast.error(t("toast.expenseSaveFailed"));
       setSaving(false);
       return false;
     }
 
     setExpenses(prev => [data, ...prev]);
-    toast.success("Wydatek dodany!");
+    toast.success(t("toast.expenseAdded"));
     setSaving(false);
     return true;
   };
@@ -81,10 +82,10 @@ export function useExpenses(session: Session | null): UseExpensesReturn {
     const { error } = await supabase.from("expenses").delete().eq("id", id);
     if (error) {
       if (backup) setExpenses(prev => [backup, ...prev]);
-      toast.error("Nie udało się usunąć wydatku.");
+      toast.error(t("toast.expenseDeleteFailed"));
       return;
     }
-    toast.success("Wydatek usunięty.");
+    toast.success(t("toast.expenseDeleted"));
   };
 
   const filtered = (month: number, year: number) =>
@@ -94,6 +95,7 @@ export function useExpenses(session: Session | null): UseExpensesReturn {
     });
 
   const byMonth = useMemo<MonthSummary[]>(() => {
+    const months = t("months", { returnObjects: true }) as string[];
     const m: Record<string, number> = {};
     expenses.forEach(e => {
       const d = new Date(e.date);
@@ -104,10 +106,10 @@ export function useExpenses(session: Session | null): UseExpensesReturn {
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([key, total]) => ({
         key,
-        label: MONTHS[parseInt(key.split("-")[1]) - 1].slice(0, 3),
+        label: months[parseInt(key.split("-")[1]) - 1].slice(0, 3),
         total: parseFloat(total.toFixed(2)),
       }));
-  }, [expenses]);
+  }, [expenses, i18n.language, t]);
 
   return { expenses, loading, saving, add, remove, filtered, byMonth };
 }

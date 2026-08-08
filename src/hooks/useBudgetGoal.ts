@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../lib/supabase";
 
 interface UseBudgetGoalReturn {
@@ -8,6 +9,7 @@ interface UseBudgetGoalReturn {
 }
 
 export function useBudgetGoal(userId: string | undefined): UseBudgetGoalReturn {
+  const { t } = useTranslation();
   const [goal, setGoalState] = useState<number | null>(null);
 
   useEffect(() => {
@@ -19,10 +21,10 @@ export function useBudgetGoal(userId: string | undefined): UseBudgetGoalReturn {
       .eq("user_id", userId)
       .maybeSingle()
       .then(({ data, error }) => {
-        if (error) return toast.error("Nie udało się wczytać celu miesięcznego.");
+        if (error) return toast.error(t("toast.budgetLoadFailed"));
         setGoalState(data?.monthly_goal ?? null);
       });
-  }, [userId]);
+  }, [userId, t]);
 
   const setGoal = async (value: number | null) => {
     if (!userId) return;
@@ -35,7 +37,7 @@ export function useBudgetGoal(userId: string | undefined): UseBudgetGoalReturn {
 
     if (error) {
       setGoalState(previous);
-      toast.error("Nie udało się zapisać celu miesięcznego.");
+      toast.error(t("toast.budgetSaveFailed"));
     }
   };
 

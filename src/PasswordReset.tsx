@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "./lib/supabase";
 import { friendlyAuthError } from "./lib/errors";
 import AuthLayout from "./AuthLayout";
 import "./styles/main.scss";
 
 export default function PasswordReset() {
+  const { t } = useTranslation();
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading]   = useState(false);
@@ -12,7 +14,7 @@ export default function PasswordReset() {
   const [done, setDone]         = useState(false);
 
   const handle = async () => {
-    if (password.length < 6) return setErr("Hasło musi mieć minimum 6 znaków.");
+    if (password.length < 6) return setErr(t("passwordReset.errPasswordLength"));
     setLoading(true);
     setErr("");
 
@@ -20,7 +22,7 @@ export default function PasswordReset() {
     const token  = params.get("token");
 
     if (!token) {
-      setErr("Brak tokenu resetowania. Spróbuj ponownie.");
+      setErr(t("passwordReset.errNoToken"));
       setLoading(false);
       return;
     }
@@ -31,7 +33,7 @@ export default function PasswordReset() {
     });
 
     if (verifyError) {
-      setErr("Link wygasł lub jest nieprawidłowy. Wyślij nowy link.");
+      setErr(t("passwordReset.errLinkExpired"));
       setLoading(false);
       return;
     }
@@ -48,15 +50,15 @@ export default function PasswordReset() {
 
   return (
     <AuthLayout>
-      <div className="auth-form__title">Nowe hasło</div>
-      <div className="auth-form__subtitle">Ustaw nowe hasło do swojego konta</div>
+      <div className="auth-form__title">{t("passwordReset.title")}</div>
+      <div className="auth-form__subtitle">{t("passwordReset.subtitle")}</div>
 
       {err  && <div className="alert alert--error">{err}</div>}
-      {done && <div className="alert alert--success">Hasło zostało zmienione! Możesz się teraz zalogować.</div>}
+      {done && <div className="alert alert--success">{t("passwordReset.success")}</div>}
 
       {!done && (
         <form onSubmit={e => { e.preventDefault(); handle(); }}>
-          <label className="form__label">Nowe hasło</label>
+          <label className="form__label">{t("passwordReset.label")}</label>
           <div className="form__input-wrap">
             <input
               type={showPass ? "text" : "password"}
@@ -76,7 +78,7 @@ export default function PasswordReset() {
           </div>
           <button type="submit" className="btn--primary" disabled={loading}>
             {loading && <span className="btn__spinner" />}
-            {loading ? "Zapisywanie…" : "Zmień hasło"}
+            {loading ? t("passwordReset.submitLoading") : t("passwordReset.submitIdle")}
           </button>
         </form>
       )}

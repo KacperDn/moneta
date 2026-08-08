@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "./lib/supabase";
 import { friendlyAuthError } from "./lib/errors";
 import AuthLayout from "./AuthLayout";
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export default function Auth({ onBack }: Props) {
+  const { t } = useTranslation();
   const [mode, setMode]         = useState<Mode>("login");
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
@@ -21,18 +23,18 @@ export default function Auth({ onBack }: Props) {
 
   const handle = async () => {
     setErr(""); setInfo("");
-    if (!email.trim()) return setErr("Wpisz adres email.");
+    if (!email.trim()) return setErr(t("auth.errEmailRequired"));
 
     if (mode === "reset") {
       setLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email);
       setLoading(false);
       if (error) return setErr(friendlyAuthError(error.message));
-      return setInfo("Link do resetowania hasła został wysłany na podany adres email.");
+      return setInfo(t("auth.infoResetSent"));
     }
 
-    if (!password.trim()) return setErr("Wpisz hasło.");
-    if (password.length < 6) return setErr("Hasło musi mieć minimum 6 znaków.");
+    if (!password.trim()) return setErr(t("auth.errPasswordRequired"));
+    if (password.length < 6) return setErr(t("auth.errPasswordLength"));
 
     setLoading(true);
     const { error } = mode === "login"
@@ -41,7 +43,7 @@ export default function Auth({ onBack }: Props) {
     setLoading(false);
 
     if (error) return setErr(friendlyAuthError(error.message));
-    if (mode === "register") setInfo("Konto utworzone! Możesz się teraz zalogować.");
+    if (mode === "register") setInfo(t("auth.infoRegisterSuccess"));
   };
 
   const switchMode = (m: Mode) => { setMode(m); setErr(""); setInfo(""); };
@@ -49,32 +51,32 @@ export default function Auth({ onBack }: Props) {
   return (
     <AuthLayout onBack={onBack}>
       <div className="auth-form__title">
-        {mode === "login" ? "Zaloguj się" : mode === "register" ? "Utwórz konto" : "Reset hasła"}
+        {mode === "login" ? t("auth.titleLogin") : mode === "register" ? t("auth.titleRegister") : t("auth.titleReset")}
       </div>
 
       {err  && <div className="alert alert--error">{err}</div>}
       {info && <div className="alert alert--success">{info}</div>}
 
       <form onSubmit={e => { e.preventDefault(); handle(); }} autoComplete="on">
-        <label className="form__label">Email</label>
+        <label className="form__label">{t("auth.emailLabel")}</label>
         <input
           type="email"
           name="email"
           autoComplete="email"
-          placeholder="twoj@email.com"
+          placeholder={t("auth.emailPlaceholder")}
           value={email}
           className="form__input"
           onChange={e => { setErr(""); setEmail(e.target.value); }}
         />
 
         {mode !== "reset" && <>
-          <label className="form__label">Hasło</label>
+          <label className="form__label">{t("auth.passwordLabel")}</label>
           <div className="form__input-wrap">
             <input
               type={showPass ? "text" : "password"}
               name="password"
               autoComplete={mode === "login" ? "current-password" : "new-password"}
-              placeholder="••••••••"
+              placeholder={t("auth.passwordPlaceholder")}
               value={password}
               className="form__input form__input--pass"
               onChange={e => { setErr(""); setPassword(e.target.value); }}
@@ -91,21 +93,21 @@ export default function Auth({ onBack }: Props) {
 
         <button type="submit" className="btn--primary" disabled={loading}>
           {loading && <span className="btn__spinner" />}
-          {loading ? "Ładowanie…" : mode === "login" ? "Zaloguj się" : mode === "register" ? "Utwórz konto" : "Wyślij link"}
+          {loading ? t("auth.submitLoading") : mode === "login" ? t("auth.submitLogin") : mode === "register" ? t("auth.submitRegister") : t("auth.submitReset")}
         </button>
       </form>
 
       <div className="auth-form__switch">
         {mode === "login" && <>
-          <button className="btn--ghost" onClick={() => switchMode("reset")}>Zapomniałem hasła</button>
+          <button className="btn--ghost" onClick={() => switchMode("reset")}>{t("auth.forgotPassword")}</button>
           <span style={{ margin: "0 8px", opacity: 0.3 }}>·</span>
-          <button className="btn--ghost" onClick={() => switchMode("register")}>Zarejestruj się</button>
+          <button className="btn--ghost" onClick={() => switchMode("register")}>{t("auth.createAccount")}</button>
         </>}
         {mode === "register" && (
-          <button className="btn--ghost" onClick={() => switchMode("login")}>Mam już konto</button>
+          <button className="btn--ghost" onClick={() => switchMode("login")}>{t("auth.haveAccount")}</button>
         )}
         {mode === "reset" && (
-          <button className="btn--ghost" onClick={() => switchMode("login")}>Wróć do logowania</button>
+          <button className="btn--ghost" onClick={() => switchMode("login")}>{t("auth.backToLogin")}</button>
         )}
       </div>
     </AuthLayout>

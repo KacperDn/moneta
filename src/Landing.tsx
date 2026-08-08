@@ -1,4 +1,5 @@
-import { PointerEvent, ReactNode, useEffect, useRef, useState } from "react";
+import { PointerEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { IconPieChart, IconTrendingUp, IconCloud, IconShield, IconSettings } from "./icons";
 import { Theme } from "./hooks/useTheme";
 import Settings from "./Settings";
@@ -12,15 +13,9 @@ interface Slide {
   desc: string;
 }
 
-const SLIDES: Slide[] = [
-  { icon: IconPieChart,   title: "Zobacz, gdzie mkną pieniądze", desc: "Automatyczny podział na kategorie z przejrzystymi wykresami." },
-  { icon: IconTrendingUp, title: "Śledź trendy miesiąc po miesiącu", desc: "Porównuj miesiące i zauważaj wzorce w wydatkach." },
-  { icon: IconCloud,      title: "Twoje dane zawsze przy Tobie", desc: "Dostęp z telefonu i komputera — zawsze zsynchronizowane." },
-  { icon: IconShield,     title: "Prywatność na pierwszym miejscu", desc: "Twoje dane widzisz tylko Ty, zabezpieczone na poziomie bazy." },
-];
+const SLIDE_ICONS = [IconPieChart, IconTrendingUp, IconCloud, IconShield];
 
-function offsetOf(i: number, active: number) {
-  const n = SLIDES.length;
+function offsetOf(i: number, active: number, n: number) {
   const wrapped = ((i - active) % n + n) % n;
   return wrapped > n / 2 ? wrapped - n : wrapped;
 }
@@ -39,15 +34,21 @@ interface Props {
 }
 
 export default function Landing({ theme, onThemeChange, onGetStarted }: Props) {
+  const { t } = useTranslation();
   const [showSettings, setShowSettings] = useState(false);
   const [active, setActive] = useState(0);
   const dragState = useRef({ startX: 0, moved: false });
   const suppressClick = useRef(false);
 
+  const SLIDES: Slide[] = useMemo(() => {
+    const translated = t("landing.slides", { returnObjects: true }) as { title: string; desc: string }[];
+    return translated.map((s, i) => ({ icon: SLIDE_ICONS[i], title: s.title, desc: s.desc }));
+  }, [t]);
+
   useEffect(() => {
     const id = setTimeout(() => setActive(a => (a + 1) % SLIDES.length), 5000);
     return () => clearTimeout(id);
-  }, [active]);
+  }, [active, SLIDES.length]);
 
   const next = () => setActive(a => (a + 1) % SLIDES.length);
   const prev = () => setActive(a => (a - 1 + SLIDES.length) % SLIDES.length);
@@ -98,15 +99,15 @@ export default function Landing({ theme, onThemeChange, onGetStarted }: Props) {
           type="button"
           className="header__settings"
           onClick={() => setShowSettings(true)}
-          aria-label="Ustawienia"
+          aria-label={t("landing.settingsAria")}
         >
           {IconSettings}
         </button>
       </header>
 
       <main className="landing__hero">
-        <h1 className="landing__title">Zobacz, gdzie naprawdę idą Twoje pieniądze</h1>
-        <p className="landing__subtitle">Proste śledzenie wydatków, przejrzyste wykresy i cele budżetowe — wszystko w jednym miejscu.</p>
+        <h1 className="landing__title">{t("landing.title")}</h1>
+        <p className="landing__subtitle">{t("landing.subtitle")}</p>
 
         <div
           className="carousel"
@@ -115,7 +116,7 @@ export default function Landing({ theme, onThemeChange, onGetStarted }: Props) {
           onPointerUp={onPointerUp}
         >
           {SLIDES.map((s, i) => {
-            const offset = offsetOf(i, active);
+            const offset = offsetOf(i, active, SLIDES.length);
             const cls = offsetClass(offset);
             const interactive = cls === "center" || cls === "left" || cls === "right";
             return (
@@ -144,17 +145,17 @@ export default function Landing({ theme, onThemeChange, onGetStarted }: Props) {
               type="button"
               className={`carousel__dot${i === active ? " carousel__dot--active" : ""}`}
               onClick={() => setActive(i)}
-              aria-label={`Karta ${i + 1}`}
+              aria-label={t("landing.cardAria", { n: i + 1 })}
             />
           ))}
         </div>
 
         <button type="button" className="btn--primary landing__cta" onClick={onGetStarted}>
-          Zaloguj się
+          {t("landing.cta")}
         </button>
       </main>
 
-      <footer className="landing__footer">moneta · aplikacja do śledzenia wydatków</footer>
+      <footer className="landing__footer">{t("landing.footer")}</footer>
     </div>
   );
 }

@@ -1,0 +1,195 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "close": "Close",
+    "loading": "Loading…"
+  },
+  "categories": {
+    "Jedzenie": "Food",
+    "Transport": "Transport",
+    "Rozrywka": "Entertainment",
+    "Rachunki": "Bills",
+    "Zdrowie": "Health",
+    "Ubrania": "Clothing",
+    "Edukacja": "Education",
+    "Inne": "Other"
+  },
+  "months": [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ],
+  "landing": {
+    "title": "See where your money really goes",
+    "subtitle": "Simple expense tracking, clear charts and budget goals — all in one place.",
+    "cta": "Sign in",
+    "footer": "moneta · expense tracking app",
+    "settingsAria": "Settings",
+    "cardAria": "Card {{n}}",
+    "slides": [
+      { "title": "See where your money's going", "desc": "Automatic category breakdown with clear charts." },
+      { "title": "Track trends month after month", "desc": "Compare months and spot patterns in your spending." },
+      { "title": "Your data, always with you", "desc": "Access from your phone and computer — always in sync." },
+      { "title": "Privacy comes first", "desc": "Only you can see your data, secured at the database level." }
+    ]
+  },
+  "auth": {
+    "titleLogin": "Sign in",
+    "titleRegister": "Create account",
+    "titleReset": "Reset password",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "emailPlaceholder": "you@email.com",
+    "passwordPlaceholder": "••••••••",
+    "errEmailRequired": "Enter your email address.",
+    "errPasswordRequired": "Enter your password.",
+    "errPasswordLength": "Password must be at least 6 characters.",
+    "infoResetSent": "A password reset link has been sent to the provided email address.",
+    "infoRegisterSuccess": "Account created! You can now sign in.",
+    "submitLoading": "Loading…",
+    "submitLogin": "Sign in",
+    "submitRegister": "Create account",
+    "submitReset": "Send link",
+    "forgotPassword": "Forgot password",
+    "createAccount": "Sign up",
+    "haveAccount": "I already have an account",
+    "backToLogin": "Back to sign in"
+  },
+  "passwordReset": {
+    "title": "New password",
+    "subtitle": "Set a new password for your account",
+    "label": "New password",
+    "errPasswordLength": "Password must be at least 6 characters.",
+    "errNoToken": "Missing reset token. Please try again.",
+    "errLinkExpired": "Link expired or invalid. Send a new link.",
+    "success": "Password changed! You can now sign in.",
+    "submitLoading": "Saving…",
+    "submitIdle": "Change password"
+  },
+  "authErrors": {
+    "invalidCredentials": "Incorrect email or password.",
+    "emailNotConfirmed": "Confirm your email address to sign in.",
+    "userExists": "An account with this email already exists.",
+    "passwordLength": "Password must be at least 6 characters.",
+    "rateLimit": "Too many attempts. Please try again shortly.",
+    "networkError": "No connection to the server. Check your internet.",
+    "generic": "Something went wrong. Please try again shortly."
+  },
+  "errorBoundary": {
+    "message": "Something went wrong. Refresh the page or try again later."
+  },
+  "settings": {
+    "title": "Settings",
+    "backAria": "Back",
+    "groupAccount": "Account",
+    "email": "Email",
+    "groupAppearance": "Appearance and language",
+    "theme": "Theme",
+    "themeDark": "Dark",
+    "themeLight": "Light",
+    "language": "Language",
+    "languagePolish": "Polski",
+    "languageEnglish": "English",
+    "groupExpenses": "Expenses",
+    "categories": "Categories",
+    "comingSoon": "coming soon",
+    "groupLegal": "Legal",
+    "privacyPolicy": "Privacy policy",
+    "logout": "Sign out"
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "updated": "Last updated: August 8, 2026",
+    "s1_heading": "1. Data controller",
+    "s1_body": "The data controller is the author of the moneta app, Kacper Daniluk. Contact: <a>{{email}}</a>.",
+    "s2_heading": "2. What data we collect",
+    "s2_body": "Email address and password — during registration and sign-in (the password is stored encrypted by Supabase Auth, never as plain text). Expense data you enter yourself: description, category, amount, date. An optional budget goal — a monthly spending limit.\n\nWe don't collect any other data — we never ask for your name, phone number, address, or payment details.",
+    "s3_heading": "3. What we use the data for",
+    "s3_body": "Solely to run the app itself — signing you in, and displaying your expenses, charts and statistics. We don't use your data for any other purpose. There are no ads, no data sales, no profiling.",
+    "s4_heading": "4. How we store the data",
+    "s4_body": "Data is stored in a PostgreSQL database provided by Supabase, with Row Level Security enabled — at the database level you only ever have access to your own data. The connection to the database is made over HTTPS.",
+    "s5_heading": "5. Sharing data",
+    "s5_body": "We do not share, sell, or rent your data to any third parties. The app does not use any analytics or advertising tools.",
+    "s6_heading": "6. Cookies and localStorage",
+    "s6_body": "The app does not use cookies for tracking. In your browser's local storage we only save your sign-in session token and your chosen theme (light/dark). None of this data is sent to third parties.",
+    "s7_heading": "7. Your rights",
+    "s7_body": "You have the right to access, correct, and delete your data. You can edit and delete expenses yourself within the app. If you want to delete your entire account along with your data, write to the contact address below — we'll remove it as soon as possible.",
+    "s8_heading": "8. Contact",
+    "s8_body": "For questions about your data, write to: <a>{{email}}</a>"
+  },
+  "toast": {
+    "fetchFailed": "Couldn't load data. Check your connection.",
+    "expenseSaveFailed": "Couldn't save the expense.",
+    "expenseAdded": "Expense added!",
+    "expenseDeleteFailed": "Couldn't delete the expense.",
+    "expenseDeleted": "Expense deleted.",
+    "budgetLoadFailed": "Couldn't load the monthly goal.",
+    "budgetSaveFailed": "Couldn't save the monthly goal."
+  },
+  "transactionsCount_one": "{{count}} transaction",
+  "transactionsCount_other": "{{count}} transactions",
+  "monthsDataCount_one": "You have data from {{count}} month",
+  "monthsDataCount_other": "You have data from {{count}} months",
+  "dashboard": {
+    "navOverview": "Overview",
+    "navAdd": "Add",
+    "navHistory": "History",
+    "settingsAria": "Settings",
+    "editGoal": "Edit goal",
+    "setGoal": "+ Set monthly goal",
+    "emptyTitle": "No expenses this month",
+    "emptySubtitle": "Add your first expense to see a category breakdown and charts.",
+    "emptyCta": "Add expense",
+    "breakdownTitle": "Breakdown",
+    "categoriesTitle": "Categories",
+    "categoriesInfoAria": "How does this work?",
+    "allHidden": "All categories are hidden — click one below to bring it back.",
+    "catHintTitle": "Filtering categories",
+    "catHintBody": "Click a category in the list to temporarily exclude it from the breakdown — percentages recalculate from what's left visible. Click a category on the chart to see its expenses.",
+    "catHintGotIt": "Got it",
+    "dayByDayTitle": "Day by day",
+    "tooltipExpenses": "Expenses",
+    "monthlyTrendTitle": "Monthly trends",
+    "tooltipSum": "Total",
+    "trendEmptyTitle": "The chart will appear once you have expenses from at least 2 months",
+    "vsLastMonth": "vs last month",
+    "avgMonthly": "monthly average",
+    "mostExpensive": "most expensive",
+    "cheapest": "cheapest"
+  },
+  "drilldown": {
+    "closeAria": "Close",
+    "viewInHistory": "View in history →"
+  },
+  "confirmDelete": {
+    "title": "Delete expense?",
+    "body": "This action cannot be undone."
+  },
+  "budgetGoal": {
+    "title": "Monthly goal",
+    "body": "Set a spending limit to track your progress this month.",
+    "placeholder": "e.g. 2000",
+    "removeGoal": "Remove goal"
+  },
+  "form": {
+    "title": "New expense",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "e.g. Groceries, Netflix…",
+    "amountLabel": "Amount (PLN)",
+    "amountPlaceholder": "0.00",
+    "categoryLabel": "Category",
+    "dateLabel": "Date",
+    "submitLoading": "Saving…",
+    "submitIdle": "Add expense",
+    "errDescription": "Enter a description for the expense.",
+    "errAmount": "Enter a valid amount."
+  },
+  "history": {
+    "title": "History",
+    "filterAll": "All",
+    "emptyTitle": "No expenses",
+    "emptySubFiltered": "No expenses in this category this month.",
+    "emptySubAll": "History for this month is empty."
+  }
+}

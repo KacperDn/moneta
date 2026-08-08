@@ -1,4 +1,5 @@
 import { Component, ReactNode } from "react";
+import i18n from "./i18n";
 
 interface Props {
   children: ReactNode;
@@ -24,7 +25,7 @@ export default class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="app app--center">
           <div className="app__loading">
-            Coś poszło nie tak. Odśwież stronę lub spróbuj później.
+            {i18n.t("errorBoundary.message")}
           </div>
         </div>
       );
