@@ -3,23 +3,44 @@ import { useTranslation } from "react-i18next";
 import { IconChevronLeft } from "./icons";
 import { Theme } from "./hooks/useTheme";
 import { useLanguage } from "./hooks/useLanguage";
+import { UserCategory } from "./types";
 import PrivacyPolicy from "./PrivacyPolicy";
+import CategoryManager from "./CategoryManager";
 
 interface Props {
   theme: Theme;
   onThemeChange: (theme: Theme) => void;
   onBack: () => void;
   email?: string;
+  categories?: UserCategory[];
+  addCategory?: (name: string, icon: string, color: string) => Promise<boolean>;
+  updateCategory?: (name: string, changes: Partial<Pick<UserCategory, "icon" | "color" | "hidden">>) => Promise<boolean>;
+  deleteCategory?: (name: string) => Promise<boolean>;
   onLogout?: () => void;
 }
 
-export default function Settings({ email, theme, onThemeChange, onBack, onLogout }: Props) {
+export default function Settings({
+  email, categories, addCategory, updateCategory, deleteCategory, theme, onThemeChange, onBack, onLogout,
+}: Props) {
   const { t } = useTranslation();
   const { language, setLanguage } = useLanguage();
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showCategories, setShowCategories] = useState(false);
 
   if (showPrivacy) {
     return <PrivacyPolicy onBack={() => setShowPrivacy(false)} />;
+  }
+
+  if (showCategories && categories && addCategory && updateCategory && deleteCategory) {
+    return (
+      <CategoryManager
+        categories={categories}
+        addCategory={addCategory}
+        updateCategory={updateCategory}
+        deleteCategory={deleteCategory}
+        onBack={() => setShowCategories(false)}
+      />
+    );
   }
 
   return (
@@ -91,14 +112,14 @@ export default function Settings({ email, theme, onThemeChange, onBack, onLogout
           </div>
         </div>
 
-        {email && (
+        {email && categories && (
           <div className="settings__group">
             <div className="settings__group-title">{t("settings.groupExpenses")}</div>
             <div className="card card--list">
-              <div className="settings__row">
+              <button type="button" className="settings__row settings__row--link" onClick={() => setShowCategories(true)}>
                 <span>{t("settings.categories")}</span>
-                <span className="settings__row-value"><span className="settings__badge">{t("settings.comingSoon")}</span></span>
-              </div>
+                <span className="settings__row-chevron">{IconChevronLeft}</span>
+              </button>
             </div>
           </div>
         )}

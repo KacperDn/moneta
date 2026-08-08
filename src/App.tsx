@@ -6,13 +6,16 @@ import { useExpenses } from "./hooks/useExpenses";
 import { useCountUp } from "./hooks/useCountUp";
 import { useBudgetGoal } from "./hooks/useBudgetGoal";
 import { useTheme } from "./hooks/useTheme";
-import { CATS, fmt, getCat } from "./constants";
+import { useCategories } from "./hooks/useCategories";
+import { fmt } from "./constants";
 import { ExpenseForm } from "./types";
 import { IconPieChart, IconSettings, IconInfo } from "./icons";
+import { getCategoryIcon } from "./categoryIcons";
 import Auth from "./Auth";
 import Landing from "./Landing";
 import PasswordReset from "./PasswordReset";
 import Settings from "./Settings";
+import CategoryManager from "./CategoryManager";
 import "./styles/main.scss";
 
 const TABS = ["dash", "add", "list"] as const;
@@ -37,6 +40,7 @@ export default function App() {
   const { session, ready, isRecovery, logout } = useAuth();
   const { loading, saving, add, remove, filtered, byMonth } = useExpenses(session);
   const { goal, setGoal } = useBudgetGoal(session?.user.id);
+  const { categories, addCategory, updateCategory, deleteCategory } = useCategories(session?.user.id);
   const { theme, setTheme } = useTheme();
   const [showLogin, setShowLogin] = useState(false);
 
@@ -49,6 +53,7 @@ export default function App() {
   const [budgetOpen, setBudgetOpen] = useState(false);
   const [budgetInput, setBudgetInput] = useState("");
   const [showSettings, setShowSettings] = useState(false);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [hiddenCats, setHiddenCats] = useState<Set<string>>(new Set());
   const [catHintOpen, setCatHintOpen] = useState(false);
   const [catFilter, setCatFilter] = useState<string | null>(null);
@@ -64,6 +69,7 @@ export default function App() {
     if (!session) {
       setShowLogin(false);
       setShowSettings(false);
+      setShowCategoryManager(false);
     }
   }, [session]);
 
@@ -105,13 +111,18 @@ export default function App() {
     setBudgetOpen(false);
   };
 
+  const getUserCat = (name: string) =>
+    categories.find(c => c.name.toLowerCase() === name.toLowerCase())
+    ?? categories.find(c => c.name === "Inne")
+    ?? categories[0];
+
   const byCat = useMemo(() => {
     const m: Record<string, number> = {};
     monthExpenses.forEach(e => { m[e.cat] = (m[e.cat] || 0) + parseFloat(String(e.amount)); });
     return Object.entries(m)
-      .map(([name, value]) => ({ value, ...getCat(name) }))
+      .map(([name, value]) => ({ value, ...getUserCat(name) }))
       .sort((a, b) => b.value - a.value);
-  }, [monthExpenses]);
+  }, [monthExpenses, categories]);
 
   const visibleCats = useMemo(() => byCat.filter(c => !hiddenCats.has(c.name)), [byCat, hiddenCats]);
   const visibleTotal = useMemo(() => visibleCats.reduce((s, c) => s + c.value, 0), [visibleCats]);
@@ -164,10 +175,25 @@ export default function App() {
     return (
       <Settings
         email={session.user.email!}
+        categories={categories}
+        addCategory={addCategory}
+        updateCategory={updateCategory}
+        deleteCategory={deleteCategory}
         theme={theme}
         onThemeChange={setTheme}
         onBack={() => setShowSettings(false)}
         onLogout={logout}
+      />
+    );
+  }
+  if (showCategoryManager) {
+    return (
+      <CategoryManager
+        categories={categories}
+        addCategory={addCategory}
+        updateCategory={updateCategory}
+        deleteCategory={deleteCategory}
+        onBack={() => setShowCategoryManager(false)}
       />
     );
   }
@@ -233,14 +259,14 @@ export default function App() {
 
       {/* Category drill-down dialog */}
       {drilldownCat && (() => {
-        const c = getCat(drilldownCat);
+        const c = getUserCat(drilldownCat);
         const items = monthExpenses.filter(e => e.cat === drilldownCat);
         const catTotal = items.reduce((s, e) => s + parseFloat(String(e.amount)), 0);
         return (
           <div className="confirm__overlay" onClick={() => setDrilldownCat(null)}>
             <div className="drilldown__box" onClick={e => e.stopPropagation()}>
               <div className="drilldown__header">
-                <div className="drilldown__icon" style={{ background: `${c.color}22` }}>{c.icon}</div>
+                <div className="drilldown__icon" style={{ background: `${c.color}22`, color: c.color }}>{getCategoryIcon(c.icon)}</div>
                 <div className="drilldown__heading">
                   <div className="drilldown__title">{catLabel(c.name)}</div>
                   <div className="drilldown__sub">{fmt(catTotal)} zł · {t("transactionsCount", { count: items.length })}</div>
@@ -377,7 +403,7 @@ export default function App() {
                         <div className="cat-bar__header">
                           <div className="cat-bar__name">
                             <span className="cat-bar__dot" style={{ background: hidden ? "transparent" : c.color, borderColor: c.color }} />
-                            <span className="cat-bar__icon">{c.icon}</span>
+                            <span className="cat-bar__icon" style={{ color: c.color }}>{getCategoryIcon(c.icon)}</span>
                             {catLabel(c.name)}
                           </div>
                           <div className="cat-bar__values">
@@ -492,12 +518,17 @@ export default function App() {
           <input className="form__input" type="number" placeholder={t("form.amountPlaceholder")} value={form.amount}
             onChange={e => { setErr(""); setForm(f => ({ ...f, amount: e.target.value })); }} />
 
-          <label className="form__label">{t("form.categoryLabel")}</label>
+          <label className="form__label form__label--row">
+            {t("form.categoryLabel")}
+            <button type="button" className="form__manage-cats" onClick={() => setShowCategoryManager(true)}>
+              {t("form.manageCategories")}
+            </button>
+          </label>
           <div className="form__cat-grid">
-            {CATS.map(c => (
+            {categories.filter(c => !c.hidden).map(c => (
               <button key={c.name} className={`form__cat-btn${form.cat === c.name ? " form__cat-btn--active" : ""}`}
                 onClick={() => setForm(f => ({ ...f, cat: c.name }))}>
-                <span className="form__cat-btn__icon">{c.icon}</span>{catLabel(c.name)}
+                <span className="form__cat-btn__icon" style={{ color: c.color }}>{getCategoryIcon(c.icon)}</span>{catLabel(c.name)}
               </button>
             ))}
           </div>
@@ -533,7 +564,7 @@ export default function App() {
                   className={`filter-pill${catFilter === c.name ? " filter-pill--active" : ""}`}
                   onClick={() => setCatFilter(catFilter === c.name ? null : c.name)}
                 >
-                  <span className="filter-pill__icon">{c.icon}</span>{catLabel(c.name)}
+                  <span className="filter-pill__icon" style={{ color: c.color }}>{getCategoryIcon(c.icon)}</span>{catLabel(c.name)}
                 </button>
               ))}
             </div>
@@ -552,10 +583,10 @@ export default function App() {
             )
             : <div className="card card--list">
               {filteredExpenses.map(e => {
-                const c = getCat(e.cat);
+                const c = getUserCat(e.cat);
                 return (
                   <div key={e.id} className="list__row">
-                    <div className="list__icon" style={{ background: `${c.color}22` }}>{c.icon}</div>
+                    <div className="list__icon" style={{ background: `${c.color}22`, color: c.color }}>{getCategoryIcon(c.icon)}</div>
                     <div className="list__info">
                       <div className="list__desc">{e.description}</div>
                       <div className="list__meta">{catLabel(c.name)} · {e.date}</div>

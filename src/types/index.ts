@@ -14,6 +14,11 @@ export interface Category {
   color: string;
 }
 
+export interface UserCategory extends Category {
+  hidden: boolean;
+  isDefault: boolean;
+}
+
 export interface MonthSummary {
   key: string;
   label: string;

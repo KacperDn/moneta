@@ -30,6 +30,7 @@
     "slides": [
       { "title": "See where your money's going", "desc": "Automatic category breakdown with clear charts." },
       { "title": "Track trends month after month", "desc": "Compare months and spot patterns in your spending." },
+      { "title": "Make it yours", "desc": "Custom categories, icons, colors, theme and language — it's your app." },
       { "title": "Your data, always with you", "desc": "Access from your phone and computer — always in sync." },
       { "title": "Privacy comes first", "desc": "Only you can see your data, secured at the database level." }
     ]
@@ -93,7 +94,6 @@
     "languageEnglish": "English",
     "groupExpenses": "Expenses",
     "categories": "Categories",
-    "comingSoon": "coming soon",
     "groupLegal": "Legal",
     "privacyPolicy": "Privacy policy",
     "logout": "Sign out"
@@ -125,7 +125,14 @@
     "expenseDeleteFailed": "Couldn't delete the expense.",
     "expenseDeleted": "Expense deleted.",
     "budgetLoadFailed": "Couldn't load the monthly goal.",
-    "budgetSaveFailed": "Couldn't save the monthly goal."
+    "budgetSaveFailed": "Couldn't save the monthly goal.",
+    "categoriesLoadFailed": "Couldn't load categories.",
+    "categoryNameTaken": "A category with this name already exists.",
+    "categorySaveFailed": "Couldn't save the category.",
+    "categoryHasExpenses": "Can't delete — this category has expenses assigned to it.",
+    "categoryDeleteFailed": "Couldn't delete the category.",
+    "categoryAdded": "Category added!",
+    "categoryDeleted": "Category deleted."
   },
   "transactionsCount_one": "{{count}} transaction",
   "transactionsCount_other": "{{count}} transactions",
@@ -179,6 +186,7 @@
     "amountLabel": "Amount (PLN)",
     "amountPlaceholder": "0.00",
     "categoryLabel": "Category",
+    "manageCategories": "Manage categories",
     "dateLabel": "Date",
     "submitLoading": "Saving…",
     "submitIdle": "Add expense",
@@ -191,5 +199,25 @@
     "emptyTitle": "No expenses",
     "emptySubFiltered": "No expenses in this category this month.",
     "emptySubAll": "History for this month is empty."
+  },
+  "categoryManager": {
+    "title": "Categories",
+    "addButton": "+ Add category",
+    "defaultBadge": "default",
+    "hiddenBadge": "hidden",
+    "hideAria": "Hide category",
+    "showAria": "Show category",
+    "newTitle": "New category",
+    "editTitle": "Edit category",
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. Coffee",
+    "iconLabel": "Icon",
+    "colorLabel": "Color",
+    "visibility": "Visibility",
+    "visibilityShown": "Shown",
+    "visibilityHidden": "Hidden",
+    "deleteButton": "Delete category",
+    "deleteBlockedHint": "Can't delete — this category has expenses assigned to it.",
+    "errNameRequired": "Enter a category name."
   }
 }

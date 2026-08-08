@@ -9,14 +9,19 @@ Personal finance tracker — track your monthly expenses, visualize spending hab
 
 ## Features
 
--  Monthly spending breakdown with donut chart
+-  Monthly spending breakdown with donut chart — click a category to drill into its individual expenses
 -  Multi-month trend chart with % change indicator
--  8 expense categories with daily bar chart
+-  Custom expense categories — rename the icon/color of any default category, add your own, or hide any of them without losing historical data
+-  Category filtering in the list view and a temporary "exclude from breakdown" toggle in the chart view
+-  Daily bar chart for the current month
+-  Dark and light theme, persisted per device
+-  Polish and English interface, switchable in Settings
+-  Marketing landing page with a coverflow-style feature carousel, separate from a simplified sign-in screen
+-  In-app privacy policy
 -  Email/password authentication with persistent sessions, plus email-based password reset
 -  Cloud database — data syncs across all devices
 -  Mobile-first responsive design, installable as a PWA (works offline for the app shell)
 -  Optional monthly budget goal with a live progress bar, synced via Supabase
--  Animated, split-screen auth experience with a rotating feature card stack
 -  User-friendly error handling — backend/config errors never leak to the UI, with a top-level crash fallback
 -  Toast notifications for every action (add/delete/errors)
 -  CI/CD — every push to `main` is linted, built, and deployed automatically
@@ -27,7 +32,9 @@ Personal finance tracker — track your monthly expenses, visualize spending hab
 |---|---|
 | Frontend | React 19, TypeScript, Vite |
 | Styles | SCSS (BEM methodology) |
+| Icons | lucide-react |
 | Charts | Recharts |
+| i18n | i18next / react-i18next (Polish + English) |
 | Notifications | react-hot-toast |
 | PWA | vite-plugin-pwa (installable, offline app shell) |
 | Database | Supabase (PostgreSQL) |
@@ -51,31 +58,44 @@ No custom backend server. The React app communicates directly with Supabase via 
 
 Every push to `main` triggers a GitHub Actions workflow ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) that lints, builds, and publishes `dist/` to the `gh-pages` branch — no manual deploy step.
 
-The `budgets` table (used for the monthly goal feature) is defined in [supabase-budgets-migration.sql](supabase-budgets-migration.sql) — run it once in the Supabase SQL Editor for a new project.
+Two tables back the optional/customizable features — run both once in the Supabase SQL Editor for a new project:
+- [supabase-budgets-migration.sql](supabase-budgets-migration.sql) — the monthly budget goal
+- [supabase-categories-migration.sql](supabase-categories-migration.sql) — per-user category overrides (icon/color/hidden) and custom categories
 
 ## Project Structure
 
 ```
 src/
 ├── hooks/
-│   ├── useAuth.ts        # session management
-│   ├── useExpenses.ts    # data fetching and mutations
-│   ├── useCountUp.ts     # animated number count-up
-│   └── useBudgetGoal.ts  # monthly budget goal (Supabase)
+│   ├── useAuth.ts         # session management
+│   ├── useExpenses.ts     # data fetching and mutations
+│   ├── useCategories.ts   # merges default + custom categories (Supabase)
+│   ├── useBudgetGoal.ts   # monthly budget goal (Supabase)
+│   ├── useTheme.ts        # dark/light theme, persisted
+│   ├── useLanguage.ts     # PL/EN language, persisted
+│   └── useCountUp.ts      # animated number count-up
+├── i18n/
+│   ├── index.ts           # i18next init
+│   └── locales/           # pl.json, en.json
 ├── lib/
-│   ├── supabase.ts       # Supabase client
-│   └── errors.ts         # maps Supabase errors to user-friendly messages
+│   ├── supabase.ts        # Supabase client
+│   └── errors.ts          # maps Supabase errors to user-friendly messages
 ├── styles/
-│   └── main.scss         # all styles (BEM, SCSS variables)
+│   └── main.scss          # all styles (BEM, SCSS variables)
 ├── types/
 │   └── index.ts          # TypeScript interfaces
-├── constants.ts          # categories, months, helpers
-├── icons.tsx             # shared inline SVG icon set
-├── App.tsx               # main dashboard / add / history views
-├── Auth.tsx              # login / register / reset-request screen
-├── AuthLayout.tsx         # shared split-screen layout for auth screens
+├── constants.ts           # default categories, formatting helpers
+├── icons.tsx              # shared lucide-react icon set
+├── categoryIcons.tsx      # icon picker resolver for expense categories
+├── App.tsx                # main dashboard / add / history views
+├── Landing.tsx            # marketing page + feature carousel (pre-login)
+├── Auth.tsx               # login / register / reset-request screen
+├── AuthLayout.tsx         # shared layout for auth screens
 ├── PasswordReset.tsx      # set-new-password screen (from email link)
-└── ErrorBoundary.tsx      # top-level crash fallback
+├── Settings.tsx           # theme, language, categories, privacy policy, logout
+├── CategoryManager.tsx     # add/edit/hide/delete expense categories
+├── PrivacyPolicy.tsx       # in-app privacy policy
+└── ErrorBoundary.tsx       # top-level crash fallback
 ```
 
 ## License

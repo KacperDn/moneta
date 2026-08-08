@@ -1,6 +1,6 @@
 import { PointerEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { IconPieChart, IconTrendingUp, IconCloud, IconShield, IconSettings } from "./icons";
+import { IconPieChart, IconTrendingUp, IconCloud, IconShield, IconPalette, IconSettings } from "./icons";
 import { Theme } from "./hooks/useTheme";
 import Settings from "./Settings";
 
@@ -13,7 +13,7 @@ interface Slide {
   desc: string;
 }
 
-const SLIDE_ICONS = [IconPieChart, IconTrendingUp, IconCloud, IconShield];
+const SLIDE_ICONS = [IconPieChart, IconTrendingUp, IconPalette, IconCloud, IconShield];
 
 function offsetOf(i: number, active: number, n: number) {
   const wrapped = ((i - active) % n + n) % n;

@@ -140,6 +140,16 @@ html, body, #root {
   min-height: 100%;
   background: $bg;
   overflow-x: hidden;
+  font-family: $font;
+}
+
+// iOS Safari treats tappable elements as needing a first tap to trigger
+// :hover before a second tap registers as a click. touch-action: manipulation
+// is the standards-based fix — more reliable than the old empty-touchstart-
+// listener hack, which doesn't catch every element every time.
+button, [role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -217,7 +227,6 @@ input:-webkit-autofill:focus {
 }
 
 .app {
-  font-family: $font;
   background: $bg;
   min-height: 100vh;
   color: $text;
@@ -633,7 +642,8 @@ input:-webkit-autofill:focus {
 }
 
 .cat-bar__icon {
-  font-size: 14px;
+  display: flex;
+  svg { width: 14px; height: 14px; }
 }
 
 .cat-bar__values {
@@ -684,6 +694,26 @@ input:-webkit-autofill:focus {
   text-transform: uppercase;
   margin-bottom: 7px;
   font-weight: 500;
+}
+
+.form__label--row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.form__manage-cats {
+  background: none;
+  border: none;
+  color: $accent-soft;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover { text-decoration: underline; }
 }
 
 .form__input {
@@ -799,8 +829,9 @@ input:-webkit-autofill:focus {
 }
 
 .form__cat-btn__icon {
-  font-size: 14px;
+  display: flex;
   transition: transform 0.25s $ease;
+  svg { width: 14px; height: 14px; }
 }
 
 .form__cat-btn--active .form__cat-btn__icon {
@@ -917,8 +948,8 @@ input:-webkit-autofill:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
   flex-shrink: 0;
+  svg { width: 16px; height: 16px; }
 }
 
 .list__info {
@@ -1016,7 +1047,8 @@ input:-webkit-autofill:focus {
 }
 
 .filter-pill__icon {
-  font-size: 13px;
+  display: flex;
+  svg { width: 13px; height: 13px; }
 }
 
 .filter-pill--active {
@@ -1162,8 +1194,8 @@ input:-webkit-autofill:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
   flex-shrink: 0;
+  svg { width: 18px; height: 18px; }
 }
 
 .drilldown__heading {
@@ -1324,7 +1356,6 @@ input:-webkit-autofill:focus {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: $font;
   background: $bg;
   color: $text;
 }
@@ -1423,7 +1454,6 @@ input:-webkit-autofill:focus {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: $font;
   background: $bg;
   color: $text;
 }
@@ -1676,7 +1706,6 @@ input:-webkit-autofill:focus {
 .settings {
   position: relative;
   overflow: hidden;
-  font-family: $font;
   background: $bg;
   min-height: 100vh;
   color: $text;
@@ -1873,4 +1902,135 @@ input:-webkit-autofill:focus {
   &:hover {
     text-decoration-color: currentColor;
   }
+}
+
+.catmgr__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border-bottom: 1px solid $border;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.15s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: $surface-hover; }
+}
+
+.catmgr__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  svg { width: 16px; height: 16px; }
+}
+
+.catmgr__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.catmgr__name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: $text;
+}
+
+.catmgr__hidden-label {
+  font-size: 12px;
+  color: $muted;
+  margin-top: 2px;
+}
+
+.catmgr__hide-btn {
+  background: none;
+  border: none;
+  color: $muted;
+  cursor: pointer;
+  padding: 6px;
+  display: inline-flex;
+  flex-shrink: 0;
+  transition: color 0.15s;
+
+  svg { width: 18px; height: 18px; }
+
+  &:hover { color: $text; }
+}
+
+.catmgr__add {
+  margin-top: 14px;
+}
+
+.catmgr__editor {
+  background: $card-solid;
+  border: 1px solid $border-mid;
+  border-radius: $radius-xl;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: popIn 0.28s $ease;
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.6);
+}
+
+.catmgr__icon-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.catmgr__icon-btn {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $surface;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  color: $muted;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  svg { width: 16px; height: 16px; }
+
+  &:hover { border-color: $border-mid; color: $text; }
+}
+
+.catmgr__icon-btn--active {
+  background: $surface-hover;
+}
+
+.catmgr__color-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.catmgr__color-btn {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+
+  &:hover { transform: scale(1.1); }
+}
+
+.catmgr__color-btn--active {
+  border-color: $text;
+}
+
+.catmgr__visibility-row {
+  padding: 14px 0;
+  border-bottom: none;
+  margin-bottom: 6px;
 }

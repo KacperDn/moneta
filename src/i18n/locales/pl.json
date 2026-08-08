@@ -30,6 +30,7 @@
     "slides": [
       { "title": "Zobacz, gdzie mkną pieniądze", "desc": "Automatyczny podział na kategorie z przejrzystymi wykresami." },
       { "title": "Śledź trendy miesiąc po miesiącu", "desc": "Porównuj miesiące i zauważaj wzorce w wydatkach." },
+      { "title": "Dostosuj wszystko do siebie", "desc": "Własne kategorie, ikony, kolory, motyw i język — to Twoja aplikacja." },
       { "title": "Twoje dane zawsze przy Tobie", "desc": "Dostęp z telefonu i komputera — zawsze zsynchronizowane." },
       { "title": "Prywatność na pierwszym miejscu", "desc": "Twoje dane widzisz tylko Ty, zabezpieczone na poziomie bazy." }
     ]
@@ -93,7 +94,6 @@
     "languageEnglish": "English",
     "groupExpenses": "Wydatki",
     "categories": "Kategorie",
-    "comingSoon": "wkrótce",
     "groupLegal": "Prawne",
     "privacyPolicy": "Polityka prywatności",
     "logout": "Wyloguj się"
@@ -125,7 +125,14 @@
     "expenseDeleteFailed": "Nie udało się usunąć wydatku.",
     "expenseDeleted": "Wydatek usunięty.",
     "budgetLoadFailed": "Nie udało się wczytać celu miesięcznego.",
-    "budgetSaveFailed": "Nie udało się zapisać celu miesięcznego."
+    "budgetSaveFailed": "Nie udało się zapisać celu miesięcznego.",
+    "categoriesLoadFailed": "Nie udało się wczytać kategorii.",
+    "categoryNameTaken": "Kategoria z tą nazwą już istnieje.",
+    "categorySaveFailed": "Nie udało się zapisać kategorii.",
+    "categoryHasExpenses": "Nie można usunąć — ta kategoria ma przypisane wydatki.",
+    "categoryDeleteFailed": "Nie udało się usunąć kategorii.",
+    "categoryAdded": "Kategoria dodana!",
+    "categoryDeleted": "Kategoria usunięta."
   },
   "transactionsCount_one": "{{count}} transakcja",
   "transactionsCount_few": "{{count}} transakcje",
@@ -181,6 +188,7 @@
     "amountLabel": "Kwota (zł)",
     "amountPlaceholder": "0,00",
     "categoryLabel": "Kategoria",
+    "manageCategories": "Zarządzaj kategoriami",
     "dateLabel": "Data",
     "submitLoading": "Zapisywanie…",
     "submitIdle": "Dodaj wydatek",
@@ -193,5 +201,25 @@
     "emptyTitle": "Brak wydatków",
     "emptySubFiltered": "Brak wydatków w tej kategorii w tym miesiącu.",
     "emptySubAll": "Historia dla tego miesiąca jest pusta."
+  },
+  "categoryManager": {
+    "title": "Kategorie",
+    "addButton": "+ Dodaj kategorię",
+    "defaultBadge": "domyślna",
+    "hiddenBadge": "ukryta",
+    "hideAria": "Ukryj kategorię",
+    "showAria": "Pokaż kategorię",
+    "newTitle": "Nowa kategoria",
+    "editTitle": "Edytuj kategorię",
+    "nameLabel": "Nazwa",
+    "namePlaceholder": "np. Kawa",
+    "iconLabel": "Ikona",
+    "colorLabel": "Kolor",
+    "visibility": "Widoczność",
+    "visibilityShown": "Widoczna",
+    "visibilityHidden": "Ukryta",
+    "deleteButton": "Usuń kategorię",
+    "deleteBlockedHint": "Nie można usunąć — ta kategoria ma przypisane wydatki.",
+    "errNameRequired": "Wpisz nazwę kategorii."
   }
 }
