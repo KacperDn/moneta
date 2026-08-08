@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { IconChevronLeft } from "./icons";
 
 interface Props {
   children: ReactNode;
@@ -20,9 +21,7 @@ export default function AuthLayout({ children, onBack }: Props) {
       <main className="auth-shell__content">
         {onBack && (
           <button type="button" className="auth-shell__back" onClick={onBack} aria-label={t("settings.backAria")}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
+            {IconChevronLeft}
           </button>
         )}
         {children}
