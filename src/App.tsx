@@ -7,9 +7,10 @@ import { useCountUp } from "./hooks/useCountUp";
 import { useBudgetGoal } from "./hooks/useBudgetGoal";
 import { useTheme } from "./hooks/useTheme";
 import { useCategories } from "./hooks/useCategories";
+import { useChat } from "./hooks/useChat";
 import { fmt } from "./constants";
 import { ExpenseForm } from "./types";
-import { IconPieChart, IconSettings, IconInfo } from "./icons";
+import { IconPieChart, IconSettings, IconInfo, IconSend } from "./icons";
 import { getCategoryIcon } from "./categoryIcons";
 import Auth from "./Auth";
 import Landing from "./Landing";
@@ -18,7 +19,7 @@ import Settings from "./Settings";
 import CategoryManager from "./CategoryManager";
 import "./styles/main.scss";
 
-const TABS = ["dash", "add", "list"] as const;
+const TABS = ["dash", "add", "list", "chat"] as const;
 
 const NOW = new Date();
 
@@ -42,6 +43,7 @@ export default function App() {
   const { goal, setGoal } = useBudgetGoal(session?.user.id);
   const { categories, addCategory, updateCategory, deleteCategory } = useCategories(session?.user.id);
   const { theme, setTheme } = useTheme();
+  const { messages: chatMessages, loading: chatLoading, send: sendChat } = useChat(session);
   const [showLogin, setShowLogin] = useState(false);
 
   const [view, setView]         = useState<typeof TABS[number]>("dash");
@@ -58,9 +60,11 @@ export default function App() {
   const [catHintOpen, setCatHintOpen] = useState(false);
   const [catFilter, setCatFilter] = useState<string | null>(null);
   const [drilldownCat, setDrilldownCat] = useState<string | null>(null);
+  const [chatInput, setChatInput] = useState("");
 
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [indicator, setIndicator] = useState({ left: 0, width: 0 });
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
 
   // showLogin/showSettings are navigation state, not auth state — reset them
   // whenever the session drops so a fresh logout always lands on Landing,
@@ -82,6 +86,10 @@ export default function App() {
     setHiddenCats(new Set());
     setCatFilter(null);
   }, [month]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages, chatLoading]);
 
   const toggleCat = (name: string) => {
     setHiddenCats(prev => {
@@ -150,6 +158,13 @@ export default function App() {
       setView("dash");
     }
     setErr("");
+  };
+
+  const handleSendChat = () => {
+    const q = chatInput.trim();
+    if (!q || chatLoading) return;
+    setChatInput("");
+    sendChat(q);
   };
 
   const handleDelete = (id: string) => setConfirmId(id);
@@ -318,14 +333,14 @@ export default function App() {
               className={`nav__tab${view === id ? " nav__tab--active" : ""}`}
               onClick={() => setView(id)}
             >
-              {[t("dashboard.navOverview"), t("dashboard.navAdd"), t("dashboard.navHistory")][i]}
+              {[t("dashboard.navOverview"), t("dashboard.navAdd"), t("dashboard.navHistory"), t("dashboard.navChat")][i]}
             </button>
           ))}
           <div className="nav__indicator" style={{ left: indicator.left, width: indicator.width }} />
         </nav>
       </div>
 
-      <div className="app__container">
+      <div className={`app__container${view === "chat" ? " app__container--chat" : ""}`}>
 
         {/* DASHBOARD */}
         {view === "dash" && (
@@ -599,6 +614,51 @@ export default function App() {
             </div>
           }
         </>}
+
+        {/* CHAT */}
+        {view === "chat" && (
+          <div className="chat">
+            <div className="chat__messages">
+              {chatMessages.map((m, i) => (
+                <div key={i} className={`chat__bubble${m.role === "user" ? " chat__bubble--user" : " chat__bubble--assistant"}`}>
+                  {m.text}
+                </div>
+              ))}
+              {chatLoading && (
+                <div className="chat__bubble chat__bubble--assistant chat__typing">
+                  <span className="chat__dot" />
+                  <span className="chat__dot" />
+                  <span className="chat__dot" />
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+            <div className="chat__input-wrap">
+              <textarea
+                className="chat__input"
+                placeholder={t("chat.placeholder")}
+                value={chatInput}
+                rows={1}
+                onChange={e => setChatInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendChat();
+                  }
+                }}
+              />
+              <button
+                type="button"
+                className="chat__send"
+                onClick={handleSendChat}
+                disabled={chatLoading || !chatInput.trim()}
+                aria-label={t("chat.sendAria")}
+              >
+                {IconSend}
+              </button>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

@@ -142,6 +142,7 @@
     "navOverview": "Overview",
     "navAdd": "Add",
     "navHistory": "History",
+    "navChat": "Chat",
     "settingsAria": "Settings",
     "editGoal": "Edit goal",
     "setGoal": "+ Set monthly goal",
@@ -199,6 +200,10 @@
     "emptyTitle": "No expenses",
     "emptySubFiltered": "No expenses in this category this month.",
     "emptySubAll": "History for this month is empty."
+  },
+  "chat": {
+    "placeholder": "Ask about your expenses…",
+    "sendAria": "Send message"
   },
   "categoryManager": {
     "title": "Categories",

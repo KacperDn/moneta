@@ -144,6 +144,7 @@
     "navOverview": "Przegląd",
     "navAdd": "Dodaj",
     "navHistory": "Historia",
+    "navChat": "Czat",
     "settingsAria": "Ustawienia",
     "editGoal": "Edytuj cel",
     "setGoal": "+ Ustaw cel miesięczny",
@@ -201,6 +202,10 @@
     "emptyTitle": "Brak wydatków",
     "emptySubFiltered": "Brak wydatków w tej kategorii w tym miesiącu.",
     "emptySubAll": "Historia dla tego miesiąca jest pusta."
+  },
+  "chat": {
+    "placeholder": "Zapytaj o swoje wydatki…",
+    "sendAria": "Wyślij wiadomość"
   },
   "categoryManager": {
     "title": "Kategorie",
