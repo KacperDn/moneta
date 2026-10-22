@@ -25,9 +25,19 @@ export function useCategories(userId: string | undefined): UseCategoriesReturn {
   const [rows, setRows] = useState<CategoryRow[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [prevUserId, setPrevUserId] = useState(userId);
+  if (userId !== prevUserId) {
+    setPrevUserId(userId);
+    if (userId) {
+      setLoading(true);
+    } else {
+      setRows([]);
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    if (!userId) { setRows([]); setLoading(false); return; }
-    setLoading(true);
+    if (!userId) return;
     supabase
       .from("categories")
       .select("name, icon, color, hidden")

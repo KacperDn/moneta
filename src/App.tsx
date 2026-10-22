@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useLayoutEffect, useEffect } from "react";
+import { useState, useMemo, useRef, useLayoutEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, ComposedChart, Area, Line, CartesianGrid } from "recharts";
 import { useAuth } from "./hooks/useAuth";
@@ -8,6 +8,7 @@ import { useBudgetGoal } from "./hooks/useBudgetGoal";
 import { useTheme } from "./hooks/useTheme";
 import { useCategories } from "./hooks/useCategories";
 import { fmt } from "./constants";
+import { sumByCategory } from "./utils/expenseStats";
 import { ExpenseForm } from "./types";
 import { IconPieChart, IconSettings, IconInfo } from "./icons";
 import { getCategoryIcon } from "./categoryIcons";
@@ -65,23 +66,28 @@ export default function App() {
   // showLogin/showSettings are navigation state, not auth state — reset them
   // whenever the session drops so a fresh logout always lands on Landing,
   // and a later log-in never reopens a screen left over from before.
-  useEffect(() => {
+  // Adjusted during render (not in an effect) to avoid an extra render pass.
+  const [prevSession, setPrevSession] = useState(session);
+  if (session !== prevSession) {
+    setPrevSession(session);
     if (!session) {
       setShowLogin(false);
       setShowSettings(false);
       setShowCategoryManager(false);
     }
-  }, [session]);
+  }
 
   useLayoutEffect(() => {
     const el = tabRefs.current[TABS.indexOf(view)];
     if (el) setIndicator({ left: el.offsetLeft, width: el.offsetWidth });
   }, [view, ready, session]);
 
-  useEffect(() => {
+  const [prevMonth, setPrevMonth] = useState(month);
+  if (month !== prevMonth) {
+    setPrevMonth(month);
     setHiddenCats(new Set());
     setCatFilter(null);
-  }, [month]);
+  }
 
   const toggleCat = (name: string) => {
     setHiddenCats(prev => {
@@ -111,18 +117,17 @@ export default function App() {
     setBudgetOpen(false);
   };
 
-  const getUserCat = (name: string) =>
+  const getUserCat = useCallback((name: string) =>
     categories.find(c => c.name.toLowerCase() === name.toLowerCase())
     ?? categories.find(c => c.name === "Inne")
-    ?? categories[0];
+    ?? categories[0], [categories]);
 
   const byCat = useMemo(() => {
-    const m: Record<string, number> = {};
-    monthExpenses.forEach(e => { m[e.cat] = (m[e.cat] || 0) + parseFloat(String(e.amount)); });
-    return Object.entries(m)
+    const totals = sumByCategory(monthExpenses);
+    return Object.entries(totals)
       .map(([name, value]) => ({ value, ...getUserCat(name) }))
       .sort((a, b) => b.value - a.value);
-  }, [monthExpenses, categories]);
+  }, [monthExpenses, getUserCat]);
 
   const visibleCats = useMemo(() => byCat.filter(c => !hiddenCats.has(c.name)), [byCat, hiddenCats]);
   const visibleTotal = useMemo(() => visibleCats.reduce((s, c) => s + c.value, 0), [visibleCats]);

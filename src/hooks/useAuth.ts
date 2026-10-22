@@ -9,21 +9,20 @@ interface UseAuthReturn {
   logout: () => Promise<void>;
 }
 
+/** Recovery links land with ?type=recovery&token=... before any session exists. */
+function isRecoveryUrl(): boolean {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("type") === "recovery" && !!params.get("token");
+}
+
 export function useAuth(): UseAuthReturn {
+  const [recoveryFromUrl] = useState(isRecoveryUrl);
   const [session, setSession]       = useState<Session | null>(null);
-  const [ready, setReady]           = useState(false);
-  const [isRecovery, setIsRecovery] = useState(false);
+  const [ready, setReady]           = useState(recoveryFromUrl);
+  const [isRecovery, setIsRecovery] = useState(recoveryFromUrl);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const type   = params.get("type");
-    const token  = params.get("token");
-
-    if (type === "recovery" && token) {
-      setIsRecovery(true);
-      setReady(true);
-      return;
-    }
+    if (recoveryFromUrl) return;
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -41,7 +40,7 @@ export function useAuth(): UseAuthReturn {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [recoveryFromUrl]);
 
   const logout = async () => {
     await supabase.auth.signOut();

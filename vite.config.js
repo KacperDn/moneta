@@ -29,4 +29,8 @@ export default defineConfig({
     }),
   ],
   base: '/moneta/',
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
+  },
 })

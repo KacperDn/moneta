@@ -12,8 +12,14 @@ export function useBudgetGoal(userId: string | undefined): UseBudgetGoalReturn {
   const { t } = useTranslation();
   const [goal, setGoalState] = useState<number | null>(null);
 
+  const [prevUserId, setPrevUserId] = useState(userId);
+  if (userId !== prevUserId && !userId) {
+    setPrevUserId(userId);
+    setGoalState(null);
+  }
+
   useEffect(() => {
-    if (!userId) { setGoalState(null); return; }
+    if (!userId) return;
 
     supabase
       .from("budgets")

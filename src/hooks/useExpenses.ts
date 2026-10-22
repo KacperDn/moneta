@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Session } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../lib/supabase";
 import { Expense, ExpenseForm, MonthSummary } from "../types";
+import { sumByMonth } from "../utils/expenseStats";
 
 const MAX_RETRIES = 3;
 
@@ -18,17 +19,12 @@ interface UseExpensesReturn {
 }
 
 export function useExpenses(session: Session | null): UseExpensesReturn {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading]   = useState(true);
   const [saving, setSaving]     = useState(false);
 
-  useEffect(() => {
-    if (!session) return;
-    fetchData();
-  }, [session]);
-
-  const fetchData = async (attempt = 1) => {
+  const fetchData = useCallback(async function fetchData(attempt = 1): Promise<void> {
     setLoading(true);
     const { data, error } = await supabase
       .from("expenses")
@@ -47,7 +43,12 @@ export function useExpenses(session: Session | null): UseExpensesReturn {
 
     setExpenses(data || []);
     setLoading(false);
-  };
+  }, [t]);
+
+  useEffect(() => {
+    if (!session) return;
+    fetchData();
+  }, [session, fetchData]);
 
   const add = async (form: ExpenseForm, userId: string): Promise<boolean> => {
     setSaving(true);
@@ -96,20 +97,12 @@ export function useExpenses(session: Session | null): UseExpensesReturn {
 
   const byMonth = useMemo<MonthSummary[]>(() => {
     const months = t("months", { returnObjects: true }) as string[];
-    const m: Record<string, number> = {};
-    expenses.forEach(e => {
-      const d = new Date(e.date);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      m[key] = (m[key] || 0) + parseFloat(String(e.amount));
-    });
-    return Object.entries(m)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([key, total]) => ({
-        key,
-        label: months[parseInt(key.split("-")[1]) - 1].slice(0, 3),
-        total: parseFloat(total.toFixed(2)),
-      }));
-  }, [expenses, i18n.language, t]);
+    return sumByMonth(expenses).map(({ key, total }) => ({
+      key,
+      label: months[parseInt(key.split("-")[1]) - 1].slice(0, 3),
+      total,
+    }));
+  }, [expenses, t]);
 
   return { expenses, loading, saving, add, remove, filtered, byMonth };
 }

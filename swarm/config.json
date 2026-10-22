@@ -1,0 +1,16 @@
+{
+  "roles": {
+    "worker": {
+      "provider": "gemini-api",
+      "model": "gemini-3.8-flash"
+    },
+    "reviewer": {
+      "provider": "gemini-api",
+      "model": "gemini-3.1-flash-lite"
+    }
+  },
+  "limits": {
+    "maxAttempts": 3,
+    "timeoutMs": 120000
+  }
+}
