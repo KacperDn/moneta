@@ -196,6 +196,7 @@
   },
   "history": {
     "title": "History",
+    "exportMonth": "Export month",
     "filterAll": "All",
     "emptyTitle": "No expenses",
     "emptySubFiltered": "No expenses in this category this month.",

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { IconChevronLeft } from "./icons";
+import { IconChevronLeft, IconDownload } from "./icons";
 import { Theme } from "./hooks/useTheme";
 import { useLanguage } from "./hooks/useLanguage";
 import { Expense, UserCategory } from "./types";
 import { expensesToCsv } from "./utils/exportCsv";
+import { downloadTextFile } from "./utils/downloadFile";
 import PrivacyPolicy from "./PrivacyPolicy";
 import CategoryManager from "./CategoryManager";
 
@@ -21,18 +22,10 @@ interface Props {
   onLogout?: () => void;
 }
 
-/** Triggers a browser download of the expenses as a CSV file. BOM improves Excel's UTF-8 detection for Polish diacritics. */
+/** BOM improves Excel's UTF-8 detection for Polish diacritics in the exported CSV. */
 function downloadExpensesCsv(expenses: Expense[]) {
   const csv = expensesToCsv(expenses);
-  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `moneta-${new Date().toISOString().split("T")[0]}.csv`;
-  link.click();
-
-  URL.revokeObjectURL(url);
+  downloadTextFile(`moneta-${new Date().toISOString().split("T")[0]}.csv`, "﻿" + csv, "text/csv;charset=utf-8;");
 }
 
 export default function Settings({
@@ -139,6 +132,7 @@ export default function Settings({
               {expenses && (
                 <button type="button" className="settings__row settings__row--link" onClick={() => downloadExpensesCsv(expenses)}>
                   <span>{t("settings.exportCsv")}</span>
+                  <span className="settings__row-icon">{IconDownload}</span>
                 </button>
               )}
             </div>

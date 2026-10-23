@@ -9,8 +9,10 @@ import { useTheme } from "./hooks/useTheme";
 import { useCategories } from "./hooks/useCategories";
 import { fmt } from "./constants";
 import { sumByCategory } from "./utils/expenseStats";
+import { expensesToCsv } from "./utils/exportCsv";
+import { downloadTextFile } from "./utils/downloadFile";
 import { ExpenseForm } from "./types";
-import { IconPieChart, IconSettings, IconInfo } from "./icons";
+import { IconPieChart, IconSettings, IconInfo, IconDownload } from "./icons";
 import { getCategoryIcon } from "./categoryIcons";
 import Auth from "./Auth";
 import Landing from "./Landing";
@@ -158,6 +160,12 @@ export default function App() {
   };
 
   const handleDelete = (id: string) => setConfirmId(id);
+
+  const exportMonthCsv = () => {
+    const csv = expensesToCsv(monthExpenses);
+    const filename = `moneta-${MONTHS[month].toLowerCase()}-${year}.csv`;
+    downloadTextFile(filename, "﻿" + csv, "text/csv;charset=utf-8;");
+  };
 
   const confirmDelete = async () => {
     if (!confirmId) return;
@@ -553,6 +561,11 @@ export default function App() {
         {view === "list" && <>
           <div className="history__title">{t("history.title")}</div>
           <div className="history__subtitle">{MONTHS[month]} {year} · {t("transactionsCount", { count: filteredExpenses.length })}</div>
+          {monthExpenses.length > 0 && (
+            <button type="button" className="btn--ghost history__export" onClick={exportMonthCsv}>
+              {IconDownload}{t("history.exportMonth")}
+            </button>
+          )}
 
           {byCat.length > 0 && (
             <div className="filter-pills">

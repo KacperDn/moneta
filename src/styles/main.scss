@@ -1011,6 +1011,17 @@ input:-webkit-autofill:focus {
   animation: fadeInUp 0.4s $ease;
 }
 
+.history__export {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: -14px;
+  margin-bottom: 14px;
+  padding: 4px 0;
+
+  svg { width: 14px; height: 14px; }
+}
+
 .filter-pills {
   display: flex;
   gap: 8px;
@@ -1788,6 +1799,16 @@ input:-webkit-autofill:focus {
 
   &:hover {
     background: $surface-hover;
+  }
+}
+
+.settings__row-icon {
+  display: inline-flex;
+  color: $muted;
+
+  svg {
+    width: 16px;
+    height: 16px;
   }
 }
 

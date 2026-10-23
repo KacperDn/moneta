@@ -198,6 +198,7 @@
   },
   "history": {
     "title": "Historia",
+    "exportMonth": "Eksportuj miesiąc",
     "filterAll": "Wszystkie",
     "emptyTitle": "Brak wydatków",
     "emptySubFiltered": "Brak wydatków w tej kategorii w tym miesiącu.",
