@@ -1,7 +1,7 @@
 ---
 id: 001
 title: Eksport wydatków do CSV
-status: ready
+status: done
 files:
   - src/utils/exportCsv.ts
   - src/utils/exportCsv.test.ts

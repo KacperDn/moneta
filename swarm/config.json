@@ -11,6 +11,6 @@
   },
   "limits": {
     "maxAttempts": 3,
-    "timeoutMs": 120000
+    "timeoutMs": 240000
   }
 }

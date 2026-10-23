@@ -17,7 +17,14 @@ const config = JSON.parse(readFileSync(path.join(__dirname, "config.json"), "utf
  * Calls the Gemini API's generateContent endpoint for a single-turn prompt.
  * Throws on HTTP errors, timeout, or an empty/blocked response.
  */
-async function callGeminiApi(prompt, { model, timeoutMs }) {
+const RETRYABLE_STATUS = new Set([429, 503]);
+const RETRY_DELAYS_MS = [5000, 15000];
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function callGeminiApiOnce(prompt, { model, timeoutMs }) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY is not set (expected in .env or the environment).");
@@ -41,7 +48,9 @@ async function callGeminiApi(prompt, { model, timeoutMs }) {
 
     if (!res.ok) {
       const message = body?.error?.message ?? res.statusText;
-      throw new Error(`Gemini API error (${res.status}): ${message}`);
+      const error = new Error(`Gemini API error (${res.status}): ${message}`);
+      error.status = res.status;
+      throw error;
     }
 
     const candidate = body?.candidates?.[0];
@@ -55,6 +64,19 @@ async function callGeminiApi(prompt, { model, timeoutMs }) {
     return text;
   } finally {
     clearTimeout(timeout);
+  }
+}
+
+/** Retries transient availability errors (quota burst, temporary overload) with backoff. */
+async function callGeminiApi(prompt, opts) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await callGeminiApiOnce(prompt, opts);
+    } catch (err) {
+      const canRetry = RETRYABLE_STATUS.has(err.status) && attempt < RETRY_DELAYS_MS.length;
+      if (!canRetry) throw err;
+      await sleep(RETRY_DELAYS_MS[attempt]);
+    }
   }
 }
 
