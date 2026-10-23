@@ -10,30 +10,23 @@ import { useCategories } from "./hooks/useCategories";
 import { fmt } from "./constants";
 import { sumByCategory } from "./utils/expenseStats";
 import { expensesToCsv } from "./utils/exportCsv";
-import { downloadTextFile } from "./utils/downloadFile";
+import { downloadCsvFile } from "./utils/downloadFile";
 import { ExpenseForm } from "./types";
-import { IconPieChart, IconSettings, IconInfo, IconDownload } from "./icons";
+import { IconPieChart, IconSettings, IconInfo } from "./icons";
 import { getCategoryIcon } from "./categoryIcons";
 import Auth from "./Auth";
 import Landing from "./Landing";
 import PasswordReset from "./PasswordReset";
 import Settings from "./Settings";
 import CategoryManager from "./CategoryManager";
+import Skeleton from "./components/Skeleton";
+import HistoryView from "./components/HistoryView";
+import { ConfirmDeleteDialog, BudgetDialog, CategoryHintDialog, CategoryDrilldownDialog } from "./components/Dialogs";
 import "./styles/main.scss";
 
 const TABS = ["dash", "add", "list"] as const;
 
 const NOW = new Date();
-
-function Skeleton() {
-  return (
-    <div className="skeleton__wrap">
-      <div className="skeleton skeleton--hero" />
-      <div className="skeleton skeleton--card" />
-      <div className="skeleton skeleton--card" />
-    </div>
-  );
-}
 
 export default function App() {
   const { t } = useTranslation();
@@ -162,9 +155,7 @@ export default function App() {
   const handleDelete = (id: string) => setConfirmId(id);
 
   const exportMonthCsv = () => {
-    const csv = expensesToCsv(monthExpenses);
-    const filename = `moneta-${MONTHS[month].toLowerCase()}-${year}.csv`;
-    downloadTextFile(filename, "﻿" + csv, "text/csv;charset=utf-8;");
+    downloadCsvFile(`moneta-${MONTHS[month].toLowerCase()}-${year}.csv`, expensesToCsv(monthExpenses));
   };
 
   const confirmDelete = async () => {
@@ -172,6 +163,8 @@ export default function App() {
     await remove(confirmId);
     setConfirmId(null);
   };
+
+  const drilldownCategory = drilldownCat ? getUserCat(drilldownCat) : null;
 
   if (!ready) return (
     <div className="app app--center">
@@ -215,98 +208,32 @@ export default function App() {
   return (
     <div className="app">
 
-      {/* Confirm dialog */}
       {confirmId && (
-        <div className="confirm__overlay">
-          <div className="confirm__box">
-            <div className="confirm__title">{t("confirmDelete.title")}</div>
-            <div className="confirm__sub">{t("confirmDelete.body")}</div>
-            <div className="confirm__actions">
-              <button className="confirm__btn confirm__btn--cancel" onClick={() => setConfirmId(null)}>{t("common.cancel")}</button>
-              <button className="confirm__btn confirm__btn--danger" onClick={confirmDelete}>{t("common.delete")}</button>
-            </div>
-          </div>
-        </div>
+        <ConfirmDeleteDialog onCancel={() => setConfirmId(null)} onConfirm={confirmDelete} />
       )}
 
-      {/* Budget goal dialog */}
       {budgetOpen && (
-        <div className="confirm__overlay">
-          <div className="confirm__box">
-            <div className="confirm__title">{t("budgetGoal.title")}</div>
-            <div className="confirm__sub">{t("budgetGoal.body")}</div>
-            <input
-              className="form__input"
-              type="number"
-              placeholder={t("budgetGoal.placeholder")}
-              value={budgetInput}
-              autoFocus
-              onChange={e => setBudgetInput(e.target.value)}
-            />
-            <div className="confirm__actions">
-              <button className="confirm__btn confirm__btn--cancel" onClick={() => setBudgetOpen(false)}>{t("common.cancel")}</button>
-              <button className="confirm__btn confirm__btn--primary" onClick={saveBudget}>{t("common.save")}</button>
-            </div>
-            {goal !== null && (
-              <button className="confirm__remove" onClick={() => { setGoal(null); setBudgetOpen(false); }}>
-                {t("budgetGoal.removeGoal")}
-              </button>
-            )}
-          </div>
-        </div>
+        <BudgetDialog
+          value={budgetInput}
+          hasGoal={goal !== null}
+          onChange={setBudgetInput}
+          onCancel={() => setBudgetOpen(false)}
+          onSave={saveBudget}
+          onRemove={() => { setGoal(null); setBudgetOpen(false); }}
+        />
       )}
 
-      {/* Category filter hint dialog */}
-      {catHintOpen && (
-        <div className="confirm__overlay">
-          <div className="confirm__box">
-            <div className="confirm__title">{t("dashboard.catHintTitle")}</div>
-            <div className="confirm__sub">
-              {t("dashboard.catHintBody")}
-            </div>
-            <div className="confirm__actions confirm__actions--single">
-              <button className="confirm__btn confirm__btn--primary" onClick={() => setCatHintOpen(false)}>{t("dashboard.catHintGotIt")}</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {catHintOpen && <CategoryHintDialog onClose={() => setCatHintOpen(false)} />}
 
-      {/* Category drill-down dialog */}
-      {drilldownCat && (() => {
-        const c = getUserCat(drilldownCat);
-        const items = monthExpenses.filter(e => e.cat === drilldownCat);
-        const catTotal = items.reduce((s, e) => s + parseFloat(String(e.amount)), 0);
-        return (
-          <div className="confirm__overlay" onClick={() => setDrilldownCat(null)}>
-            <div className="drilldown__box" onClick={e => e.stopPropagation()}>
-              <div className="drilldown__header">
-                <div className="drilldown__icon" style={{ background: `${c.color}22`, color: c.color }}>{getCategoryIcon(c.icon)}</div>
-                <div className="drilldown__heading">
-                  <div className="drilldown__title">{catLabel(c.name)}</div>
-                  <div className="drilldown__sub">{fmt(catTotal)} zł · {t("transactionsCount", { count: items.length })}</div>
-                </div>
-                <button type="button" className="drilldown__close" onClick={() => setDrilldownCat(null)} aria-label={t("drilldown.closeAria")}>×</button>
-              </div>
-              <div className="drilldown__list">
-                {items.map(e => (
-                  <div key={e.id} className="drilldown__row">
-                    <div className="drilldown__desc">{e.description}</div>
-                    <div className="drilldown__date">{e.date}</div>
-                    <div className="drilldown__amount">{fmt(parseFloat(String(e.amount)))} zł</div>
-                  </div>
-                ))}
-              </div>
-              <button
-                type="button"
-                className="btn--ghost drilldown__viewall"
-                onClick={() => { setCatFilter(c.name); setDrilldownCat(null); setView("list"); }}
-              >
-                {t("drilldown.viewInHistory")}
-              </button>
-            </div>
-          </div>
-        );
-      })()}
+      {drilldownCategory && (
+        <CategoryDrilldownDialog
+          category={drilldownCategory}
+          label={catLabel(drilldownCategory.name)}
+          expenses={monthExpenses.filter(e => e.cat === drilldownCategory.name)}
+          onClose={() => setDrilldownCat(null)}
+          onViewAll={() => { setCatFilter(drilldownCategory.name); setDrilldownCat(null); setView("list"); }}
+        />
+      )}
 
       {/* Header */}
       <div className="header">
@@ -558,66 +485,22 @@ export default function App() {
         </>}
 
         {/* LIST */}
-        {view === "list" && <>
-          <div className="history__title">{t("history.title")}</div>
-          <div className="history__subtitle">{MONTHS[month]} {year} · {t("transactionsCount", { count: filteredExpenses.length })}</div>
-          {monthExpenses.length > 0 && (
-            <button type="button" className="btn--ghost history__export" onClick={exportMonthCsv}>
-              {IconDownload}{t("history.exportMonth")}
-            </button>
-          )}
-
-          {byCat.length > 0 && (
-            <div className="filter-pills">
-              <button
-                type="button"
-                className={`filter-pill${catFilter === null ? " filter-pill--active" : ""}`}
-                onClick={() => setCatFilter(null)}
-              >
-                {t("history.filterAll")}
-              </button>
-              {byCat.map(c => (
-                <button
-                  key={c.name}
-                  type="button"
-                  className={`filter-pill${catFilter === c.name ? " filter-pill--active" : ""}`}
-                  onClick={() => setCatFilter(catFilter === c.name ? null : c.name)}
-                >
-                  <span className="filter-pill__icon" style={{ color: c.color }}>{getCategoryIcon(c.icon)}</span>{catLabel(c.name)}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {loading ? <Skeleton /> : filteredExpenses.length === 0
-            ? (
-              <div className="empty-state">
-                <div className="empty-state__icon">{IconPieChart}</div>
-                <div className="empty-state__title">{t("history.emptyTitle")}</div>
-                <div className="empty-state__sub">
-                  {catFilter ? t("history.emptySubFiltered") : t("history.emptySubAll")}
-                </div>
-                <button className="btn--primary empty-state__cta" onClick={() => setView("add")}>{t("dashboard.emptyCta")}</button>
-              </div>
-            )
-            : <div className="card card--list">
-              {filteredExpenses.map(e => {
-                const c = getUserCat(e.cat);
-                return (
-                  <div key={e.id} className="list__row">
-                    <div className="list__icon" style={{ background: `${c.color}22`, color: c.color }}>{getCategoryIcon(c.icon)}</div>
-                    <div className="list__info">
-                      <div className="list__desc">{e.description}</div>
-                      <div className="list__meta">{catLabel(c.name)} · {e.date}</div>
-                    </div>
-                    <div className="list__amount">{fmt(parseFloat(String(e.amount)))} zł</div>
-                    <button className="list__delete" onClick={() => handleDelete(e.id)}>×</button>
-                  </div>
-                );
-              })}
-            </div>
-          }
-        </>}
+        {view === "list" && (
+          <HistoryView
+            monthLabel={`${MONTHS[month]} ${year}`}
+            loading={loading}
+            expenses={filteredExpenses}
+            monthExpenseCount={monthExpenses.length}
+            monthCategories={byCat}
+            catFilter={catFilter}
+            getCategory={getUserCat}
+            categoryLabel={catLabel}
+            onCatFilterChange={setCatFilter}
+            onDelete={handleDelete}
+            onAddExpense={() => setView("add")}
+            onExport={exportMonthCsv}
+          />
+        )}
 
       </div>
     </div>

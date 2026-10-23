@@ -80,6 +80,14 @@ src/
 ├── lib/
 │   ├── supabase.ts        # Supabase client
 │   └── errors.ts          # maps Supabase errors to user-friendly messages
+├── components/
+│   ├── Dialogs.tsx        # confirm / budget / category-hint / drill-down dialogs
+│   ├── HistoryView.tsx    # history tab (month list, category filter, export)
+│   └── Skeleton.tsx       # loading placeholder
+├── utils/
+│   ├── expenseStats.ts    # monthly / per-category sums (pure, tested)
+│   ├── exportCsv.ts       # expenses -> CSV string (pure, tested)
+│   └── downloadFile.ts    # browser file download helpers
 ├── styles/
 │   └── main.scss          # all styles (BEM, SCSS variables)
 ├── types/

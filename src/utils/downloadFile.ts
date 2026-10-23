@@ -16,3 +16,10 @@ export function downloadTextFile(filename: string, content: string, mimeType: st
   // Revoking synchronously can abort the download in Safari.
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+const UTF8_BOM = String.fromCharCode(0xfeff);
+
+/** Downloads CSV text; the BOM makes Excel detect UTF-8 so Polish diacritics render correctly. */
+export function downloadCsvFile(filename: string, csv: string): void {
+  downloadTextFile(filename, UTF8_BOM + csv, "text/csv;charset=utf-8;");
+}

@@ -5,7 +5,7 @@ import { Theme } from "./hooks/useTheme";
 import { useLanguage } from "./hooks/useLanguage";
 import { Expense, UserCategory } from "./types";
 import { expensesToCsv } from "./utils/exportCsv";
-import { downloadTextFile } from "./utils/downloadFile";
+import { downloadCsvFile } from "./utils/downloadFile";
 import PrivacyPolicy from "./PrivacyPolicy";
 import CategoryManager from "./CategoryManager";
 
@@ -22,12 +22,6 @@ interface Props {
   onLogout?: () => void;
 }
 
-/** BOM improves Excel's UTF-8 detection for Polish diacritics in the exported CSV. */
-function downloadExpensesCsv(expenses: Expense[]) {
-  const csv = expensesToCsv(expenses);
-  downloadTextFile(`moneta-${new Date().toISOString().split("T")[0]}.csv`, "﻿" + csv, "text/csv;charset=utf-8;");
-}
-
 export default function Settings({
   email, expenses, categories, addCategory, updateCategory, deleteCategory, theme, onThemeChange, onBack, onLogout,
 }: Props) {
@@ -35,6 +29,11 @@ export default function Settings({
   const { language, setLanguage } = useLanguage();
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
+
+  const exportAll = (all: Expense[]) => {
+    const today = new Date().toISOString().split("T")[0];
+    downloadCsvFile(`moneta-${today}.csv`, expensesToCsv(all));
+  };
 
   if (showPrivacy) {
     return <PrivacyPolicy onBack={() => setShowPrivacy(false)} />;
@@ -130,7 +129,7 @@ export default function Settings({
                 <span className="settings__row-chevron">{IconChevronLeft}</span>
               </button>
               {expenses && (
-                <button type="button" className="settings__row settings__row--link" onClick={() => downloadExpensesCsv(expenses)}>
+                <button type="button" className="settings__row settings__row--link" onClick={() => exportAll(expenses)}>
                   <span>{t("settings.exportCsv")}</span>
                   <span className="settings__row-icon">{IconDownload}</span>
                 </button>
