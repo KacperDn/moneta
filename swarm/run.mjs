@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -8,54 +8,40 @@ import { buildWorkerPrompt, buildFixPrompt, parseFileBlocks } from "./prompt.mjs
 import { callModel, limits } from "./models.mjs";
 import { createWorktree, cleanupWorktree, diffNameOnly, addAll, commitAll, resetHard } from "./git.mjs";
 import { writeFiles, runGate, tail } from "./worktreeOps.mjs";
+import { createLogger } from "./logger.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..");
 const kanbanDir = path.join(repoRoot, "kanban");
-const logsDir = path.join(__dirname, "logs");
 
-const cardId = process.argv[2];
-if (!cardId) {
-  console.error("Usage: node swarm/run.mjs <card-id>");
-  process.exit(1);
-}
-
-mkdirSync(logsDir, { recursive: true });
-const logPath = path.join(logsDir, `${cardId}-${Date.now()}.log`);
-const logLines = [];
-
-function log(message) {
-  const line = `[${new Date().toISOString()}] ${message}`;
-  console.log(line);
-  logLines.push(line);
-  writeFileSync(logPath, logLines.join("\n") + "\n");
-}
-
-async function main() {
+/** Runs the worker + gate loop for one "ready" card. Safe to call concurrently for different cards. */
+export async function processCard(cardId) {
+  const log = createLogger(cardId, "run");
   const card = findCardById(kanbanDir, cardId);
+
   if (!card) {
     log(`Card ${cardId} not found in ${kanbanDir}.`);
-    process.exit(1);
+    return { ok: false };
   }
-
   if (card.status !== "ready") {
     log(`Card ${cardId} has status "${card.status}", expected "ready". Aborting.`);
-    process.exit(1);
+    return { ok: false };
   }
 
   log(`Starting card ${card.id}: ${card.title}`);
   setCardStatus(card.path, "running");
 
   try {
-    await runCard(card);
+    await runCard(card, log);
+    return { ok: true };
   } catch (err) {
     log(`Unhandled error while processing card ${card.id}: ${err.stack || err.message}`);
     setCardStatus(card.path, "blocked");
-    process.exitCode = 1;
+    return { ok: false };
   }
 }
 
-async function runCard(card) {
+async function runCard(card, log) {
   const branch = `card/${card.id}`;
   const worktreePath = path.join(repoRoot, ".worktrees", `card-${card.id}`);
 
@@ -118,7 +104,13 @@ async function runCard(card) {
   setCardStatus(card.path, "blocked");
 }
 
-main().catch(err => {
-  console.error(`Fatal error before card processing started: ${err.stack || err.message}`);
-  process.exit(1);
-});
+const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMain) {
+  const cardId = process.argv[2];
+  if (!cardId) {
+    console.error("Usage: node swarm/run.mjs <card-id>");
+    process.exit(1);
+  }
+  const result = await processCard(cardId);
+  if (!result.ok) process.exitCode = 1;
+}

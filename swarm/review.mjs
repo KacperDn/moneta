@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -24,39 +24,24 @@ import {
   resetHard,
 } from "./git.mjs";
 import { writeFiles, runGate, tail } from "./worktreeOps.mjs";
+import { createLogger } from "./logger.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..");
 const kanbanDir = path.join(repoRoot, "kanban");
-const logsDir = path.join(__dirname, "logs");
 
-const cardId = process.argv[2];
-if (!cardId) {
-  console.error("Usage: node swarm/review.mjs <card-id>");
-  process.exit(1);
-}
-
-mkdirSync(logsDir, { recursive: true });
-const logPath = path.join(logsDir, `${cardId}-review-${Date.now()}.log`);
-const logLines = [];
-
-function log(message) {
-  const line = `[${new Date().toISOString()}] ${message}`;
-  console.log(line);
-  logLines.push(line);
-  writeFileSync(logPath, logLines.join("\n") + "\n");
-}
-
-async function main() {
+/** Runs the reviewer loop for one "review" card. Safe to call concurrently for different cards. */
+export async function processReview(cardId) {
+  const log = createLogger(cardId, "review");
   const card = findCardById(kanbanDir, cardId);
-  if (!card) {
-    console.error(`Card ${cardId} not found in ${kanbanDir}.`);
-    process.exit(1);
-  }
 
+  if (!card) {
+    log(`Card ${cardId} not found in ${kanbanDir}.`);
+    return { ok: false };
+  }
   if (card.status !== "review") {
-    console.error(`Card ${cardId} has status "${card.status}", expected "review". Aborting.`);
-    process.exit(1);
+    log(`Card ${cardId} has status "${card.status}", expected "review". Aborting.`);
+    return { ok: false };
   }
 
   const branch = `card/${card.id}`;
@@ -64,19 +49,20 @@ async function main() {
   if (!worktreePath) {
     log(`No worktree found for ${branch}. It must have been removed after the gate run.`);
     setCardStatus(card.path, "blocked");
-    process.exit(1);
+    return { ok: false };
   }
 
   try {
-    await reviewCard(card, branch, worktreePath);
+    await reviewCard(card, branch, worktreePath, log);
+    return { ok: true };
   } catch (err) {
     log(`Unhandled error while reviewing card ${card.id}: ${err.stack || err.message}`);
     setCardStatus(card.path, "blocked");
-    process.exitCode = 1;
+    return { ok: false };
   }
 }
 
-async function reviewCard(card, branch, worktreePath) {
+async function reviewCard(card, branch, worktreePath, log) {
   const agentsMd = readFileSync(path.join(repoRoot, "AGENTS.md"), "utf8");
   const basePrompt = buildWorkerPrompt(agentsMd, card);
   const maxRounds = limits.maxAttempts;
@@ -145,7 +131,13 @@ async function reviewCard(card, branch, worktreePath) {
   setCardStatus(card.path, "blocked");
 }
 
-main().catch(err => {
-  console.error(`Fatal error before review started: ${err.stack || err.message}`);
-  process.exit(1);
-});
+const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMain) {
+  const cardId = process.argv[2];
+  if (!cardId) {
+    console.error("Usage: node swarm/review.mjs <card-id>");
+    process.exit(1);
+  }
+  const result = await processReview(cardId);
+  if (!result.ok) process.exitCode = 1;
+}

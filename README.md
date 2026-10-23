@@ -98,6 +98,18 @@ src/
 └── ErrorBoundary.tsx       # top-level crash fallback
 ```
 
+## AI task orchestrator
+
+This repo also includes a small, model-agnostic orchestrator (`swarm/`) that
+runs scoped coding tasks through an AI worker, a hard quality gate
+(lint/typecheck/tests/build), and a second AI model acting as reviewer,
+before anything reaches a human. Forbidden zones (auth, Supabase config,
+secrets, deploy config) are enforced by diffing the actual file changes, not
+just by asking the model nicely. Nothing is merged to `main` automatically.
+
+See [docs/SWARM.md](docs/SWARM.md) for the full design, a flow diagram, and
+an honest list of its current limitations.
+
 ## License
 
 MIT © KacperDn
