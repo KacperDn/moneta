@@ -39,7 +39,7 @@ export default function App() {
   const MONTHS = t("months", { returnObjects: true }) as string[];
 
   const { session, ready, isRecovery, logout } = useAuth();
-  const { loading, saving, add, remove, filtered, byMonth } = useExpenses(session);
+  const { expenses, loading, saving, add, remove, filtered, byMonth } = useExpenses(session);
   const { goal, setGoal } = useBudgetGoal(session?.user.id);
   const { categories, addCategory, updateCategory, deleteCategory } = useCategories(session?.user.id);
   const { theme, setTheme } = useTheme();
@@ -180,6 +180,7 @@ export default function App() {
     return (
       <Settings
         email={session.user.email!}
+        expenses={expenses}
         categories={categories}
         addCategory={addCategory}
         updateCategory={updateCategory}

@@ -94,6 +94,7 @@
     "languageEnglish": "English",
     "groupExpenses": "Expenses",
     "categories": "Categories",
+    "exportCsv": "Export to CSV",
     "groupLegal": "Legal",
     "privacyPolicy": "Privacy policy",
     "logout": "Sign out"
