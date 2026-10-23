@@ -28,6 +28,15 @@ export default defineConfig([
     },
   },
   {
+    files: ['swarm/**/*.mjs'],
+    extends: [js.configs.recommended],
+    languageOptions: {
+      ecmaVersion: 2023,
+      sourceType: 'module',
+      globals: globals.node,
+    },
+  },
+  {
     files: ['**/*.{ts,tsx}'],
     extends: [
       tseslint.configs.recommended,

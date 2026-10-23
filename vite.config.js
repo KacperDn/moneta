@@ -31,6 +31,6 @@ export default defineConfig({
   base: '/moneta/',
   test: {
     environment: 'node',
-    include: ['src/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'swarm/**/*.test.mjs'],
   },
 })
