@@ -89,6 +89,14 @@ describe("expensesToCsv", () => {
     );
   });
 
+  it("formats amounts that arrive as numeric strings from the API", () => {
+    const expenses: Expense[] = [
+      createExpense({ amount: "12.5" as unknown as number }),
+    ];
+
+    expect(expensesToCsv(expenses)).toBe(`${CSV_HEADER}\n2025-01-15,Jedzenie,Obiad w restauracji,12.50`);
+  });
+
   it("handles empty description without errors", () => {
     const expenses: Expense[] = [
       createExpense({ description: "" }),

@@ -15,19 +15,15 @@ function escapeCsvField(value: string): string {
 
 /**
  * Serializes a list of expenses into a CSV string without performing any I/O.
- * Decimal values use dot separators to prevent column delimiter collisions.
+ * Amounts use a dot as the decimal separator so they never collide with the column delimiter.
  */
 export function expensesToCsv(expenses: Expense[]): string {
-  const rows = expenses.map((expense) => {
-    const date = escapeCsvField(expense.date ?? "");
-    const category = escapeCsvField(expense.cat ?? "");
-    const description = escapeCsvField(expense.description ?? "");
-    const amount = typeof expense.amount === "number" && Number.isFinite(expense.amount)
-      ? expense.amount.toFixed(2)
-      : escapeCsvField(String(expense.amount ?? ""));
-
-    return `${date},${category},${description},${amount}`;
-  });
+  const rows = expenses.map(e => [
+    escapeCsvField(e.date),
+    escapeCsvField(e.cat),
+    escapeCsvField(e.description),
+    parseFloat(String(e.amount)).toFixed(2),
+  ].join(","));
 
   return [CSV_HEADER, ...rows].join("\n");
 }
