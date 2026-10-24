@@ -21,6 +21,7 @@ Personal finance tracker — track your monthly expenses, visualize spending hab
 -  Email/password authentication with persistent sessions, plus email-based password reset
 -  Cloud database — data syncs across all devices
 -  Mobile-first responsive design, installable as a PWA (works offline for the app shell)
+-  Edit any expense by tapping it in the history list
 -  Optional monthly budget goal with a live progress bar, synced via Supabase
 -  User-friendly error handling — backend/config errors never leak to the UI, with a top-level crash fallback
 -  Toast notifications for every action (add/delete/errors)
@@ -56,11 +57,12 @@ PostgreSQL + Row Level Security
 
 No custom backend server. The React app communicates directly with Supabase via REST API. Each user can only access their own data, enforced at the database level via Row Level Security policies.
 
-Every push to `main` triggers a GitHub Actions workflow ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) that lints, builds, and publishes `dist/` to the `gh-pages` branch — no manual deploy step.
+Every push to `main` triggers a GitHub Actions workflow ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) that lints, type-checks, tests, builds, and publishes `dist/` to the `gh-pages` branch — no manual deploy step.
 
-Two tables back the optional/customizable features — run both once in the Supabase SQL Editor for a new project:
+Run these once in the Supabase SQL Editor for a new project:
 - [supabase-budgets-migration.sql](supabase-budgets-migration.sql) — the monthly budget goal
 - [supabase-categories-migration.sql](supabase-categories-migration.sql) — per-user category overrides (icon/color/hidden) and custom categories
+- [supabase-expenses-update-migration.sql](supabase-expenses-update-migration.sql) — row-level policy that lets users edit their own expenses
 
 ## Project Structure
 
@@ -81,15 +83,25 @@ src/
 │   ├── supabase.ts        # Supabase client
 │   └── errors.ts          # maps Supabase errors to user-friendly messages
 ├── components/
-│   ├── Dialogs.tsx        # confirm / budget / category-hint / drill-down dialogs
-│   ├── HistoryView.tsx    # history tab (month list, category filter, export)
-│   └── Skeleton.tsx       # loading placeholder
+│   ├── Dialogs.tsx          # confirm / budget / category-hint / drill-down dialogs
+│   ├── EditExpenseDialog.tsx # edit an existing expense
+│   ├── HistoryView.tsx      # history tab (month list, category filter, summary, export)
+│   ├── RecentExpenses.tsx   # latest entries next to the add form
+│   ├── AmountInput.tsx      # amount field with stepper and quick amounts
+│   ├── MonthSelect.tsx      # custom month dropdown
+│   ├── DashboardMock.tsx    # decorative dashboard preview (landing, auth)
+│   └── Skeleton.tsx         # loading placeholder
 ├── utils/
-│   ├── expenseStats.ts    # monthly / per-category sums (pure, tested)
-│   ├── exportCsv.ts       # expenses -> CSV string (pure, tested)
-│   └── downloadFile.ts    # browser file download helpers
+│   ├── expenseStats.ts      # monthly / per-category sums (pure, tested)
+│   ├── expenseList.ts       # replace an edited expense in the list (pure, tested)
+│   ├── exportCsv.ts         # expenses -> CSV string (pure, tested)
+│   ├── amount.ts            # amount input sanitizing / formatting (pure, tested)
+│   └── downloadFile.ts      # browser file download helpers
 ├── styles/
-│   └── main.scss          # all styles (BEM, SCSS variables)
+│   ├── main.scss            # entry point, lists the partials in cascade order
+│   ├── _tokens.scss         # colors (light/dark), spacing, breakpoints, mixins
+│   ├── _components.scss     # base + component styles (BEM)
+│   └── _app-desktop.scss, _landing.scss, _screens.scss, ...  # responsive layers
 ├── types/
 │   └── index.ts          # TypeScript interfaces
 ├── constants.ts           # default categories, formatting helpers

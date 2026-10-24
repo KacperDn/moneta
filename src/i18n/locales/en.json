@@ -135,6 +135,8 @@
     "s8_body": "For questions about your data, write to: <a>{{email}}</a>"
   },
   "toast": {
+    "expenseUpdated": "Expense updated.",
+    "expenseUpdateFailed": "Could not update the expense.",
     "fetchFailed": "Couldn't load data. Check your connection.",
     "expenseSaveFailed": "Couldn't save the expense.",
     "expenseAdded": "Expense added!",
@@ -198,6 +200,7 @@
     "removeGoal": "Remove goal"
   },
   "form": {
+    "editTitle": "Edit expense",
     "recentTitle": "Recent expenses",
     "title": "New expense",
     "descriptionLabel": "Description",
@@ -213,6 +216,7 @@
     "errAmount": "Enter a valid amount."
   },
   "history": {
+    "editAria": "Edit expense",
     "title": "History",
     "exportMonth": "Export month",
     "filterAll": "All",

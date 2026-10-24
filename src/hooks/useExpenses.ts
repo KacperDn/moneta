@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "../lib/supabase";
 import { Expense, ExpenseForm, MonthSummary } from "../types";
 import { sumByMonth } from "../utils/expenseStats";
+import { replaceExpense } from "../utils/expenseList";
 
 const MAX_RETRIES = 3;
 
@@ -13,6 +14,7 @@ interface UseExpensesReturn {
   loading: boolean;
   saving: boolean;
   add: (form: ExpenseForm, userId: string) => Promise<boolean>;
+  update: (id: string, form: ExpenseForm) => Promise<boolean>;
   remove: (id: string) => Promise<void>;
   filtered: (month: number, year: number) => Expense[];
   byMonth: MonthSummary[];
@@ -76,6 +78,32 @@ export function useExpenses(session: Session | null): UseExpensesReturn {
     return true;
   };
 
+  const update = async (id: string, form: ExpenseForm): Promise<boolean> => {
+    setSaving(true);
+    // .select().single() turns a silently RLS-filtered update (0 rows) into an error.
+    const { data, error } = await supabase
+      .from("expenses")
+      .update({
+        description: form.desc,
+        cat: form.cat,
+        amount: parseFloat(form.amount),
+        date: form.date,
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    setSaving(false);
+    if (error || !data) {
+      toast.error(t("toast.expenseUpdateFailed"));
+      return false;
+    }
+
+    setExpenses(prev => replaceExpense(prev, data));
+    toast.success(t("toast.expenseUpdated"));
+    return true;
+  };
+
   const remove = async (id: string) => {
     const backup = expenses.find(e => e.id === id);
     setExpenses(prev => prev.filter(e => e.id !== id));
@@ -104,5 +132,5 @@ export function useExpenses(session: Session | null): UseExpensesReturn {
     }));
   }, [expenses, t]);
 
-  return { expenses, loading, saving, add, remove, filtered, byMonth };
+  return { expenses, loading, saving, add, update, remove, filtered, byMonth };
 }

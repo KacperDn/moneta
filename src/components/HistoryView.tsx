@@ -16,6 +16,7 @@ interface HistoryViewProps {
   getCategory: (name: string) => UserCategory;
   categoryLabel: (name: string) => string;
   onCatFilterChange: (name: string | null) => void;
+  onEdit: (expense: Expense) => void;
   onDelete: (id: string) => void;
   onAddExpense: () => void;
   onExport: () => void;
@@ -23,7 +24,7 @@ interface HistoryViewProps {
 
 export default function HistoryView({
   monthLabel, loading, expenses, monthExpenseCount, monthCategories, monthTotal, catFilter,
-  getCategory, categoryLabel, onCatFilterChange, onDelete, onAddExpense, onExport,
+  getCategory, categoryLabel, onCatFilterChange, onEdit, onDelete, onAddExpense, onExport,
 }: HistoryViewProps) {
   const { t } = useTranslation();
 
@@ -78,13 +79,15 @@ export default function HistoryView({
               const c = getCategory(e.cat);
               return (
                 <div key={e.id} className="list__row">
-                  <div className="list__icon" style={{ background: `${c.color}22`, color: c.color }}>{getCategoryIcon(c.icon)}</div>
-                  <div className="list__info">
-                    <div className="list__desc">{e.description}</div>
-                    <div className="list__meta">{categoryLabel(c.name)} · {e.date}</div>
-                  </div>
-                  <div className="list__amount">{fmt(parseFloat(String(e.amount)))} zł</div>
-                  <button className="list__delete" onClick={() => onDelete(e.id)}>×</button>
+                  <button type="button" className="list__main" onClick={() => onEdit(e)} aria-label={`${e.description}, ${t("history.editAria")}`}>
+                    <span className="list__icon" style={{ background: `${c.color}22`, color: c.color }}>{getCategoryIcon(c.icon)}</span>
+                    <span className="list__info">
+                      <span className="list__desc">{e.description}</span>
+                      <span className="list__meta">{categoryLabel(c.name)} · {e.date}</span>
+                    </span>
+                    <span className="list__amount">{fmt(parseFloat(String(e.amount)))} zł</span>
+                  </button>
+                  <button type="button" className="list__delete" onClick={() => onDelete(e.id)}>×</button>
                 </div>
               );
             })}

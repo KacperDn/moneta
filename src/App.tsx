@@ -13,7 +13,7 @@ import { fmt } from "./constants";
 import { sumByCategory } from "./utils/expenseStats";
 import { expensesToCsv } from "./utils/exportCsv";
 import { downloadCsvFile } from "./utils/downloadFile";
-import { ExpenseForm } from "./types";
+import { Expense, ExpenseForm } from "./types";
 import { IconPieChart, IconSettings, IconInfo, IconOverview, IconAdd, IconHistory } from "./icons";
 import { getCategoryIcon } from "./categoryIcons";
 import Auth from "./Auth";
@@ -26,6 +26,7 @@ import HistoryView from "./components/HistoryView";
 import RecentExpenses from "./components/RecentExpenses";
 import MonthSelect from "./components/MonthSelect";
 import AmountInput from "./components/AmountInput";
+import EditExpenseDialog from "./components/EditExpenseDialog";
 import { ConfirmDeleteDialog, BudgetDialog, CategoryHintDialog, CategoryDrilldownDialog } from "./components/Dialogs";
 import "./styles/main.scss";
 
@@ -40,7 +41,7 @@ export default function App() {
   const MONTHS = t("months", { returnObjects: true }) as string[];
 
   const { session, ready, isRecovery, logout } = useAuth();
-  const { expenses, loading, saving, add, remove, filtered, byMonth } = useExpenses(session);
+  const { expenses, loading, saving, add, update, remove, filtered, byMonth } = useExpenses(session);
   const { goal, setGoal } = useBudgetGoal(session?.user.id);
   const { categories, addCategory, updateCategory, deleteCategory } = useCategories(session?.user.id);
   const { theme, setTheme } = useTheme();
@@ -56,6 +57,7 @@ export default function App() {
   const [year]                  = useState(NOW.getFullYear());
   const [form, setForm]         = useState<ExpenseForm>({ desc: "", cat: "Jedzenie", amount: "", date: NOW.toISOString().split("T")[0] });
   const [err, setErr]           = useState("");
+  const [editing, setEditing] = useState<Expense | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [budgetOpen, setBudgetOpen] = useState(false);
   const [budgetInput, setBudgetInput] = useState("");
@@ -165,6 +167,11 @@ export default function App() {
 
   const handleDelete = (id: string) => setConfirmId(id);
 
+  const handleUpdate = async (form: ExpenseForm) => {
+    if (!editing) return;
+    if (await update(editing.id, form)) setEditing(null);
+  };
+
   const exportMonthCsv = () => {
     downloadCsvFile(`moneta-${MONTHS[month].toLowerCase()}-${year}.csv`, expensesToCsv(monthExpenses));
   };
@@ -219,6 +226,18 @@ export default function App() {
 
   return (
     <div className="app">
+
+      {editing && (
+        <EditExpenseDialog
+          key={editing.id}
+          expense={editing}
+          categories={categories}
+          categoryLabel={catLabel}
+          saving={saving}
+          onSave={handleUpdate}
+          onCancel={() => setEditing(null)}
+        />
+      )}
 
       {confirmId && (
         <ConfirmDeleteDialog onCancel={() => setConfirmId(null)} onConfirm={confirmDelete} />
@@ -514,6 +533,7 @@ export default function App() {
             getCategory={getUserCat}
             categoryLabel={catLabel}
             onCatFilterChange={setCatFilter}
+            onEdit={setEditing}
             onDelete={handleDelete}
             onAddExpense={() => setView("add")}
             onExport={exportMonthCsv}

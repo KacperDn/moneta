@@ -22,6 +22,11 @@ export function revealProps(index = 0) {
  */
 export function useScrollReveal(): void {
   useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") {
+      document.querySelectorAll(SELECTOR).forEach(el => el.classList.add("is-visible"));
+      return;
+    }
+
     const io = new IntersectionObserver(entries => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;

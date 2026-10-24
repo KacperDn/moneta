@@ -135,6 +135,8 @@
     "s8_body": "W sprawie swoich danych pisz na: <a>{{email}}</a>"
   },
   "toast": {
+    "expenseUpdated": "Wydatek zaktualizowany.",
+    "expenseUpdateFailed": "Nie udało się zaktualizować wydatku.",
     "fetchFailed": "Nie udało się pobrać danych. Sprawdź połączenie.",
     "expenseSaveFailed": "Nie udało się zapisać wydatku.",
     "expenseAdded": "Wydatek dodany!",
@@ -200,6 +202,7 @@
     "removeGoal": "Usuń cel"
   },
   "form": {
+    "editTitle": "Edytuj wydatek",
     "recentTitle": "Ostatnie wydatki",
     "title": "Nowy wydatek",
     "descriptionLabel": "Opis",
@@ -215,6 +218,7 @@
     "errAmount": "Podaj poprawną kwotę."
   },
   "history": {
+    "editAria": "Edytuj wydatek",
     "title": "Historia",
     "exportMonth": "Eksportuj miesiąc",
     "filterAll": "Wszystkie",
