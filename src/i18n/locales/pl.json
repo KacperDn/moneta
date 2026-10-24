@@ -21,6 +21,7 @@
     "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"
   ],
   "landing": {
+    "scrollDown": "Przewiń w dół",
     "title": "Zobacz, gdzie naprawdę idą Twoje pieniądze",
     "subtitle": "Proste śledzenie wydatków, przejrzyste wykresy i cele budżetowe — wszystko w jednym miejscu.",
     "cta": "Zaloguj się",

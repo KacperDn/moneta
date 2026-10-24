@@ -21,6 +21,7 @@
     "July", "August", "September", "October", "November", "December"
   ],
   "landing": {
+    "scrollDown": "Scroll down",
     "title": "See where your money really goes",
     "subtitle": "Simple expense tracking, clear charts and budget goals — all in one place.",
     "cta": "Sign in",

@@ -1,8 +1,10 @@
 import { MouseEvent, PointerEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { IconPieChart, IconTrendingUp, IconCloud, IconShield, IconPalette, IconSettings } from "./icons";
+import { IconPieChart, IconTrendingUp, IconCloud, IconShield, IconPalette, IconSettings, IconChevronDown } from "./icons";
 import { Theme } from "./hooks/useTheme";
 import { revealProps } from "./hooks/useScrollReveal";
+import { useMediaQuery } from "./hooks/useMediaQuery";
+import { useScrollProgress } from "./hooks/useScrollProgress";
 import Settings from "./Settings";
 import DashboardMock from "./components/DashboardMock";
 
@@ -45,6 +47,10 @@ interface Props {
 export default function Landing({ theme, onThemeChange, onGetStarted }: Props) {
   const { t } = useTranslation();
   const [showSettings, setShowSettings] = useState(false);
+  const progressRef = useRef<HTMLDivElement>(null);
+  useScrollProgress(progressRef);
+  // The feature grid only exists on wider screens; phones scroll to the steps instead.
+  const nextSectionId = useMediaQuery("(min-width: 900px)") ? "features" : "how";
   const [active, setActive] = useState(0);
   const dragState = useRef({ startX: 0, moved: false });
   const suppressClick = useRef(false);
@@ -103,7 +109,7 @@ export default function Landing({ theme, onThemeChange, onGetStarted }: Props) {
     <div className="landing">
       <div className="auth-glow auth-glow--1" />
       <div className="auth-glow auth-glow--2" />
-      <div className="landing__progress" aria-hidden="true" />
+      <div className="landing__progress" ref={progressRef} aria-hidden="true" />
 
       <header className="landing__header">
         <span className="landing__logo">moneta</span>
@@ -179,6 +185,15 @@ export default function Landing({ theme, onThemeChange, onGetStarted }: Props) {
         </div>
 
         <DashboardMock />
+
+        <button
+          type="button"
+          className="landing__scroll"
+          onClick={scrollToSection(nextSectionId)}
+          aria-label={t("landing.scrollDown")}
+        >
+          {IconChevronDown}
+        </button>
       </main>
 
       <section id="features" className="lp-section lp-section--features">

@@ -17,7 +17,6 @@
     position: absolute;
     inset: 0;
     z-index: -1;
-    opacity: 0;
     background: $header-backdrop;
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -27,13 +26,13 @@
 
 .landing__progress {
   position: fixed;
-  top: 0;
+  top: env(safe-area-inset-top, 0px);
   left: 0;
   right: 0;
   height: 3px;
   z-index: 40;
   transform-origin: 0 50%;
-  transform: scaleX(0);
+  transform: scaleX(var(--progress, 0));
   background: linear-gradient(90deg, $accent, $accent-2);
   pointer-events: none;
 }
@@ -62,6 +61,7 @@
 // ── Landing: sections (shared, single column on small screens) ──────────────
 .lp-section {
   position: relative;
+  scroll-margin-top: 40px; // keeps the sticky header off the section title after scrolling to it
   z-index: 1;
   width: 100%;
   max-width: 420px;
@@ -469,8 +469,7 @@
 // ── Scroll-linked motion (progressive enhancement) ──────────────────────────
 // Supported in Chromium and Safari 26+. Elsewhere the page is simply static.
 @supports (animation-timeline: scroll()) {
-  @keyframes lp-progress { to { transform: scaleX(1); } }
-  @keyframes lp-header-bg { to { opacity: 1; } }
+  @keyframes lp-header-bg { from { opacity: 0; } }
   @keyframes lp-mock-leave {
     to {
       transform: perspective(1400px) rotateY(0deg) rotateX(0deg) translateY(-48px) scale(0.95);
@@ -480,11 +479,6 @@
   @keyframes lp-cta-rise {
     from { transform: scale(0.94); }
     to   { transform: scale(1); }
-  }
-
-  .landing__progress {
-    animation: lp-progress linear both;
-    animation-timeline: scroll(root block);
   }
 
   .landing__header::before {
@@ -504,4 +498,40 @@
     animation-timeline: view();
     animation-range: entry 0% entry 80%;
   }
+}
+
+// Scroll-down cue under the hero.
+.landing__hero { padding-bottom: 96px; }
+
+.landing__scroll {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto;
+  padding: 0;
+  background: none;
+  border: none;
+  color: $accent-soft;
+  cursor: pointer;
+  transition: color 0.2s;
+
+  svg {
+    width: 38px;
+    height: 38px;
+    stroke-width: 1.75;
+    animation: lp-nudge 1.8s ease-in-out infinite;
+  }
+
+  &:hover { color: $text; }
+}
+
+@keyframes lp-nudge {
+  0%, 100% { transform: translateY(-3px); }
+  50%      { transform: translateY(5px); }
 }
