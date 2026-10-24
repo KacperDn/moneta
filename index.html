@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <script>
       try {
-        if (localStorage.getItem("moneta_theme") === "light") {
-          document.documentElement.setAttribute("data-theme", "light");
+        var theme = localStorage.getItem("moneta_theme");
+        if (theme === "light" || theme === "ocean") {
+          document.documentElement.setAttribute("data-theme", theme);
         }
       } catch (e) {}
       document.addEventListener("touchstart", function () {}, { passive: true });
@@ -30,8 +31,8 @@
     <meta name="twitter:title" content="moneta — personal finance tracker" />
     <meta name="twitter:description" content="Track your monthly expenses, visualize spending habits and monitor trends over time." />
     <meta name="twitter:image" content="https://kacperdn.github.io/moneta/og-image.png" />
-    <script type="module" crossorigin src="/moneta/assets/index-Dk5RPGNe.js"></script>
-    <link rel="stylesheet" crossorigin href="/moneta/assets/index-Cs2A-EPi.css">
+    <script type="module" crossorigin src="/moneta/assets/index-CfTMHf_P.js"></script>
+    <link rel="stylesheet" crossorigin href="/moneta/assets/index-DEwZwcJM.css">
   <link rel="manifest" href="/moneta/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/moneta/registerSW.js"></script></head>
   <body>
     <div id="root"></div>
