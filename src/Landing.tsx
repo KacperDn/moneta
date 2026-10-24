@@ -1,8 +1,10 @@
-import { PointerEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { MouseEvent, PointerEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconPieChart, IconTrendingUp, IconCloud, IconShield, IconPalette, IconSettings } from "./icons";
 import { Theme } from "./hooks/useTheme";
+import { revealProps } from "./hooks/useScrollReveal";
 import Settings from "./Settings";
+import DashboardMock from "./components/DashboardMock";
 
 const SWIPE_MOVE_THRESHOLD = 6;
 const SWIPE_TRIGGER_THRESHOLD = 40;
@@ -25,6 +27,13 @@ function offsetClass(offset: number) {
   if (offset === 1) return "right";
   if (offset === -1) return "left";
   return "back";
+}
+
+function scrollToSection(id: string) {
+  return (e: MouseEvent) => {
+    e.preventDefault();
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 }
 
 interface Props {
@@ -88,21 +97,31 @@ export default function Landing({ theme, onThemeChange, onGetStarted }: Props) {
     );
   }
 
+  const steps = t("landing.steps", { returnObjects: true }) as { title: string; desc: string }[];
+
   return (
     <div className="landing">
       <div className="auth-glow auth-glow--1" />
       <div className="auth-glow auth-glow--2" />
+      <div className="landing__progress" aria-hidden="true" />
 
       <header className="landing__header">
         <span className="landing__logo">moneta</span>
-        <button
-          type="button"
-          className="header__settings"
-          onClick={() => setShowSettings(true)}
-          aria-label={t("landing.settingsAria")}
-        >
-          {IconSettings}
-        </button>
+        <nav className="landing__nav">
+          <a href="#features" onClick={scrollToSection("features")}>{t("landing.navFeatures")}</a>
+          <a href="#how" onClick={scrollToSection("how")}>{t("landing.navHow")}</a>
+        </nav>
+        <div className="landing__header-actions">
+          <button type="button" className="landing__login" onClick={onGetStarted}>{t("landing.cta")}</button>
+          <button
+            type="button"
+            className="header__settings"
+            onClick={() => setShowSettings(true)}
+            aria-label={t("landing.settingsAria")}
+          >
+            {IconSettings}
+          </button>
+        </div>
       </header>
 
       <main className="landing__hero">
@@ -150,10 +169,56 @@ export default function Landing({ theme, onThemeChange, onGetStarted }: Props) {
           ))}
         </div>
 
+        <div className="landing__actions">
+          <button type="button" className="btn--primary landing__cta" onClick={onGetStarted}>
+            {t("landing.cta")}
+          </button>
+          <a href="#features" className="landing__secondary" onClick={scrollToSection("features")}>
+            {t("landing.ctaSecondary")}
+          </a>
+        </div>
+
+        <DashboardMock />
+      </main>
+
+      <section id="features" className="lp-section lp-section--features">
+        <div className="lp-section__head" {...revealProps()}>
+          <h2 className="lp-section__title">{t("landing.featuresTitle")}</h2>
+          <p className="lp-section__sub">{t("landing.featuresSub")}</p>
+        </div>
+        <div className="lp-grid">
+          {SLIDES.map((s, i) => (
+            <article key={i} className="lp-feature" {...revealProps(i % 3)}>
+              <div className="lp-feature__icon">{s.icon}</div>
+              <h3 className="lp-feature__title">{s.title}</h3>
+              <p className="lp-feature__desc">{s.desc}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="how" className="lp-section">
+        <div className="lp-section__head" {...revealProps()}>
+          <h2 className="lp-section__title">{t("landing.howTitle")}</h2>
+        </div>
+        <ol className="lp-steps">
+          {steps.map((step, i) => (
+            <li key={i} className="lp-step" {...revealProps(i)}>
+              <span className="lp-step__num">{i + 1}</span>
+              <h3 className="lp-step__title">{step.title}</h3>
+              <p className="lp-step__desc">{step.desc}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="lp-cta" {...revealProps()}>
+        <h2 className="lp-cta__title">{t("landing.ctaTitle")}</h2>
+        <p className="lp-cta__sub">{t("landing.ctaSub")}</p>
         <button type="button" className="btn--primary landing__cta" onClick={onGetStarted}>
           {t("landing.cta")}
         </button>
-      </main>
+      </section>
 
       <footer className="landing__footer">{t("landing.footer")}</footer>
     </div>

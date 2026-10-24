@@ -7,12 +7,14 @@ import { useCountUp } from "./hooks/useCountUp";
 import { useBudgetGoal } from "./hooks/useBudgetGoal";
 import { useTheme } from "./hooks/useTheme";
 import { useCategories } from "./hooks/useCategories";
+import { useScrollReveal, revealProps } from "./hooks/useScrollReveal";
+import { useMediaQuery } from "./hooks/useMediaQuery";
 import { fmt } from "./constants";
 import { sumByCategory } from "./utils/expenseStats";
 import { expensesToCsv } from "./utils/exportCsv";
 import { downloadCsvFile } from "./utils/downloadFile";
 import { ExpenseForm } from "./types";
-import { IconPieChart, IconSettings, IconInfo } from "./icons";
+import { IconPieChart, IconSettings, IconInfo, IconOverview, IconAdd, IconHistory } from "./icons";
 import { getCategoryIcon } from "./categoryIcons";
 import Auth from "./Auth";
 import Landing from "./Landing";
@@ -21,10 +23,14 @@ import Settings from "./Settings";
 import CategoryManager from "./CategoryManager";
 import Skeleton from "./components/Skeleton";
 import HistoryView from "./components/HistoryView";
+import RecentExpenses from "./components/RecentExpenses";
+import MonthSelect from "./components/MonthSelect";
+import AmountInput from "./components/AmountInput";
 import { ConfirmDeleteDialog, BudgetDialog, CategoryHintDialog, CategoryDrilldownDialog } from "./components/Dialogs";
 import "./styles/main.scss";
 
 const TABS = ["dash", "add", "list"] as const;
+const TAB_ICONS = [IconOverview, IconAdd, IconHistory];
 
 const NOW = new Date();
 
@@ -38,6 +44,11 @@ export default function App() {
   const { goal, setGoal } = useBudgetGoal(session?.user.id);
   const { categories, addCategory, updateCategory, deleteCategory } = useCategories(session?.user.id);
   const { theme, setTheme } = useTheme();
+  useScrollReveal();
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const chartHeights = isDesktop
+    ? { pie: 270, pieInner: 70, pieOuter: 108, bars: 320, trend: 220, axisLeft: 0 }
+    : { pie: 190, pieInner: 52, pieOuter: 82, bars: 140, trend: 160, axisLeft: -28 };
   const [showLogin, setShowLogin] = useState(false);
 
   const [view, setView]         = useState<typeof TABS[number]>("dash");
@@ -164,6 +175,7 @@ export default function App() {
     setConfirmId(null);
   };
 
+  const tabLabels = [t("dashboard.navOverview"), t("dashboard.navAdd"), t("dashboard.navHistory")];
   const drilldownCategory = drilldownCat ? getUserCat(drilldownCat) : null;
 
   if (!ready) return (
@@ -238,20 +250,18 @@ export default function App() {
       {/* Header */}
       <div className="header">
         <div className="header__top">
-          <div style={{ minWidth: 0, flex: 1, marginRight: 10 }}>
+          <div className="header__brand">
             <div className="header__logo">moneta</div>
             <div className="header__email">{session.user.email}</div>
           </div>
           <div className="header__controls">
-            <select className="header__select" value={month} onChange={e => setMonth(+e.target.value)}>
-              {MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}
-            </select>
+            <MonthSelect months={MONTHS} value={month} onChange={setMonth} label={t("dashboard.monthSelectAria")} />
             <button className="header__settings" onClick={() => setShowSettings(true)} aria-label={t("dashboard.settingsAria")}>
               {IconSettings}
             </button>
           </div>
         </div>
-        <nav className="nav">
+        <nav className="nav nav--header">
           {TABS.map((id, i) => (
             <button
               key={id}
@@ -259,18 +269,18 @@ export default function App() {
               className={`nav__tab${view === id ? " nav__tab--active" : ""}`}
               onClick={() => setView(id)}
             >
-              {[t("dashboard.navOverview"), t("dashboard.navAdd"), t("dashboard.navHistory")][i]}
+              {tabLabels[i]}
             </button>
           ))}
           <div className="nav__indicator" style={{ left: indicator.left, width: indicator.width }} />
         </nav>
       </div>
 
-      <div className="app__container">
+      <div className={`app__container app__container--${view}`}>
 
         {/* DASHBOARD */}
         {view === "dash" && (
-          loading ? <Skeleton /> : <>
+          loading ? <Skeleton /> : <div className="dash">
             <div className="hero">
               <div className="hero__month">{MONTHS[month]} {year}</div>
               <div className="hero__total">{fmt(animatedTotal)}<span className="hero__currency">zł</span></div>
@@ -301,16 +311,16 @@ export default function App() {
                 </div>
               )
               : <>
-                <div className="card">
+                <div className="card" {...revealProps(1)}>
                   <div className="card__title">{t("dashboard.breakdownTitle")}</div>
                   {visibleCats.length === 0
                     ? <div className="cat-bar__all-hidden">{t("dashboard.allHidden")}</div>
                     : (
-                      <ResponsiveContainer width="100%" height={190}>
+                      <ResponsiveContainer width="100%" height={chartHeights.pie}>
                         <PieChart>
                           <Pie
                             data={visibleCats} dataKey="value" nameKey="name" cx="50%" cy="50%"
-                            innerRadius={52} outerRadius={82} paddingAngle={3} cornerRadius={6} strokeWidth={0}
+                            innerRadius={chartHeights.pieInner} outerRadius={chartHeights.pieOuter} paddingAngle={3} cornerRadius={6} strokeWidth={0}
                             animationDuration={700} animationEasing="ease-out"
                           >
                             {visibleCats.map((e, i) => (
@@ -324,7 +334,7 @@ export default function App() {
                   }
                 </div>
 
-                <div className="card">
+                <div className="card" {...revealProps(2)}>
                   <div className="card__title card__title--row">
                     {t("dashboard.categoriesTitle")}
                     <button type="button" className="card__info" onClick={() => setCatHintOpen(true)} aria-label={t("dashboard.categoriesInfoAria")}>
@@ -361,10 +371,10 @@ export default function App() {
                 </div>
 
                 {byDay.length > 1 && (
-                  <div className="card">
+                  <div className="card" {...revealProps(3)}>
                     <div className="card__title">{t("dashboard.dayByDayTitle")}</div>
-                    <ResponsiveContainer width="100%" height={140}>
-                      <BarChart data={byDay} margin={{ top: 0, right: 0, left: -28, bottom: 0 }}>
+                    <ResponsiveContainer width="100%" height={chartHeights.bars}>
+                      <BarChart data={byDay} margin={{ top: 0, right: 0, left: chartHeights.axisLeft, bottom: 0 }}>
                         <defs>
                           <linearGradient id="barFill" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="var(--accent-soft)" />
@@ -386,7 +396,7 @@ export default function App() {
               </>
             }
 
-            <div className="card">
+            <div className="card" {...revealProps(4)}>
               <div className="card__title">{t("dashboard.monthlyTrendTitle")}</div>
               {byMonth.length < 2 ? (
                 <div className="trend__empty">
@@ -424,8 +434,8 @@ export default function App() {
                       <div className="trend__stat-value trend__stat-value--down">{minM.label}</div>
                     </div>
                   </div>
-                  <ResponsiveContainer width="100%" height={160}>
-                    <ComposedChart data={byMonth} margin={{ top: 10, right: 10, left: -28, bottom: 0 }}>
+                  <ResponsiveContainer width="100%" height={chartHeights.trend}>
+                    <ComposedChart data={byMonth} margin={{ top: 10, right: 10, left: chartHeights.axisLeft, bottom: 0 }}>
                       <defs>
                         <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.35} />
@@ -443,46 +453,53 @@ export default function App() {
                 </>;
               })()}
             </div>
-          </>
+          </div>
         )}
 
         {/* ADD */}
-        {view === "add" && <>
-          <div className="form__title">{t("form.title")}</div>
-          {err && <div className="alert alert--error">{err}</div>}
+        {view === "add" && <div className="add">
+          <section className="add__form">
+            <div className="form__title">{t("form.title")}</div>
+            {err && <div className="alert alert--error">{err}</div>}
 
-          <label className="form__label">{t("form.descriptionLabel")}</label>
-          <input className="form__input" placeholder={t("form.descriptionPlaceholder")} value={form.desc}
-            onChange={e => { setErr(""); setForm(f => ({ ...f, desc: e.target.value })); }} />
+            <label className="form__label">{t("form.descriptionLabel")}</label>
+            <input className="form__input" placeholder={t("form.descriptionPlaceholder")} value={form.desc}
+              onChange={e => { setErr(""); setForm(f => ({ ...f, desc: e.target.value })); }} />
 
-          <label className="form__label">{t("form.amountLabel")}</label>
-          <input className="form__input" type="number" placeholder={t("form.amountPlaceholder")} value={form.amount}
-            onChange={e => { setErr(""); setForm(f => ({ ...f, amount: e.target.value })); }} />
+            <label className="form__label">{t("form.amountLabel")}</label>
+            <AmountInput
+              value={form.amount}
+              placeholder={t("form.amountPlaceholder")}
+              quickAmounts={[10, 50, 100]}
+              onChange={amount => { setErr(""); setForm(f => ({ ...f, amount })); }}
+            />
 
-          <label className="form__label form__label--row">
-            {t("form.categoryLabel")}
-            <button type="button" className="form__manage-cats" onClick={() => setShowCategoryManager(true)}>
-              {t("form.manageCategories")}
-            </button>
-          </label>
-          <div className="form__cat-grid">
-            {categories.filter(c => !c.hidden).map(c => (
-              <button key={c.name} className={`form__cat-btn${form.cat === c.name ? " form__cat-btn--active" : ""}`}
-                onClick={() => setForm(f => ({ ...f, cat: c.name }))}>
-                <span className="form__cat-btn__icon" style={{ color: c.color }}>{getCategoryIcon(c.icon)}</span>{catLabel(c.name)}
+            <label className="form__label form__label--row">
+              {t("form.categoryLabel")}
+              <button type="button" className="form__manage-cats" onClick={() => setShowCategoryManager(true)}>
+                {t("form.manageCategories")}
               </button>
-            ))}
-          </div>
+            </label>
+            <div className="form__cat-grid">
+              {categories.filter(c => !c.hidden).map(c => (
+                <button key={c.name} className={`form__cat-btn${form.cat === c.name ? " form__cat-btn--active" : ""}`}
+                  onClick={() => setForm(f => ({ ...f, cat: c.name }))}>
+                  <span className="form__cat-btn__icon" style={{ color: c.color }}>{getCategoryIcon(c.icon)}</span>{catLabel(c.name)}
+                </button>
+              ))}
+            </div>
 
-          <label className="form__label">{t("form.dateLabel")}</label>
-          <input className="form__input" type="date" value={form.date}
-            onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
+            <label className="form__label">{t("form.dateLabel")}</label>
+            <input className="form__input" type="date" value={form.date}
+              onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
 
-          <button className="btn--primary" onClick={handleAdd} disabled={saving}>
-            {saving && <span className="btn__spinner" />}
-            {saving ? t("form.submitLoading") : t("form.submitIdle")}
-          </button>
-        </>}
+            <button className="btn--primary" onClick={handleAdd} disabled={saving}>
+              {saving && <span className="btn__spinner" />}
+              {saving ? t("form.submitLoading") : t("form.submitIdle")}
+            </button>
+          </section>
+          <RecentExpenses expenses={expenses.slice(0, 6)} getCategory={getUserCat} categoryLabel={catLabel} />
+        </div>}
 
         {/* LIST */}
         {view === "list" && (
@@ -492,6 +509,7 @@ export default function App() {
             expenses={filteredExpenses}
             monthExpenseCount={monthExpenses.length}
             monthCategories={byCat}
+            monthTotal={total}
             catFilter={catFilter}
             getCategory={getUserCat}
             categoryLabel={catLabel}
@@ -503,6 +521,20 @@ export default function App() {
         )}
 
       </div>
+
+      <nav className="nav nav--bottom" aria-label={t("dashboard.navAria")}>
+        {TABS.map((id, i) => (
+          <button
+            key={id}
+            className={`nav__bottom-tab${view === id ? " nav__bottom-tab--active" : ""}`}
+            onClick={() => setView(id)}
+            aria-current={view === id ? "page" : undefined}
+          >
+            <span className="nav__bottom-icon">{TAB_ICONS[i]}</span>
+            <span>{tabLabels[i]}</span>
+          </button>
+        ))}
+      </nav>
     </div>
   );
 }

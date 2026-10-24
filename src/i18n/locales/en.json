@@ -33,7 +33,21 @@
       { "title": "Make it yours", "desc": "Custom categories, icons, colors, theme and language — it's your app." },
       { "title": "Your data, always with you", "desc": "Access from your phone and computer — always in sync." },
       { "title": "Privacy comes first", "desc": "Only you can see your data, secured at the database level." }
-    ]
+    ],
+    "navFeatures": "Features",
+    "navHow": "How it works",
+    "ctaSecondary": "See features",
+    "featuresTitle": "Everything you need to stay on top of your spending",
+    "featuresSub": "No spreadsheets, no clutter — just what helps you understand your money.",
+    "howTitle": "How it works",
+    "steps": [
+      { "title": "Add an expense", "desc": "A few seconds: amount, category and a note. Works the same on phone and desktop." },
+      { "title": "See the big picture", "desc": "Category, day-by-day and monthly trend charts build themselves." },
+      { "title": "Set a goal and stick to it", "desc": "A monthly budget with a progress bar shows how much you can still spend." }
+    ],
+    "ctaTitle": "Start tracking your spending today",
+    "ctaSub": "Create an account and add your first expense in under a minute.",
+    "mockLabel": "Spent this month"
   },
   "auth": {
     "titleLogin": "Sign in",
@@ -55,6 +69,7 @@
     "forgotPassword": "Forgot password",
     "createAccount": "Sign up",
     "haveAccount": "I already have an account",
+    "backHome": "Back to home",
     "backToLogin": "Back to sign in"
   },
   "passwordReset": {
@@ -140,6 +155,8 @@
   "monthsDataCount_one": "You have data from {{count}} month",
   "monthsDataCount_other": "You have data from {{count}} months",
   "dashboard": {
+    "navAria": "Navigation",
+    "monthSelectAria": "Choose month",
     "navOverview": "Overview",
     "navAdd": "Add",
     "navHistory": "History",
@@ -181,6 +198,7 @@
     "removeGoal": "Remove goal"
   },
   "form": {
+    "recentTitle": "Recent expenses",
     "title": "New expense",
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "e.g. Groceries, Netflix…",

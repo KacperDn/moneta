@@ -17,6 +17,7 @@ createRoot(document.getElementById("root")!).render(
     </ErrorBoundary>
     <Toaster
       position="bottom-center"
+      containerStyle={{ bottom: 88 }}
       toastOptions={{
         style: {
           background: "#1c1c1f",

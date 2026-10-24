@@ -33,7 +33,21 @@
       { "title": "Dostosuj wszystko do siebie", "desc": "Własne kategorie, ikony, kolory, motyw i język — to Twoja aplikacja." },
       { "title": "Twoje dane zawsze przy Tobie", "desc": "Dostęp z telefonu i komputera — zawsze zsynchronizowane." },
       { "title": "Prywatność na pierwszym miejscu", "desc": "Twoje dane widzisz tylko Ty, zabezpieczone na poziomie bazy." }
-    ]
+    ],
+    "navFeatures": "Funkcje",
+    "navHow": "Jak to działa",
+    "ctaSecondary": "Zobacz funkcje",
+    "featuresTitle": "Wszystko, czego potrzebujesz do kontroli wydatków",
+    "featuresSub": "Bez arkuszy i bez zbędnych ekranów — tylko to, co pomaga zrozumieć swoje pieniądze.",
+    "howTitle": "Jak to działa",
+    "steps": [
+      { "title": "Dodaj wydatek", "desc": "Kilka sekund: kwota, kategoria i opis. Działa tak samo na telefonie i komputerze." },
+      { "title": "Zobacz obraz całości", "desc": "Wykresy kategorii, dzień po dniu i trend miesięczny układają się same." },
+      { "title": "Ustaw cel i trzymaj się go", "desc": "Miesięczny budżet z paskiem postępu pokazuje, ile jeszcze możesz wydać." }
+    ],
+    "ctaTitle": "Zacznij kontrolować wydatki już dziś",
+    "ctaSub": "Załóż konto i dodaj pierwszy wydatek w mniej niż minutę.",
+    "mockLabel": "Wydane w tym miesiącu"
   },
   "auth": {
     "titleLogin": "Zaloguj się",
@@ -55,6 +69,7 @@
     "forgotPassword": "Zapomniałem hasła",
     "createAccount": "Zarejestruj się",
     "haveAccount": "Mam już konto",
+    "backHome": "Wróć na stronę główną",
     "backToLogin": "Wróć do logowania"
   },
   "passwordReset": {
@@ -142,6 +157,8 @@
   "monthsDataCount_one": "Masz dane z {{count}} miesiąca",
   "monthsDataCount_other": "Masz dane z {{count}} miesięcy",
   "dashboard": {
+    "navAria": "Nawigacja",
+    "monthSelectAria": "Wybierz miesiąc",
     "navOverview": "Przegląd",
     "navAdd": "Dodaj",
     "navHistory": "Historia",
@@ -183,6 +200,7 @@
     "removeGoal": "Usuń cel"
   },
   "form": {
+    "recentTitle": "Ostatnie wydatki",
     "title": "Nowy wydatek",
     "descriptionLabel": "Opis",
     "descriptionPlaceholder": "np. Biedronka, Netflix…",
