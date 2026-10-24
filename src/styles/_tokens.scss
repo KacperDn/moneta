@@ -1,0 +1,138 @@
+// Color tokens live as CSS custom properties (not plain Sass values) so the
+// theme can switch at runtime via [data-theme] on <html> — see useTheme.ts.
+// Dark is the default palette (applied on :root); light overrides it.
+:root {
+  --bg:             #09090b;
+  --bg-elevated:    #0f0f12;
+  --card-solid:     #16161a;
+  --card-solid-dim: #101013;
+  --overlay-solid:  #18181b;
+  --header-backdrop: rgba(9, 9, 11, 0.97);
+  --surface:        rgba(255, 255, 255, 0.045);
+  --surface-hover:  rgba(255, 255, 255, 0.07);
+  --border:         rgba(255, 255, 255, 0.08);
+  --border-mid:     rgba(255, 255, 255, 0.12);
+  --text:           #fafafa;
+  --text-soft:      rgba(255, 255, 255, 0.82);
+  --muted:          rgba(255, 255, 255, 0.42);
+  --subtle:         rgba(255, 255, 255, 0.22);
+  --heading-a:      #ffffff;
+  --heading-b:      rgba(255, 255, 255, 0.75);
+  --accent:         #a78bfa;
+  --accent-2:       #ec4899;
+  --accent-soft:    #c4b5fd;
+  --accent-dim:     rgba(167, 139, 250, 0.15);
+  --accent-border:  rgba(167, 139, 250, 0.5);
+  --accent-glow:    rgba(167, 139, 250, 0.35);
+  --danger:         #ef4444;
+  --danger-bg:      rgba(239, 68, 68, 0.12);
+  --danger-border:  rgba(239, 68, 68, 0.25);
+  --success-bg:     rgba(16, 185, 129, 0.1);
+  --success-border: rgba(16, 185, 129, 0.25);
+  --success-text:   #6ee7b7;
+}
+
+[data-theme="light"] {
+  --bg:             #f5f5f7;
+  --bg-elevated:    #ffffff;
+  --card-solid:     #ffffff;
+  --card-solid-dim: #ececef;
+  --overlay-solid:  #ffffff;
+  --header-backdrop: rgba(245, 245, 247, 0.97);
+  --surface:        rgba(10, 10, 20, 0.035);
+  --surface-hover:  rgba(10, 10, 20, 0.06);
+  --border:         rgba(10, 10, 20, 0.1);
+  --border-mid:     rgba(10, 10, 20, 0.16);
+  --text:           #131318;
+  --text-soft:      rgba(19, 19, 24, 0.8);
+  --muted:          rgba(19, 19, 24, 0.52);
+  --subtle:         rgba(19, 19, 24, 0.32);
+  --heading-a:      #0a0a0d;
+  --heading-b:      rgba(10, 10, 13, 0.72);
+  --accent:         #7c5cf0;
+  --accent-2:       #db2777;
+  --accent-soft:    #6d28d9;
+  --accent-dim:     rgba(124, 92, 240, 0.1);
+  --accent-border:  rgba(124, 92, 240, 0.4);
+  --accent-glow:    rgba(124, 92, 240, 0.22);
+  --danger:         #dc2626;
+  --danger-bg:      rgba(220, 38, 38, 0.08);
+  --danger-border:  rgba(220, 38, 38, 0.22);
+  --success-bg:     rgba(5, 150, 105, 0.08);
+  --success-border: rgba(5, 150, 105, 0.22);
+  --success-text:   #047857;
+}
+
+$bg:             var(--bg);
+$bg-elevated:    var(--bg-elevated);
+$card-solid:     var(--card-solid);
+$card-solid-dim: var(--card-solid-dim);
+$overlay-solid:  var(--overlay-solid);
+$header-backdrop: var(--header-backdrop);
+$surface:        var(--surface);
+$surface-hover:  var(--surface-hover);
+$border:         var(--border);
+$border-mid:     var(--border-mid);
+$text:           var(--text);
+$text-soft:      var(--text-soft);
+$muted:          var(--muted);
+$subtle:         var(--subtle);
+$heading-a:      var(--heading-a);
+$heading-b:      var(--heading-b);
+$accent:         var(--accent);
+$accent-2:       var(--accent-2);
+$accent-soft:    var(--accent-soft);
+$accent-dim:     var(--accent-dim);
+$accent-border:  var(--accent-border);
+$accent-glow:    var(--accent-glow);
+$danger:         var(--danger);
+$danger-bg:      var(--danger-bg);
+$danger-border:  var(--danger-border);
+$success-bg:     var(--success-bg);
+$success-border: var(--success-border);
+$success-text:   var(--success-text);
+
+$radius-sm: 8px;
+$radius-md: 10px;
+$radius-lg: 16px;
+$radius-xl: 20px;
+
+$ease: cubic-bezier(0.16, 1, 0.3, 1);
+$ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+
+$font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+// Single source of truth for the mobile/desktop split used across auth + landing.
+$breakpoint-mobile: 480px;
+
+@mixin mobile {
+  @media (max-width: $breakpoint-mobile) { @content; }
+}
+
+@mixin desktop {
+  @media (min-width: ($breakpoint-mobile + 1)) { @content; }
+}
+
+// Coverflow carousel (Landing page) — side-card offset is derived from card
+// width so resizing the card keeps the "peek" proportion consistent instead
+// of drifting out of sync (see: earlier bug where widening the card without
+// rescaling the offset made the side cards nearly disappear behind it).
+$carousel-card-width:         340px;
+$carousel-card-width-mobile:  270px;
+$carousel-card-height:        265px;
+$carousel-card-height-mobile: 230px;
+$carousel-offset-ratio: 0.46;  // side-card horizontal offset, as a fraction of card width
+$carousel-perspective:  800px;
+$carousel-tilt:         48deg; // rotateY applied to left/right cards
+$carousel-depth:        -130px; // translateZ push-back for left/right cards
+$carousel-back-depth:   -280px; // translateZ push-back for the hidden "back" card
+$carousel-scale:        0.66;  // left/right card scale
+$carousel-back-scale:   0.55;  // hidden "back" card scale
+
+// Breakpoints for the responsive layers (landing switches at tablet, the signed-in app at desktop).
+$bp-tablet:  900px;
+$bp-desktop: 1024px;
+
+@mixin from($width) {
+  @media (min-width: $width) { @content; }
+}

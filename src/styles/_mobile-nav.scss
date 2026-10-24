@@ -1,0 +1,69 @@
+@use "tokens" as *;
+
+// Mobile: bottom tab bar instead of tabs under the header.
+.nav--bottom { display: none; }
+
+@media (max-width: ($bp-desktop - 1)) {
+  .nav--header { display: none; }
+
+  .header {
+    padding: 14px 20px;
+    border-bottom: 1px solid $border;
+  }
+
+  .header__top { margin-bottom: 0; }
+
+  .app__container {
+    padding-bottom: calc(104px + env(safe-area-inset-bottom));
+  }
+
+  .nav--bottom {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+    background: $header-backdrop;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid $border;
+  }
+
+  .nav__bottom-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 0;
+    background: none;
+    border: none;
+    color: $muted;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .nav__bottom-icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 30px;
+    border-radius: 99px;
+    transition: background 0.25s $ease, transform 0.15s;
+
+    svg { width: 21px; height: 21px; }
+  }
+
+  .nav__bottom-tab:active .nav__bottom-icon { transform: scale(0.92); }
+
+  .nav__bottom-tab--active {
+    color: $accent-soft;
+    font-weight: 600;
+
+    .nav__bottom-icon { background: $accent-dim; }
+  }
+}

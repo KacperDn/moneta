@@ -1,0 +1,49 @@
+@use "tokens" as *;
+
+// Edit expense dialog + row action.
+.edit__box {
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  padding: 28px 24px;
+  background: $card-solid;
+  border: 1px solid $border-mid;
+  border-radius: $radius-xl;
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.6);
+  animation: popIn 0.28s $ease;
+
+  .form__cat-grid { margin-bottom: 16px; }
+  .confirm__actions { margin-top: 8px; }
+}
+
+.edit__title {
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+
+// Tapping the row body opens the edit dialog; the delete button stays separate.
+.list__main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.list__desc,
+.list__meta {
+  display: block;
+}
+
+.list__row:has(.list__main:active) { background: $surface-hover; }

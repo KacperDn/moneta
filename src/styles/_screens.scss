@@ -1,0 +1,196 @@
+@use "tokens" as *;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Screens: add expense, history summary, auth split layout
+// ─────────────────────────────────────────────────────────────────────────────
+.add__recent { display: none; }
+
+.history__summary { display: none; }
+
+@include from($bp-desktop) {
+  .app__container--add { max-width: 1120px; }
+  .app__container--list { max-width: 1180px; }
+
+  .add {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .add__form {
+    padding: 32px 36px 36px;
+    border-radius: 24px;
+    border: 1px solid $border;
+    background-color: $surface;
+    background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 40%);
+    animation: fadeInUp 0.45s $ease backwards;
+
+    .form__title { padding-top: 0; font-size: 26px; }
+    .form__cat-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .add__recent {
+    display: block;
+    position: sticky;
+    top: 40px;
+    animation: fadeInUp 0.45s $ease 0.08s backwards;
+
+    .card--list { margin-bottom: 0; }
+    .list__row:last-child { border-bottom: none; }
+  }
+
+  .history {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .history__title { font-size: 28px; }
+
+  .history__summary {
+    display: block;
+    position: sticky;
+    top: 40px;
+    padding: 26px;
+    border-radius: 24px;
+    border: 1px solid $border;
+    background:
+      radial-gradient(120% 120% at 0% 0%, var(--accent-dim), transparent 60%),
+      $surface;
+    animation: fadeInUp 0.45s $ease 0.08s backwards;
+
+    .card__title { margin-bottom: 10px; }
+  }
+
+  .history__summary-total {
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -1.6px;
+    font-variant-numeric: tabular-nums;
+
+    span { margin-left: 4px; font-size: 18px; font-weight: 500; color: $muted; }
+  }
+
+  .history__summary-count {
+    margin-top: 4px;
+    font-size: 12.5px;
+    color: $muted;
+  }
+
+  .history__summary-rows {
+    display: grid;
+    gap: 14px;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid $border;
+  }
+
+  .history__summary-row {
+    display: grid;
+    grid-template-columns: 10px 1fr auto;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 7px;
+    font-size: 13px;
+  }
+
+  .history__summary-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .history__summary-amount { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .history__summary-track {
+    grid-column: 1 / -1;
+    height: 5px;
+    border-radius: 99px;
+    overflow: hidden;
+    background: $surface-hover;
+
+    div { height: 100%; border-radius: inherit; }
+  }
+
+  .list__row:hover { background: $surface; }
+}
+
+// Auth screens: brand panel + form side by side on wide screens.
+.auth-shell__aside { display: none; }
+
+@include from($bp-tablet) {
+  .auth-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .auth-shell__header { display: none; }
+
+  .auth-shell__aside { grid-column: 1; grid-row: 1; }
+
+  .auth-shell__panel {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    justify-self: center;
+    flex: none;
+    max-width: 484px;
+    padding: 40px 32px;
+  }
+
+  .auth-shell__back {
+    margin: 0 0 14px 4px;
+    font-size: 15px;
+  }
+
+  .auth-shell__aside {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+    padding: 64px clamp(40px, 5vw, 88px);
+    border-right: 1px solid $border;
+    background:
+      radial-gradient(90% 70% at 20% 0%, var(--accent-dim), transparent 70%),
+      $bg-elevated;
+
+    .mock { display: block; margin-top: 24px; max-width: 480px; }
+    .mock__window { transform: none; box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.5); }
+  }
+
+  .auth-shell__aside-logo {
+    margin-bottom: 18px;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+    background: linear-gradient(135deg, $accent 0%, $accent-soft 55%, $accent-2 130%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .auth-shell__aside-title {
+    max-width: 520px;
+    font-size: clamp(30px, 3.2vw, 44px);
+    font-weight: 800;
+    letter-spacing: -1.4px;
+    line-height: 1.1;
+  }
+
+  .auth-shell__aside-sub {
+    max-width: 440px;
+    color: $muted;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .auth-shell__content {
+    padding: 40px 36px;
+    border-radius: 24px;
+    border: 1px solid $border;
+    background-color: $surface;
+    background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 40%);
+  }
+
+  .auth-form__title { font-size: 28px; }
+}

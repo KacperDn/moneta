@@ -1,0 +1,168 @@
+@use "tokens" as *;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Desktop layout & scroll motion
+// Mobile-first: everything below is additive. Landing switches layout at
+// $bp-tablet, the signed-in app at $bp-desktop.
+// ─────────────────────────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+.header__brand {
+  min-width: 0;
+  flex: 1;
+  margin-right: 10px;
+}
+
+// Scroll reveal — driven by useScrollReveal (adds .is-visible in view).
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  animation: none;
+  transition:
+    opacity 0.7s $ease var(--reveal-delay, 0ms),
+    transform 0.7s $ease var(--reveal-delay, 0ms),
+    border-color 0.25s, background-color 0.25s, box-shadow 0.25s;
+
+  &.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+[data-reveal]:not(.is-visible) .cat-bar__fill { width: 0 !important; }
+
+// ── Signed-in app: sidebar + dashboard grid ─────────────────────────────────
+@include from($bp-desktop) {
+  .app {
+    display: grid;
+    grid-template-columns: 252px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    padding: 30px 16px 22px;
+    border-bottom: none;
+    border-right: 1px solid $border;
+  }
+
+  .header__top {
+    display: contents;
+  }
+
+  .header__brand {
+    flex: none;
+    margin: 0 0 30px;
+    padding: 0 12px;
+  }
+
+  .header__logo { font-size: 24px; }
+  .header__email { margin-top: 4px; }
+
+  .nav {
+    order: 2;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nav__tab {
+    flex: none;
+    text-align: left;
+    padding: 12px 14px;
+    border-radius: $radius-md;
+    font-size: 14px;
+    transition: color 0.2s, background 0.2s;
+
+    &:hover { background: $surface; }
+  }
+
+  .nav__tab--active {
+    background: $accent-dim;
+    box-shadow: inset 3px 0 0 $accent;
+  }
+
+  .nav__indicator { display: none; }
+
+  .header__controls {
+    order: 3;
+    margin-top: auto;
+    padding: 0 4px;
+  }
+
+  .month-select { flex: 1; }
+
+  .month-select__list {
+    top: auto;
+    bottom: calc(100% + 8px);
+    left: 0;
+    right: auto;
+    transform-origin: bottom left;
+  }
+
+  .app__container {
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 40px 44px 80px;
+  }
+
+  .app__container--add { max-width: 680px; }
+  .app__container--list { max-width: 900px; }
+
+  .dash {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: stretch;
+
+    > .card { margin-bottom: 0; }
+    > .hero,
+    > .empty-state { grid-column: 1 / -1; }
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+    column-gap: 56px;
+    align-items: center;
+    text-align: left;
+    padding: 40px 44px;
+    border-radius: 24px;
+    border: 1px solid $border;
+    background:
+      radial-gradient(120% 160% at 0% 0%, var(--accent-dim), transparent 62%),
+      $surface;
+
+    > :not(.budget):not(.budget__set) { grid-column: 1; }
+
+    > .budget,
+    > .budget__set {
+      grid-column: 2;
+      grid-row: 1 / span 3;
+      align-self: center;
+      margin: 0;
+      max-width: none;
+    }
+
+    > .budget__set { justify-self: start; }
+  }
+
+  .hero__total { font-size: clamp(60px, 6.2vw, 92px); letter-spacing: -3px; }
+  .hero__currency { font-size: 28px; }
+  .hero__month { font-size: 13px; }
+
+  .card { padding: 22px; }
+
+  .hero { margin-bottom: 0; }
+
+  .filter-pills {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+}
