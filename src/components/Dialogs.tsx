@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { fmt } from "../constants";
 import { getCategoryIcon } from "../categoryIcons";
 import { Expense, UserCategory } from "../types";
+import AmountInput from "./AmountInput";
 
 interface ConfirmDeleteDialogProps {
   onCancel: () => void;
@@ -40,13 +41,13 @@ export function BudgetDialog({ value, hasGoal, onChange, onCancel, onSave, onRem
       <div className="confirm__box">
         <div className="confirm__title">{t("budgetGoal.title")}</div>
         <div className="confirm__sub">{t("budgetGoal.body")}</div>
-        <input
-          className="form__input"
-          type="number"
-          placeholder={t("budgetGoal.placeholder")}
+        <AmountInput
           value={value}
+          placeholder={t("budgetGoal.placeholder")}
+          step={100}
+          quickAmounts={[100, 500, 1000]}
           autoFocus
-          onChange={e => onChange(e.target.value)}
+          onChange={onChange}
         />
         <div className="confirm__actions">
           <button className="confirm__btn confirm__btn--cancel" onClick={onCancel}>{t("common.cancel")}</button>
