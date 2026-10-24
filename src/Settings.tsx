@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconChevronLeft, IconDownload } from "./icons";
-import { Theme } from "./hooks/useTheme";
+import { Theme, THEMES } from "./hooks/useTheme";
 import { useLanguage } from "./hooks/useLanguage";
 import { Expense, UserCategory } from "./types";
 import { expensesToCsv } from "./utils/exportCsv";
 import { downloadCsvFile } from "./utils/downloadFile";
 import PrivacyPolicy from "./PrivacyPolicy";
 import CategoryManager from "./CategoryManager";
+
+const THEME_LABEL_KEYS = {
+  dark: "settings.themeDark",
+  light: "settings.themeLight",
+  ocean: "settings.themeOcean",
+} as const;
 
 interface Props {
   theme: Theme;
@@ -82,20 +88,17 @@ export default function Settings({
             <div className="settings__row">
               <span>{t("settings.theme")}</span>
               <div className="settings__theme-toggle">
-                <button
-                  type="button"
-                  className={`settings__theme-btn${theme === "dark" ? " settings__theme-btn--active" : ""}`}
-                  onClick={() => onThemeChange("dark")}
-                >
-                  {t("settings.themeDark")}
-                </button>
-                <button
-                  type="button"
-                  className={`settings__theme-btn${theme === "light" ? " settings__theme-btn--active" : ""}`}
-                  onClick={() => onThemeChange("light")}
-                >
-                  {t("settings.themeLight")}
-                </button>
+                {THEMES.map(name => (
+                  <button
+                    key={name}
+                    type="button"
+                    className={`settings__theme-btn${theme === name ? " settings__theme-btn--active" : ""}`}
+                    onClick={() => onThemeChange(name)}
+                  >
+                    <span className={`settings__theme-dot settings__theme-dot--${name}`} />
+                    {t(THEME_LABEL_KEYS[name])}
+                  </button>
+                ))}
               </div>
             </div>
             <div className="settings__row">

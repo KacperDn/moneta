@@ -26,8 +26,8 @@ createRoot(document.getElementById("root")!).render(
           borderRadius: "10px",
           fontSize: "14px",
         },
-        success: { iconTheme: { primary: "#a78bfa", secondary: "#09090b" } },
-        error:   { iconTheme: { primary: "#ef4444", secondary: "#09090b" } },
+        success: { iconTheme: { primary: "var(--accent)", secondary: "var(--bg)" } },
+        error:   { iconTheme: { primary: "var(--danger)", secondary: "var(--bg)" } },
       }}
     />
   </StrictMode>

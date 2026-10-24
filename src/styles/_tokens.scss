@@ -1,6 +1,6 @@
 // Color tokens live as CSS custom properties (not plain Sass values) so the
 // theme can switch at runtime via [data-theme] on <html> — see useTheme.ts.
-// Dark is the default palette (applied on :root); light overrides it.
+// Dark is the default palette (applied on :root); light and ocean override it.
 :root {
   --bg:             #09090b;
   --bg-elevated:    #0f0f12;
@@ -30,37 +30,90 @@
   --success-bg:     rgba(16, 185, 129, 0.1);
   --success-border: rgba(16, 185, 129, 0.25);
   --success-text:   #6ee7b7;
+  --danger-text:    #fca5a5;
+  --on-accent:      #14101f;
+  --accent-strong:  #8b6ee0;
+  --accent-disabled: #4c4368;
+  --glow-1:         rgba(167, 139, 250, 0.3);
+  --glow-2:         rgba(236, 72, 153, 0.22);
+  color-scheme: dark;
 }
 
 [data-theme="light"] {
-  --bg:             #f5f5f7;
-  --bg-elevated:    #ffffff;
-  --card-solid:     #ffffff;
-  --card-solid-dim: #ececef;
-  --overlay-solid:  #ffffff;
-  --header-backdrop: rgba(245, 245, 247, 0.97);
-  --surface:        rgba(10, 10, 20, 0.035);
-  --surface-hover:  rgba(10, 10, 20, 0.06);
-  --border:         rgba(10, 10, 20, 0.1);
-  --border-mid:     rgba(10, 10, 20, 0.16);
-  --text:           #131318;
-  --text-soft:      rgba(19, 19, 24, 0.8);
-  --muted:          rgba(19, 19, 24, 0.52);
-  --subtle:         rgba(19, 19, 24, 0.32);
-  --heading-a:      #0a0a0d;
-  --heading-b:      rgba(10, 10, 13, 0.72);
-  --accent:         #7c5cf0;
-  --accent-2:       #db2777;
-  --accent-soft:    #6d28d9;
-  --accent-dim:     rgba(124, 92, 240, 0.1);
-  --accent-border:  rgba(124, 92, 240, 0.4);
-  --accent-glow:    rgba(124, 92, 240, 0.22);
+  --bg:             #ecebe6;
+  --bg-elevated:    #f5f4f0;
+  --card-solid:     #f5f4f0;
+  --card-solid-dim: #e3e1db;
+  --overlay-solid:  #f5f4f0;
+  --header-backdrop: rgba(236, 235, 230, 0.97);
+  --surface:        rgba(50, 40, 30, 0.045);
+  --surface-hover:  rgba(50, 40, 30, 0.075);
+  --border:         rgba(50, 40, 30, 0.12);
+  --border-mid:     rgba(50, 40, 30, 0.19);
+  --text:           #2b2a31;
+  --text-soft:      rgba(43, 42, 49, 0.84);
+  --muted:          rgba(43, 42, 49, 0.62);
+  --subtle:         rgba(43, 42, 49, 0.38);
+  --heading-a:      #1e1d24;
+  --heading-b:      rgba(30, 29, 36, 0.74);
+  --accent:         #7459dc;
+  --accent-2:       #c73a82;
+  --accent-soft:    #5f3fcf;
+  --accent-dim:     rgba(116, 89, 220, 0.12);
+  --accent-border:  rgba(116, 89, 220, 0.42);
+  --accent-glow:    rgba(116, 89, 220, 0.22);
   --danger:         #dc2626;
   --danger-bg:      rgba(220, 38, 38, 0.08);
   --danger-border:  rgba(220, 38, 38, 0.22);
   --success-bg:     rgba(5, 150, 105, 0.08);
   --success-border: rgba(5, 150, 105, 0.22);
   --success-text:   #047857;
+  --danger-text:    #b91c1c;
+  --on-accent:      #ffffff;
+  --accent-strong:  #5f46c4;
+  --accent-disabled: #bdb4e6;
+  --glow-1:         rgba(116, 89, 220, 0.16);
+  --glow-2:         rgba(199, 58, 130, 0.1);
+  color-scheme: light;
+}
+
+// Ocean: deep blue-slate with a cyan accent.
+[data-theme="ocean"] {
+  --bg:             #0a1118;
+  --bg-elevated:    #0e1822;
+  --card-solid:     #121e2a;
+  --card-solid-dim: #0d1722;
+  --overlay-solid:  #14212e;
+  --header-backdrop: rgba(10, 17, 24, 0.97);
+  --surface:        rgba(150, 200, 255, 0.05);
+  --surface-hover:  rgba(150, 200, 255, 0.085);
+  --border:         rgba(150, 200, 255, 0.1);
+  --border-mid:     rgba(150, 200, 255, 0.17);
+  --text:           #eaf3fb;
+  --text-soft:      rgba(234, 243, 251, 0.84);
+  --muted:          rgba(214, 232, 248, 0.5);
+  --subtle:         rgba(214, 232, 248, 0.26);
+  --heading-a:      #ffffff;
+  --heading-b:      rgba(234, 243, 251, 0.78);
+  --accent:         #22d3ee;
+  --accent-2:       #3b82f6;
+  --accent-soft:    #7ee3f5;
+  --accent-dim:     rgba(34, 211, 238, 0.14);
+  --accent-border:  rgba(34, 211, 238, 0.5);
+  --accent-glow:    rgba(34, 211, 238, 0.32);
+  --danger:         #f87171;
+  --danger-bg:      rgba(248, 113, 113, 0.12);
+  --danger-border:  rgba(248, 113, 113, 0.28);
+  --success-bg:     rgba(16, 185, 129, 0.1);
+  --success-border: rgba(16, 185, 129, 0.25);
+  --success-text:   #6ee7b7;
+  --danger-text:    #fca5a5;
+  --on-accent:      #04141c;
+  --accent-strong:  #0891b2;
+  --accent-disabled: #1d4756;
+  --glow-1:         rgba(34, 211, 238, 0.22);
+  --glow-2:         rgba(59, 130, 246, 0.2);
+  color-scheme: dark;
 }
 
 $bg:             var(--bg);
@@ -90,6 +143,10 @@ $danger-bg:      var(--danger-bg);
 $danger-border:  var(--danger-border);
 $success-bg:     var(--success-bg);
 $success-border: var(--success-border);
+$danger-text:     var(--danger-text);
+$on-accent:       var(--on-accent);
+$accent-strong:  var(--accent-strong);
+$accent-disabled: var(--accent-disabled);
 $success-text:   var(--success-text);
 
 $radius-sm: 8px;

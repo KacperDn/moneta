@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <script>
       try {
-        if (localStorage.getItem("moneta_theme") === "light") {
-          document.documentElement.setAttribute("data-theme", "light");
+        var theme = localStorage.getItem("moneta_theme");
+        if (theme === "light" || theme === "ocean") {
+          document.documentElement.setAttribute("data-theme", theme);
         }
       } catch (e) {}
       document.addEventListener("touchstart", function () {}, { passive: true });
