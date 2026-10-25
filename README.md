@@ -14,6 +14,12 @@ Personal finance tracker — track your monthly expenses, visualize spending hab
 - Custom expense categories — change the icon/color of any default category, add your own, or hide any of them without losing historical data
 - Optional monthly budget goal with a live progress bar
 
+**Planning**
+- Monthly planner: enter this month's income (and where it comes from), then split the pool across planned spending. The remaining amount updates live and warns when you plan more than you earn
+- Planned items can be linked to an expense category (planned vs. actually spent, from your history) or to a savings goal (planned vs. deposited)
+- Copy a month's plan from the previous month
+- Savings goals ("piggy banks"): any number of them, optional target with a progress bar, deposits and withdrawals with a history
+
 **Insight**
 - Monthly spending breakdown with a donut chart — click a category to drill into its individual expenses
 - Category filtering in the history view and a temporary "exclude from breakdown" toggle in the chart view
@@ -89,6 +95,7 @@ Run these once in the Supabase SQL Editor for a new project (alongside an `expen
 - [supabase-budgets-migration.sql](supabase-budgets-migration.sql) — the monthly budget goal
 - [supabase-categories-migration.sql](supabase-categories-migration.sql) — per-user category overrides (icon/color/hidden) and custom categories
 - [supabase-expenses-update-migration.sql](supabase-expenses-update-migration.sql) — row-level policy that lets users edit their own expenses
+- [supabase-planner-migration.sql](supabase-planner-migration.sql) — monthly planner and savings goals (3 tables; row-level security, constraints, and composite foreign keys that tie every row to its owner)
 
 | Command | What it does |
 |---|---|
@@ -99,7 +106,7 @@ Run these once in the Supabase SQL Editor for a new project (alongside an `expen
 | `npm test` | Vitest (watch mode; add `-- --run` for a single run) |
 | `bash scripts/gate.sh` | The full quality gate: lint → typecheck → tests → build |
 
-Business logic that can be pure (sums, grouping, CSV, amount parsing) lives in `src/utils/` and is unit-tested without mocking Supabase or React.
+Business logic that can be pure (sums, grouping, planner and savings maths, CSV, amount parsing) lives in `src/utils/` and is unit-tested without mocking Supabase or React.
 
 ## Project Structure
 
@@ -108,6 +115,8 @@ src/
 ├── hooks/
 │   ├── useAuth.ts            # session management
 │   ├── useExpenses.ts        # data fetching and mutations (add / update / remove)
+│   ├── usePlan.ts            # monthly planner items (income / planned spending)
+│   ├── useSavings.ts         # savings goals and their deposits/withdrawals
 │   ├── useCategories.ts      # merges default + custom categories (Supabase)
 │   ├── useBudgetGoal.ts      # monthly budget goal (Supabase)
 │   ├── useTheme.ts           # dark/light theme, persisted
@@ -126,6 +135,11 @@ src/
 │   ├── Dialogs.tsx           # confirm / budget / category-hint / drill-down dialogs
 │   ├── EditExpenseDialog.tsx # edit an existing expense
 │   ├── HistoryView.tsx       # history tab (month list, category filter, summary, export)
+│   ├── PlannerView.tsx       # monthly planner tab
+│   ├── SavingsView.tsx       # savings goals tab
+│   ├── PlanItemDialog.tsx    # add/edit an income or planned-spending line
+│   ├── SavingsDialogs.tsx    # savings goal and deposit/withdraw dialogs
+│   ├── DialogShell.tsx       # shared modal frame (overlay, Escape, click-outside)
 │   ├── RecentExpenses.tsx    # latest entries next to the add form
 │   ├── AmountInput.tsx       # amount field with stepper and quick amounts
 │   ├── MonthSelect.tsx       # custom month dropdown
@@ -136,6 +150,10 @@ src/
 │   ├── expenseList.ts        # replace an edited expense in the list (pure, tested)
 │   ├── exportCsv.ts          # expenses -> CSV string (pure, tested)
 │   ├── amount.ts             # amount input sanitizing / formatting (pure, tested)
+│   ├── money.ts              # integer-cent arithmetic (pure, tested)
+│   ├── plan.ts               # planner totals, plan vs. actual (pure, tested)
+│   ├── savings.ts            # goal balances and progress (pure, tested)
+│   ├── date.ts               # local-time date helpers (pure, tested)
 │   └── downloadFile.ts       # browser file download helpers
 ├── styles/
 │   ├── main.scss             # entry point, lists the partials in cascade order
@@ -147,7 +165,7 @@ src/
 ├── constants.ts              # default categories, formatting helpers
 ├── icons.tsx                 # shared lucide-react icon set
 ├── categoryIcons.tsx         # icon picker resolver for expense categories
-├── App.tsx                   # dashboard / add / history views, navigation
+├── App.tsx                   # dashboard / add / history views, navigation (plan and savings live in components/)
 ├── Landing.tsx               # marketing page (pre-login)
 ├── Auth.tsx                  # login / register / reset-request screen
 ├── AuthLayout.tsx            # shared split-screen layout for auth screens
