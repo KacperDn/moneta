@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { sanitizeAmount, formatAmount } from "./amount";
+import { sanitizeAmount, formatAmount, parseAmount } from "./amount";
 
 describe("sanitizeAmount", () => {
   it("accepts a comma as the decimal separator", () => {
@@ -44,3 +44,21 @@ describe("formatAmount", () => {
     expect(formatAmount(10)).toBe("10");
   });
 });
+
+describe("parseAmount", () => {
+  it("returns the number for a valid positive amount", () => {
+    expect(parseAmount("12.5")).toBe(12.5);
+  });
+
+  it("rejects empty, zero and negative input", () => {
+    expect(parseAmount("")).toBeNull();
+    expect(parseAmount("0")).toBeNull();
+    expect(parseAmount("-5")).toBeNull();
+  });
+
+  it("rejects amounts the database would refuse", () => {
+    expect(parseAmount("1000000000")).toBeNull();
+    expect(parseAmount("999999999.99")).toBe(999999999.99);
+  });
+});
+

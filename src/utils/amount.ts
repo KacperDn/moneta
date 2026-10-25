@@ -13,3 +13,14 @@ export function sanitizeAmount(raw: string): string {
 export function formatAmount(n: number): string {
   return String(Math.round(Math.max(0, n) * 100) / 100);
 }
+
+/** Matches the database CHECK (amount > 0 and amount < 1,000,000,000). */
+const MAX_AMOUNT = 1_000_000_000;
+
+/** Parses a typed amount; null when it is empty, not positive, or beyond what the database accepts. */
+export function parseAmount(value: string): number | null {
+  const parsed = parseFloat(value);
+  if (!Number.isFinite(parsed) || parsed <= 0 || parsed >= MAX_AMOUNT) return null;
+  return parsed;
+}
+
