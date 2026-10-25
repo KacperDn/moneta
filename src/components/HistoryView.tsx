@@ -31,9 +31,9 @@ export default function HistoryView({
   return (
     <div className="history">
       <div className="history__main">
-        <div className="history__title">{t("history.title")}</div>
+        <div className="page__title">{t("history.title")}</div>
         <div className="history__meta">
-          <div className="history__subtitle">{monthLabel} · {t("transactionsCount", { count: expenses.length })}</div>
+          <div className="page__subtitle">{monthLabel} · {t("transactionsCount", { count: expenses.length })}</div>
           {monthExpenseCount > 0 && (
             <button type="button" className="btn--ghost history__export" onClick={onExport}>
               {IconDownload}{t("history.exportMonth")}

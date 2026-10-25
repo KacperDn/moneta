@@ -1,5 +1,8 @@
 {
   "common": {
+    "loadErrorTitle": "Could not load your data",
+    "loadErrorSub": "Check your connection and try again.",
+    "retry": "Try again",
     "cancel": "Cancel",
     "save": "Save",
     "delete": "Delete",
@@ -137,6 +140,12 @@
     "s8_body": "For questions about your data, write to: <a>{{email}}</a>"
   },
   "toast": {
+    "planSaveFailed": "Could not save the plan.",
+    "planDeleteFailed": "Could not delete the plan item.",
+    "planCopied": "Plan copied from the previous month.",
+    "planNothingToCopy": "The previous month has no plan.",
+    "savingsSaveFailed": "Could not save the savings change.",
+    "savingsDeleteFailed": "Could not delete the entry.",
     "expenseUpdated": "Expense updated.",
     "expenseUpdateFailed": "Could not update the expense.",
     "fetchFailed": "Couldn't load data. Check your connection.",
@@ -159,6 +168,8 @@
   "monthsDataCount_one": "You have data from {{count}} month",
   "monthsDataCount_other": "You have data from {{count}} months",
   "dashboard": {
+    "navPlan": "Plan",
+    "navSavings": "Savings",
     "navAria": "Navigation",
     "monthSelectAria": "Choose month",
     "navOverview": "Overview",
@@ -195,6 +206,70 @@
     "title": "Delete expense?",
     "body": "This action cannot be undone."
   },
+  "plan": {
+    "title": "Monthly planner",
+    "poolLabel": "Left to allocate",
+    "income": "Income",
+    "planned": "Planned",
+    "overbooked": "You planned {{amount}} zł more than your income.",
+    "incomeTitle": "Income",
+    "incomeEmpty": "Add how much money comes in this month, and from where.",
+    "allocationTitle": "Planned spending",
+    "allocationEmpty": "Split the pool: rent, food, savings...",
+    "addIncome": "+ Add income",
+    "addAllocation": "+ Add spending",
+    "copyPrevious": "Copy from previous month",
+    "spentOf": "Spent {{spent}} of {{planned}} zł",
+    "savedOf": "{{goal}}: saved {{saved}} of {{planned}} zł",
+    "dialog": {
+      "incomeNew": "New income",
+      "incomeEdit": "Edit income",
+      "allocationNew": "New planned spending",
+      "allocationEdit": "Edit planned spending",
+      "labelIncome": "Source",
+      "labelAllocation": "What for",
+      "placeholderIncome": "e.g. Salary",
+      "placeholderAllocation": "e.g. Rent",
+      "linkLabel": "Link to",
+      "link": { "none": "None", "category": "Category", "goal": "Savings" },
+      "noGoals": "You have no savings goals yet. Add one in the Savings tab.",
+      "errLabel": "Enter a name.",
+      "errLink": "Choose a category or a savings goal."
+    }
+  },
+  "savings": {
+    "title": "Savings",
+    "subtitle": "Put money aside for specific goals",
+    "totalLabel": "Total saved",
+    "goalsCount_one": "{{count}} goal",
+    "goalsCount_other": "{{count}} goals",
+    "newGoal": "+ New goal",
+    "emptyTitle": "No savings goals",
+    "emptySub": "Create a goal, e.g. for a holiday or an emergency fund.",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "history": "History",
+    "noEntries": "No entries.",
+    "target": "Target: {{amount}} zł ({{pct}}%)",
+    "editAria": "Edit savings goal",
+    "deleteEntryAria": "Delete entry",
+    "deleteTitle": "Delete this goal?",
+    "deleteBody": "The goal \"{{name}}\" will be removed together with its whole deposit history. This cannot be undone.",
+    "dialog": {
+      "goalNew": "New savings goal",
+      "goalEdit": "Edit savings goal",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Holiday",
+      "targetLabel": "Target (optional, zł)",
+      "targetPlaceholder": "e.g. 5000",
+      "deposit": "Deposit",
+      "withdraw": "Withdrawal",
+      "noteLabel": "Note (optional)",
+      "notePlaceholder": "e.g. bonus",
+      "errName": "Enter a goal name.",
+      "errWithdraw": "You cannot withdraw more than the goal holds."
+    }
+  },
   "budgetGoal": {
     "title": "Monthly goal",
     "body": "Set a spending limit to track your progress this month.",
@@ -202,6 +277,7 @@
     "removeGoal": "Remove goal"
   },
   "form": {
+    "errDate": "Enter a date.",
     "editTitle": "Edit expense",
     "recentTitle": "Recent expenses",
     "title": "New expense",

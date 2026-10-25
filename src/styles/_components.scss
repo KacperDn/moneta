@@ -930,7 +930,7 @@ input:-webkit-autofill:focus {
   }
 }
 
-.history__title {
+.page__title {
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -948,10 +948,12 @@ input:-webkit-autofill:focus {
   animation: fadeInUp 0.4s $ease;
 }
 
-.history__subtitle {
+.page__subtitle {
   font-size: 13px;
   color: $muted;
 }
+
+.page__subtitle--spaced { margin-bottom: 16px; }
 
 .history__export {
   display: inline-flex;

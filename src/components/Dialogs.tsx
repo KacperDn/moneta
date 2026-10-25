@@ -5,17 +5,19 @@ import { Expense, UserCategory } from "../types";
 import AmountInput from "./AmountInput";
 
 interface ConfirmDeleteDialogProps {
+  title?: string;
+  body?: string;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
-export function ConfirmDeleteDialog({ onCancel, onConfirm }: ConfirmDeleteDialogProps) {
+export function ConfirmDeleteDialog({ title, body, onCancel, onConfirm }: ConfirmDeleteDialogProps) {
   const { t } = useTranslation();
   return (
     <div className="confirm__overlay">
       <div className="confirm__box">
-        <div className="confirm__title">{t("confirmDelete.title")}</div>
-        <div className="confirm__sub">{t("confirmDelete.body")}</div>
+        <div className="confirm__title">{title ?? t("confirmDelete.title")}</div>
+        <div className="confirm__sub">{body ?? t("confirmDelete.body")}</div>
         <div className="confirm__actions">
           <button className="confirm__btn confirm__btn--cancel" onClick={onCancel}>{t("common.cancel")}</button>
           <button className="confirm__btn confirm__btn--danger" onClick={onConfirm}>{t("common.delete")}</button>

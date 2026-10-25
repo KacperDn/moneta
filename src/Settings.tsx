@@ -6,6 +6,7 @@ import { useLanguage } from "./hooks/useLanguage";
 import { Expense, UserCategory } from "./types";
 import { expensesToCsv } from "./utils/exportCsv";
 import { downloadCsvFile } from "./utils/downloadFile";
+import { todayISO } from "./utils/date";
 import PrivacyPolicy from "./PrivacyPolicy";
 import CategoryManager from "./CategoryManager";
 
@@ -37,7 +38,7 @@ export default function Settings({
   const [showCategories, setShowCategories] = useState(false);
 
   const exportAll = (all: Expense[]) => {
-    const today = new Date().toISOString().split("T")[0];
+    const today = todayISO();
     downloadCsvFile(`moneta-${today}.csv`, expensesToCsv(all));
   };
 

@@ -14,7 +14,7 @@ import { sumByCategory } from "./utils/expenseStats";
 import { expensesToCsv } from "./utils/exportCsv";
 import { downloadCsvFile } from "./utils/downloadFile";
 import { Expense, ExpenseForm } from "./types";
-import { IconPieChart, IconSettings, IconInfo, IconOverview, IconAdd, IconHistory } from "./icons";
+import { IconPieChart, IconSettings, IconInfo, IconOverview, IconAdd, IconHistory, IconPlan, IconPiggyBank } from "./icons";
 import { getCategoryIcon } from "./categoryIcons";
 import Auth from "./Auth";
 import Landing from "./Landing";
@@ -27,11 +27,15 @@ import RecentExpenses from "./components/RecentExpenses";
 import MonthSelect from "./components/MonthSelect";
 import AmountInput from "./components/AmountInput";
 import EditExpenseDialog from "./components/EditExpenseDialog";
+import PlannerView from "./components/PlannerView";
+import SavingsView from "./components/SavingsView";
+import { todayISO } from "./utils/date";
+import { parseAmount } from "./utils/amount";
 import { ConfirmDeleteDialog, BudgetDialog, CategoryHintDialog, CategoryDrilldownDialog } from "./components/Dialogs";
 import "./styles/main.scss";
 
-const TABS = ["dash", "add", "list"] as const;
-const TAB_ICONS = [IconOverview, IconAdd, IconHistory];
+const TABS = ["dash", "add", "list", "plan", "savings"] as const;
+const TAB_ICONS = [IconOverview, IconAdd, IconHistory, IconPlan, IconPiggyBank];
 
 const NOW = new Date();
 
@@ -55,7 +59,7 @@ export default function App() {
   const [view, setView]         = useState<typeof TABS[number]>("dash");
   const [month, setMonth]       = useState(NOW.getMonth());
   const [year]                  = useState(NOW.getFullYear());
-  const [form, setForm]         = useState<ExpenseForm>({ desc: "", cat: "Jedzenie", amount: "", date: NOW.toISOString().split("T")[0] });
+  const [form, setForm]         = useState<ExpenseForm>({ desc: "", cat: "Jedzenie", amount: "", date: todayISO() });
   const [err, setErr]           = useState("");
   const [editing, setEditing] = useState<Expense | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
@@ -155,8 +159,8 @@ export default function App() {
 
   const handleAdd = async () => {
     if (!form.desc.trim()) return setErr(t("form.errDescription"));
-    const a = parseFloat(form.amount);
-    if (!form.amount || isNaN(a) || a <= 0) return setErr(t("form.errAmount"));
+    if (parseAmount(form.amount) === null) return setErr(t("form.errAmount"));
+    if (!form.date) return setErr(t("form.errDate"));
     const ok = await add(form, session!.user.id);
     if (ok) {
       setForm(f => ({ ...f, desc: "", amount: "" }));
@@ -182,7 +186,7 @@ export default function App() {
     setConfirmId(null);
   };
 
-  const tabLabels = [t("dashboard.navOverview"), t("dashboard.navAdd"), t("dashboard.navHistory")];
+  const tabLabels = [t("dashboard.navOverview"), t("dashboard.navAdd"), t("dashboard.navHistory"), t("dashboard.navPlan"), t("dashboard.navSavings")];
   const drilldownCategory = drilldownCat ? getUserCat(drilldownCat) : null;
 
   if (!ready) return (
@@ -539,6 +543,21 @@ export default function App() {
             onExport={exportMonthCsv}
           />
         )}
+
+        {view === "plan" && (
+          <PlannerView
+            userId={session.user.id}
+            year={year}
+            month={month}
+            monthLabel={`${MONTHS[month]} ${year}`}
+            monthExpenses={monthExpenses}
+            categories={categories}
+            getCategory={getUserCat}
+            categoryLabel={catLabel}
+          />
+        )}
+
+        {view === "savings" && <SavingsView userId={session.user.id} />}
 
       </div>
 

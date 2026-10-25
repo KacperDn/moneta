@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getCategoryIcon } from "../categoryIcons";
 import { Expense, ExpenseForm, UserCategory } from "../types";
+import { parseAmount } from "../utils/amount";
 import AmountInput from "./AmountInput";
+import DialogShell from "./DialogShell";
 
 interface EditExpenseDialogProps {
   expense: Expense;
@@ -23,68 +25,59 @@ export default function EditExpenseDialog({ expense, categories, categoryLabel, 
   });
   const [err, setErr] = useState("");
 
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => { if (e.key === "Escape") onCancel(); };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [onCancel]);
-
   const options = categories.filter(c => !c.hidden || c.name === expense.cat);
 
   const submit = () => {
     if (!form.desc.trim()) return setErr(t("form.errDescription"));
-    const amount = parseFloat(form.amount);
-    if (!form.amount || isNaN(amount) || amount <= 0) return setErr(t("form.errAmount"));
+    if (parseAmount(form.amount) === null) return setErr(t("form.errAmount"));
+    if (!form.date) return setErr(t("form.errDate"));
     setErr("");
     onSave({ ...form, desc: form.desc.trim() });
   };
 
   return (
-    <div className="confirm__overlay" onClick={onCancel}>
-      <div className="edit__box" role="dialog" aria-modal="true" aria-label={t("form.editTitle")} onClick={e => e.stopPropagation()}>
-        <div className="edit__title">{t("form.editTitle")}</div>
-        {err && <div className="alert alert--error">{err}</div>}
+    <DialogShell title={t("form.editTitle")} onClose={onCancel}>
+      {err && <div className="alert alert--error">{err}</div>}
 
-        <label className="form__label">{t("form.descriptionLabel")}</label>
-        <input
-          className="form__input"
-          placeholder={t("form.descriptionPlaceholder")}
-          value={form.desc}
-          autoFocus
-          onChange={e => { setErr(""); setForm(f => ({ ...f, desc: e.target.value })); }}
-        />
+      <label className="form__label">{t("form.descriptionLabel")}</label>
+      <input
+        className="form__input"
+        placeholder={t("form.descriptionPlaceholder")}
+        value={form.desc}
+        autoFocus
+        onChange={e => { setErr(""); setForm(f => ({ ...f, desc: e.target.value })); }}
+      />
 
-        <label className="form__label">{t("form.amountLabel")}</label>
-        <AmountInput
-          value={form.amount}
-          placeholder={t("form.amountPlaceholder")}
-          onChange={amount => { setErr(""); setForm(f => ({ ...f, amount })); }}
-        />
+      <label className="form__label">{t("form.amountLabel")}</label>
+      <AmountInput
+        value={form.amount}
+        placeholder={t("form.amountPlaceholder")}
+        onChange={amount => { setErr(""); setForm(f => ({ ...f, amount })); }}
+      />
 
-        <label className="form__label">{t("form.categoryLabel")}</label>
-        <div className="form__cat-grid">
-          {options.map(c => (
-            <button
-              key={c.name}
-              type="button"
-              className={`form__cat-btn${form.cat === c.name ? " form__cat-btn--active" : ""}`}
-              onClick={() => setForm(f => ({ ...f, cat: c.name }))}
-            >
-              <span className="form__cat-btn__icon" style={{ color: c.color }}>{getCategoryIcon(c.icon)}</span>{categoryLabel(c.name)}
-            </button>
-          ))}
-        </div>
-
-        <label className="form__label">{t("form.dateLabel")}</label>
-        <input className="form__input" type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
-
-        <div className="confirm__actions">
-          <button className="confirm__btn confirm__btn--cancel" onClick={onCancel}>{t("common.cancel")}</button>
-          <button className="confirm__btn confirm__btn--primary" onClick={submit} disabled={saving}>
-            {saving ? t("form.submitLoading") : t("common.save")}
+      <label className="form__label">{t("form.categoryLabel")}</label>
+      <div className="form__cat-grid">
+        {options.map(c => (
+          <button
+            key={c.name}
+            type="button"
+            className={`form__cat-btn${form.cat === c.name ? " form__cat-btn--active" : ""}`}
+            onClick={() => setForm(f => ({ ...f, cat: c.name }))}
+          >
+            <span className="form__cat-btn__icon" style={{ color: c.color }}>{getCategoryIcon(c.icon)}</span>{categoryLabel(c.name)}
           </button>
-        </div>
+        ))}
       </div>
-    </div>
+
+      <label className="form__label">{t("form.dateLabel")}</label>
+      <input className="form__input" type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
+
+      <div className="confirm__actions">
+        <button className="confirm__btn confirm__btn--cancel" onClick={onCancel}>{t("common.cancel")}</button>
+        <button className="confirm__btn confirm__btn--primary" onClick={submit} disabled={saving}>
+          {saving ? t("form.submitLoading") : t("common.save")}
+        </button>
+      </div>
+    </DialogShell>
   );
 }

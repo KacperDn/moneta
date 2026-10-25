@@ -1,5 +1,8 @@
 {
   "common": {
+    "loadErrorTitle": "Nie udało się wczytać danych",
+    "loadErrorSub": "Sprawdź połączenie z internetem i spróbuj ponownie.",
+    "retry": "Spróbuj ponownie",
     "cancel": "Anuluj",
     "save": "Zapisz",
     "delete": "Usuń",
@@ -137,6 +140,12 @@
     "s8_body": "W sprawie swoich danych pisz na: <a>{{email}}</a>"
   },
   "toast": {
+    "planSaveFailed": "Nie udało się zapisać planu.",
+    "planDeleteFailed": "Nie udało się usunąć pozycji planu.",
+    "planCopied": "Plan skopiowany z poprzedniego miesiąca.",
+    "planNothingToCopy": "Poprzedni miesiąc nie ma żadnego planu.",
+    "savingsSaveFailed": "Nie udało się zapisać zmian w skarbonce.",
+    "savingsDeleteFailed": "Nie udało się usunąć wpisu.",
     "expenseUpdated": "Wydatek zaktualizowany.",
     "expenseUpdateFailed": "Nie udało się zaktualizować wydatku.",
     "fetchFailed": "Nie udało się pobrać danych. Sprawdź połączenie.",
@@ -161,6 +170,8 @@
   "monthsDataCount_one": "Masz dane z {{count}} miesiąca",
   "monthsDataCount_other": "Masz dane z {{count}} miesięcy",
   "dashboard": {
+    "navPlan": "Plan",
+    "navSavings": "Skarbonki",
     "navAria": "Nawigacja",
     "monthSelectAria": "Wybierz miesiąc",
     "navOverview": "Przegląd",
@@ -197,6 +208,72 @@
     "title": "Usunąć wydatek?",
     "body": "Tej operacji nie można cofnąć."
   },
+  "plan": {
+    "title": "Planer miesiąca",
+    "poolLabel": "Do rozdysponowania",
+    "income": "Przychody",
+    "planned": "Zaplanowano",
+    "overbooked": "Zaplanowano o {{amount}} zł więcej, niż wynoszą przychody.",
+    "incomeTitle": "Przychody",
+    "incomeEmpty": "Dodaj, ile pieniędzy wpłynie w tym miesiącu i skąd.",
+    "allocationTitle": "Planowane wydatki",
+    "allocationEmpty": "Rozdziel pulę: mieszkanie, jedzenie, oszczędności...",
+    "addIncome": "+ Dodaj przychód",
+    "addAllocation": "+ Dodaj wydatek",
+    "copyPrevious": "Skopiuj z poprzedniego miesiąca",
+    "spentOf": "Wydano {{spent}} z {{planned}} zł",
+    "savedOf": "{{goal}}: odłożono {{saved}} z {{planned}} zł",
+    "dialog": {
+      "incomeNew": "Nowy przychód",
+      "incomeEdit": "Edytuj przychód",
+      "allocationNew": "Nowy planowany wydatek",
+      "allocationEdit": "Edytuj planowany wydatek",
+      "labelIncome": "Źródło",
+      "labelAllocation": "Na co",
+      "placeholderIncome": "np. Wypłata",
+      "placeholderAllocation": "np. Czynsz",
+      "linkLabel": "Powiązanie",
+      "link": { "none": "Brak", "category": "Kategoria", "goal": "Skarbonka" },
+      "noGoals": "Nie masz jeszcze skarbonek. Dodaj pierwszą w zakładce Skarbonki.",
+      "errLabel": "Podaj nazwę.",
+      "errLink": "Wybierz kategorię lub skarbonkę."
+    }
+  },
+  "savings": {
+    "title": "Skarbonki",
+    "subtitle": "Odkładaj pieniądze na konkretne cele",
+    "totalLabel": "Razem odłożone",
+    "goalsCount_one": "{{count}} skarbonka",
+    "goalsCount_few": "{{count}} skarbonki",
+    "goalsCount_many": "{{count}} skarbonek",
+    "goalsCount_other": "{{count}} skarbonki",
+    "newGoal": "+ Nowa skarbonka",
+    "emptyTitle": "Brak skarbonek",
+    "emptySub": "Załóż skarbonkę, np. na wakacje albo poduszkę finansową.",
+    "deposit": "Wpłać",
+    "withdraw": "Wypłać",
+    "history": "Historia",
+    "noEntries": "Brak wpisów.",
+    "target": "Cel: {{amount}} zł ({{pct}}%)",
+    "editAria": "Edytuj skarbonkę",
+    "deleteEntryAria": "Usuń wpis",
+    "deleteTitle": "Usunąć skarbonkę?",
+    "deleteBody": "Skarbonka „{{name}}” zniknie razem z całą historią wpłat. Tej operacji nie można cofnąć.",
+    "dialog": {
+      "goalNew": "Nowa skarbonka",
+      "goalEdit": "Edytuj skarbonkę",
+      "nameLabel": "Nazwa",
+      "namePlaceholder": "np. Wakacje",
+      "targetLabel": "Cel (opcjonalnie, zł)",
+      "targetPlaceholder": "np. 5000",
+      "deposit": "Wpłata",
+      "withdraw": "Wypłata",
+      "noteLabel": "Notatka (opcjonalnie)",
+      "notePlaceholder": "np. premia",
+      "errName": "Podaj nazwę skarbonki.",
+      "errWithdraw": "Nie możesz wypłacić więcej, niż jest w skarbonce."
+    }
+  },
   "budgetGoal": {
     "title": "Cel miesięczny",
     "body": "Ustaw limit wydatków, żeby śledzić postęp w tym miesiącu.",
@@ -204,6 +281,7 @@
     "removeGoal": "Usuń cel"
   },
   "form": {
+    "errDate": "Podaj datę.",
     "editTitle": "Edytuj wydatek",
     "recentTitle": "Ostatnie wydatki",
     "title": "Nowy wydatek",

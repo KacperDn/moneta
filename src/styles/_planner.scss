@@ -1,0 +1,352 @@
+@use "tokens" as *;
+
+// Monthly planner and savings goals.
+
+.plan__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.plan__pool {
+  margin-bottom: 20px;
+  padding: 24px 22px;
+  border-radius: 24px;
+  border: 1px solid $border;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--accent-dim), transparent 62%),
+    $surface;
+}
+
+.plan__pool-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $muted;
+}
+
+.plan__pool-value {
+  margin-top: 6px;
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -1.6px;
+  font-variant-numeric: tabular-nums;
+
+  span {
+    margin-left: 4px;
+    font-size: 18px;
+    font-weight: 500;
+    color: $muted;
+  }
+}
+
+.plan__pool-value--over { color: var(--danger); }
+
+.plan__pool-track {
+  height: 8px;
+  margin-top: 16px;
+  border-radius: 99px;
+  overflow: hidden;
+  background: $surface-hover;
+}
+
+.plan__pool-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, $accent, $accent-2);
+  transition: width 0.6s $ease;
+}
+
+.plan__pool-fill--over { background: var(--danger); }
+
+.plan__pool-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: $muted;
+
+  strong { color: $text; font-weight: 600; }
+}
+
+.plan__warning {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: $radius-md;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: $danger-text;
+  font-size: 13px;
+}
+
+.plan__columns {
+  display: grid;
+  gap: 20px;
+}
+
+.plan__column .card--list { margin-bottom: 10px; }
+
+.plan__empty {
+  margin-bottom: 10px;
+  padding: 18px;
+  text-align: center;
+  font-size: 13px;
+  color: $muted;
+  border: 1px dashed $border-mid;
+  border-radius: $radius-lg;
+}
+
+.plan__add {
+  width: 100%;
+  padding: 11px;
+  background: none;
+  border: 1px dashed $border-mid;
+  border-radius: $radius-md;
+  color: $muted;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+
+  &:hover {
+    color: $text;
+    border-color: $accent-border;
+    background: $accent-dim;
+  }
+}
+
+.plan__hint {
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: $muted;
+}
+
+.plan__income-amount { color: var(--success-text); }
+
+.plan__bar {
+  display: block;
+  height: 4px;
+  margin-top: 7px;
+  border-radius: 99px;
+  overflow: hidden;
+  background: $surface-hover;
+}
+
+.plan__bar--thick {
+  height: 8px;
+  margin-top: 14px;
+}
+
+.plan__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: $accent;
+  transition: width 0.5s $ease;
+}
+
+.plan__bar-fill--over { background: var(--danger); }
+
+.plan__meta--over { color: $danger-text; }
+
+// Segmented control (choose one of a few options).
+.segmented {
+  display: inline-flex;
+  gap: 2px;
+  margin-bottom: 14px;
+  padding: 3px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+}
+
+.segmented__btn {
+  padding: 7px 14px;
+  background: none;
+  border: none;
+  border-radius: $radius-sm;
+  color: $muted;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover { color: $text; }
+}
+
+.segmented__btn--active {
+  background: $accent-dim;
+  color: $accent-soft;
+  font-weight: 600;
+}
+
+// Savings goals ("piggy banks").
+.savings__grid {
+  display: grid;
+  gap: 16px;
+}
+
+.goal {
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid $border;
+  background-color: $surface;
+  background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 45%);
+}
+
+.goal__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.goal__dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--goal-color);
+}
+
+.goal__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.goal__edit {
+  display: inline-flex;
+  padding: 4px;
+  background: none;
+  border: none;
+  color: $subtle;
+  cursor: pointer;
+  transition: color 0.15s;
+
+  svg { width: 15px; height: 15px; }
+
+  &:hover { color: $accent-soft; }
+}
+
+.goal__balance {
+  margin-top: 14px;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -1.2px;
+  font-variant-numeric: tabular-nums;
+
+  span {
+    margin-left: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    color: $muted;
+  }
+}
+
+.goal__fill { background: var(--goal-color); }
+
+.goal__target {
+  margin-top: 8px;
+  font-size: 12.5px;
+  color: $muted;
+}
+
+.goal__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.goal__btn {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: 1px solid $border-mid;
+  border-radius: $radius-md;
+  color: $text;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+
+  &:hover:not(:disabled) { background: $surface-hover; border-color: $accent-border; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.goal__btn--primary {
+  background: color-mix(in srgb, var(--goal-color) 18%, transparent);
+  border-color: color-mix(in srgb, var(--goal-color) 55%, transparent);
+}
+
+.goal__history-toggle {
+  margin-top: 14px;
+  padding: 4px 0;
+  background: none;
+  border: none;
+  color: $muted;
+  font-size: 12.5px;
+  cursor: pointer;
+
+  &:hover { color: $text; }
+}
+
+.goal__history {
+  display: grid;
+  margin-top: 8px;
+  list-style: none;
+}
+
+.goal__entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-top: 1px solid $border;
+  font-size: 13px;
+}
+
+.goal__entry-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.goal__entry-note {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.goal__entry-date {
+  font-size: 11.5px;
+  color: $muted;
+}
+
+.goal__entry-amount {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--success-text);
+}
+
+.goal__entry-amount--out { color: $danger-text; }
+
+@include from($bp-desktop) {
+  .app__container--plan,
+  .app__container--savings { max-width: 1120px; }
+
+  .plan__pool { padding: 30px 34px; }
+  .plan__pool-value { font-size: 56px; letter-spacing: -2.2px; }
+
+  .plan__columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 28px;
+  }
+
+  .savings__grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+}

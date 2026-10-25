@@ -28,3 +28,6 @@ dist-ssr
 # AI orchestrator run artifacts
 swarm/logs/
 .worktrees/
+
+# Supabase CLI local state
+supabase/.temp/

@@ -1,4 +1,4 @@
-import { PieChart, TrendingUp, Cloud, Shield, Palette, Settings, ChevronLeft, Info, Eye, EyeOff, Download, ChevronDown, LayoutDashboard, Plus, ReceiptText } from "lucide-react";
+import { PieChart, TrendingUp, Cloud, Shield, Palette, Settings, ChevronLeft, Info, Eye, EyeOff, Download, ChevronDown, LayoutDashboard, Plus, ReceiptText, Pencil, PiggyBank, ClipboardList, Wallet } from "lucide-react";
 
 export const IconPieChart = <PieChart />;
 export const IconTrendingUp = <TrendingUp />;
@@ -15,3 +15,7 @@ export const IconChevronDown = <ChevronDown />;
 export const IconOverview = <LayoutDashboard />;
 export const IconAdd = <Plus />;
 export const IconHistory = <ReceiptText />;
+export const IconPencil = <Pencil />;
+export const IconPiggyBank = <PiggyBank />;
+export const IconPlan = <ClipboardList />;
+export const IconWallet = <Wallet />;

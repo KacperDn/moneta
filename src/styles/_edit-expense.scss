@@ -2,6 +2,7 @@
 
 // Edit expense dialog + row action.
 .edit__box {
+  outline: none;
   width: 100%;
   max-width: 460px;
   max-height: calc(100dvh - 40px);
